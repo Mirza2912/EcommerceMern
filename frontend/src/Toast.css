@@ -1,0 +1,5 @@
+/* src/toastStyles.css */
+.Toastify__toast--success {
+  background-color: white; /* Green */
+  color: #ffce53; /* Text color */
+}
