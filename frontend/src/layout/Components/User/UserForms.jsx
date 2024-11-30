@@ -4,20 +4,20 @@ import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaRegUserCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import Toast from "../Components/Toast.js";
+import Toast from "../Home/Toast.js";
 import { Link, useNavigate } from "react-router-dom";
 import {
   clearError,
   login,
   registerUser,
-} from "../store/Action/userActions.js";
+} from "../../store/Action/userActions.js";
 
 const UserForms = () => {
   //For checking user is loggedIn or not
   const [isLogin, setIsLogin] = useState(true);
 
-  const dispatch = useDispatch(); //useDispatch fro dispatch action
-  const navigate = useNavigate();
+  const Dispatch = useDispatch(); //useDispatch fro dispatch action
+  const Navigate = useNavigate();
 
   //fetching data from user state
   const { loading, error, isAuthenticated, user } = useSelector(
@@ -81,20 +81,20 @@ const UserForms = () => {
   useEffect(() => {
     if (error) {
       Toast(error, "error");
-      dispatch(clearError());
+      Dispatch(clearError());
     }
     if (isAuthenticated) {
-      navigate("/account");
+      Navigate("/account");
+      Toast(`${user.message}`, "success");
     }
-  }, [dispatch, error, Toast, isAuthenticated, navigate]);
+  }, [Dispatch, error, Toast, isAuthenticated, Navigate]);
 
   //Login Form handler
   const loginFormHandler = (e) => {
     e.preventDefault();
 
-    dispatch(login(loginData));
+    Dispatch(login(loginData));
     if (isAuthenticated !== false) {
-      Toast("OKAY", "success");
       setLoginData({ email: "", password: "" });
     }
   };
@@ -104,11 +104,12 @@ const UserForms = () => {
     e.preventDefault();
 
     //dispatch for registration
-    dispatch(registerUser(signUpData));
+    Dispatch(registerUser(signUpData));
 
     //check is user loggedIn or not
     if (isAuthenticated) {
-      Toast(user.message, "success"); //showing popup for error
+      Navigate("/account");
+      Toast(`${user.message}`, "success"); //showing popup for error
       setSignUpData({ name: "", email: "", password: "" }); //Setting signUpData empty
     }
   };

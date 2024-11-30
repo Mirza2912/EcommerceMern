@@ -11,6 +11,11 @@ const getAllProducts = AsyncHandler(async (req, res) => {
 
   //How many products we want to show in one page
   const productsPerPage = 8;
+
+  //total products
+  const productCount = await Product.countDocuments();
+  // console.log(productCount);
+
   //This hold new instance of ApiFeature class and tis hold all feature of ApiFeature class
   const apiFeature = new ApiFeatures(Product.find(), req.query)
     .Search()
@@ -27,7 +32,13 @@ const getAllProducts = AsyncHandler(async (req, res) => {
   // products = await apiFeature.query;
   res
     .status(200)
-    .json(new ApiResponse(200, products, "All Searched  Products...!"));
+    .json(
+      new ApiResponse(
+        200,
+        { productCount, products },
+        "All Searched  Products...!"
+      )
+    );
 });
 
 //getting product details(single)
@@ -52,6 +63,8 @@ const createProduct = AsyncHandler(async (req, res) => {
 
   const data = req.body;
   const newProduct = await Product.create(data);
+  // console.log(newProduct);
+
   res
     .status(201)
     .json(

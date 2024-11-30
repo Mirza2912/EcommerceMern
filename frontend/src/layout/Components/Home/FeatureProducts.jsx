@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "./Toast.js";
-import "../../Toast.css";
+// import "../../Toast.css";
 import Card from "./Card.jsx";
-import { clearError } from "../store/ProductSlice/productSlice.js";
-import { getAllProducts } from "../store/ProductSlice/productSliceReducers.js";
+import { clearError } from "../../store/ProductSlice/productSlice.js";
+import { getAllProducts } from "../../store/ProductSlice/productSliceReducers.js";
 
 const FeatureProducts = () => {
   const dispatch = useDispatch();

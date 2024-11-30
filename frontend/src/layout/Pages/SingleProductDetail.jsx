@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Title from "../Components/Title";
+import Title from "../Components/Home/Title.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { clearError } from "../store/ProductSlice/productSlice.js";
 import { singleProductDetails } from "../store/ProductSlice/productSliceReducers.js";
 import { useParams } from "react-router-dom";
-import Toast from "../Components/Toast.js";
+import Toast from "../Components/Home/Toast.js";
 import Rating from "@mui/material/Rating";
 
 const SingleProductDetails = () => {

@@ -11,6 +11,7 @@ export const productSlice = createSlice({
   name: "productSlice",
   initialState: {
     products: [], //for storing all products in state
+    productCount: 0,
     singleProduct: {},
     loading: false,
     error: null,
@@ -33,7 +34,8 @@ export const productSlice = createSlice({
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload.data;
+        state.products = action.payload.data.products;
+        state.productCount = action.payload.data.productCount;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
         state.loading = false;

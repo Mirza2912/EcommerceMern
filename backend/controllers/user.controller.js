@@ -101,7 +101,7 @@ const userLogin = AsyncHandler(async (req, res, next) => {
 
   //if given email and password then this code will execute
   const user = await User.findOne({ email }).select("+password");
-  //   console.log(user);
+  // console.log(user);
 
   //if user not find
   if (!user) {
@@ -158,11 +158,12 @@ const userDetails = AsyncHandler(async (req, res, next) => {
   // fetching _id of user who want to access details from req.user which we set in middleware
   const { _id } = req.user;
 
-  const userDetails = await User.findById(_id);
+  const user = await User.findById(_id);
+  // console.log(user);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, userDetails, "User Details...!"));
+    .json(new ApiResponse(200, { user }, "User Details...!"));
 });
 
 //update user profile

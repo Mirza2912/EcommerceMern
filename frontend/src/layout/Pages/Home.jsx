@@ -1,9 +1,7 @@
 import React from "react";
-import Title from "../Components/Title";
-import { toast } from "react-toastify";
-import Hero from "../Components/Hero";
-import Toast from "../Components/Toast";
-import FeatureProducts from "../Components/FeatureProducts";
+import Title from "../Components/Home/Title";
+import Hero from "../Components/Home/Hero";
+import FeatureProducts from "../Components/Home/FeatureProducts";
 
 const Home = () => {
   return (

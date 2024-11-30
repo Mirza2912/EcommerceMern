@@ -11,6 +11,7 @@ export default {
       screens: {
         xsm: { max: "639px" },
         xxsm: { max: "450px" },
+        sml: { min: "830px" },
         slg: { min: "990px" },
         xlg: { min: "1237px" },
         xxl: { min: "1400px" },
