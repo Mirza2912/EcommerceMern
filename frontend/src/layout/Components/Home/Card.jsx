@@ -45,7 +45,7 @@ const Card = ({ product }) => {
           />
           <h2> {` (${product.numOfReviews} Reviews)`}</h2>
         </div>
-        <h1 className="text-white">{product.price} PKR</h1>
+        <h1 className="text-white">Rs {product.price}</h1>
       </div>
     </NavLink>
   );

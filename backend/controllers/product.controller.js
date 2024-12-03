@@ -25,6 +25,9 @@ const getAllProducts = AsyncHandler(async (req, res) => {
   //in this code we call find method on the basis of keyword which we defined in ApiFeature class
   const products = await apiFeature.query;
 
+  //length of filtered products
+  let filteredProductCount = products.length;
+
   // //calling pagination(productsPerPage) it will return only limited pages which we want
   // apiFeature.pagination(productsPerPage);
 
@@ -35,7 +38,7 @@ const getAllProducts = AsyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { productCount, products },
+        { productCount, products, productsPerPage, filteredProductCount },
         "All Searched  Products...!"
       )
     );
