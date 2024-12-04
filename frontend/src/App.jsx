@@ -16,6 +16,7 @@ import { userDetails } from "./layout/store/Action/userActions.js";
 import { ProtectedRoute } from "./layout/Routes/protectedRoute.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import UpdateProfile from "./layout/Components/User/UpdateProfile.jsx";
+import Search from "./layout/Pages/Search.jsx";
 
 /*--------------------------------------*/
 /*     Defining Routes of Website
@@ -68,7 +69,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Products />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/products/:keyword" element={<Products />} />
         <Route path="/contact" element={<Contact />} />
         <Route
           path="/account"
@@ -81,6 +83,7 @@ const App = () => {
 
         <Route path="/login" element={<UserForms />} />
         <Route path="/product/:id" element={<SingleProductDetail />} />
+        <Route path="/search" element={<Search />} />
       </Routes>
     </Router>
   );

@@ -38,9 +38,9 @@ const productSchema = new Schema(
     },
     images: [
       {
-        // public_id: {
-        //   type: String,
-        // },
+        public_id: {
+          type: String,
+        },
         url: {
           type: String,
           required: [true, "Image url is required...!"],

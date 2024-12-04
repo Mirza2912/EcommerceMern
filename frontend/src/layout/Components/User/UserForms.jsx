@@ -107,9 +107,9 @@ const UserForms = () => {
     Dispatch(registerUser(signUpData));
 
     //check is user loggedIn or not
-    if (isAuthenticated) {
+    if (isAuthenticated && isAuthenticated === true) {
       Navigate("/account");
-      Toast(`${user.message}`, "success"); //showing popup for error
+      Toast(`${user.message}`, "success");
       setSignUpData({ name: "", email: "", password: "" }); //Setting signUpData empty
     }
   };

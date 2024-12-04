@@ -7,23 +7,35 @@ import axios from "axios";
 
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
-  async (
-    keyword = "",
-    currentPage = 1,
-    price = [0, 25000],
+  async ({
     category,
-    ratings = 0
-  ) => {
+    rating = 0,
+    price = [0, 3000],
+    currentPage = 1,
+    inStock,
+    outStock,
+    keyword = "",
+  }) => {
     try {
-      //making links for filtration
-      // let link = `/api/v1/products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
+      const params = new URLSearchParams();
 
-      // if (category) {
-      //   link = `/api/v1/products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&category=${category}&ratings[gte]=${ratings}`;
-      // }
+      // console.log(inStock, outStock);
+
+      // Add filters to the query string
+      if (keyword !== undefined) params.append("keyword", keyword);
+      if (price[0] !== undefined) params.append("price[gte]", price[0]);
+      if (price[1] !== undefined) params.append("price[lte]", price[1]);
+      if (category) params.append("category", category);
+      if (rating !== undefined) params.append("rating[gte]", rating);
+      if (currentPage !== undefined) params.append("page", currentPage);
+      if (inStock !== undefined && inStock === true)
+        params.append("stock[gt]", 0);
+      if (outStock !== undefined && outStock === true)
+        params.append("stock[lte]", 0);
+
       /*making api call with axios for getting product from backend */
-      const { data } = await axios.get("/api/v1/products");
-      console.log(data);
+      const { data } = await axios.get(`/api/v1/products?${params}`);
+      // console.log(data);
       return data; //returning fetched data
     } catch (error) {
       console.log(error);

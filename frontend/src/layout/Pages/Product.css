@@ -1,0 +1,38 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+.page-item {
+  background-color: #141516;
+  list-style: none;
+  border: 1px solid gray;
+  padding: 1vmax 1.5vmax;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+.page-item:first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+.page-item:last-child {
+  border-radius: 0 5px 5px 0;
+}
+.page-link {
+  text-decoration: none;
+  font: 300 0.8vmax "Roboto";
+  color: #faaf00;
+  transition: all 0.3s;
+}
+.page-item:hover {
+  background-color: #faaf00;
+}
+.page-item:hover .page-link {
+  color: white;
+}
+.pageItemActive {
+  background-color: #faaf00;
+}
+.pageLinkActive {
+  color: white;
+}

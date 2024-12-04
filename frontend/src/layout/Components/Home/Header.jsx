@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { RiMenuFill } from "react-icons/ri";
 import { IoCloseSharp } from "react-icons/io5";
+import SearchIcon from "@mui/icons-material/Search";
 import { useState } from "react";
 
 const Header = () => {
@@ -69,11 +70,11 @@ const Header = () => {
                       : "text-white hover:text-gold"
                   } hover:text-white`
                 }
-                to="/services"
+                to="/products"
                 onClick={() => setnavItem(false)}
               >
                 <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-gold scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-                Services
+                Products
               </NavLink>
             </li>
             <li className="relative group">
@@ -106,6 +107,22 @@ const Header = () => {
               >
                 <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-gold scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
                 Account
+              </NavLink>
+            </li>
+            <li className="relative group">
+              <NavLink
+                className={({ isActive }) =>
+                  `${
+                    isActive
+                      ? "text-gold font-bolder hover:text-[white] "
+                      : "text-white hover:text-gold"
+                  } hover:text-white`
+                }
+                to="/search"
+                onClick={() => setnavItem(false)}
+              >
+                <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-gold scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+                <SearchIcon />
               </NavLink>
             </li>
 

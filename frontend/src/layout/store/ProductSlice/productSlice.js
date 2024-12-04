@@ -13,6 +13,7 @@ export const productSlice = createSlice({
     products: [], //for storing all products in state
     productCount: 0,
     singleProduct: {},
+    filteredProductCount: 0,
     loading: false,
     error: null,
   },
@@ -31,11 +32,17 @@ export const productSlice = createSlice({
     builder
       .addCase(getAllProducts.pending, (state) => {
         state.loading = true;
+        state.products = [];
+        state.productCount = 0;
+        state.singleProduct = {};
+        state.filteredProductCount = 0;
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload.data.products;
         state.productCount = action.payload.data.productCount;
+        state.filteredProductCount = action.payload.data.filteredProductCount;
+        state.productsPerPage = action.payload.data.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
         state.loading = false;
