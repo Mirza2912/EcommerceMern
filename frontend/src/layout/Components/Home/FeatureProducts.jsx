@@ -11,7 +11,7 @@ const FeatureProducts = () => {
 
   //fetching products loading and error from state
   const { products, loading, error } = useSelector((state) => state.products);
-  // console.log(loading, error, products);
+  console.log(products);
 
   // /*--------------------------------------*/
   // /*     Get All Products using useEffect

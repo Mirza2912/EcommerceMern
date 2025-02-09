@@ -10,6 +10,7 @@ import {
   userLogin,
   userLogout,
   userRegistration,
+  verifyOTP,
 } from "../controllers/user.controller.js";
 import {
   isAuthenticatedUser,
@@ -20,6 +21,8 @@ const router = Router();
 
 // for registration
 router.route("/register").post(userRegistration);
+//verify otp
+router.route("/opt-verification").post(verifyOTP);
 // for login
 router.route("/login").post(userLogin);
 // for logout

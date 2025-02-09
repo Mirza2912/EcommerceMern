@@ -3,6 +3,284 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "cloudinary";
+import { sendEmail } from "../utils/SendEmail.js";
+
+//template for sending verification code
+function generateMessageTemplate(verificationCode, name) {
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+    <h2 style="color: #4CAF50; text-align: center;">Verification Code</h2>
+    <p style="font-size: 16px; color: #333;">Dear <span>${name}</span></p>
+    <p style="font-size: 16px; color: #333;">Your verification code is:</p>
+    <div style="text-align: center; margin: 20px 0;">
+      <span style="display: inline-block; font-size: 24px; font-weight: bold; color: #4CAF50; padding: 10px 20px; border: 1px solid #4CAF50; border-radius: 5px; background-color: #e8f5e9;">
+        ${verificationCode}
+      </span>
+    </div>
+    <p style="font-size: 16px; color: #333;">Please use this code to verify your email address. The code will expire in 10 minutes.</p>
+    <p style="font-size: 16px; color: #333;">If you did not request this, please ignore this email.</p>
+    <footer style="margin-top: 20px; text-align: center; font-size: 14px; color: #999;">
+      <p>Thank you,<br>Your Company Team</p>
+      <p style="font-size: 12px; color: #aaa;">This is an automated message. Please do not reply to this email.</p>
+    </footer>
+  </div>
+`;
+}
+
+//function to send verification code
+async function sendVerificationCode(
+  verificationCode,
+  email,
+  phone,
+  res,
+  name,
+  next
+) {
+  // console.log("✅ Entering sendVerificationCode function"); // Debugging log
+  // console.log("👉 Type of next in sendVerificationCode:", typeof next);
+  try {
+    //generate message template
+    const message = generateMessageTemplate(verificationCode, name);
+    //calling sendEmail function to send email
+    await sendEmail({
+      email,
+      subject: "Your Verification Code",
+      message,
+    });
+    // console.log("✅ Verification code sent!");
+    //sending response
+    return res
+      .status(200)
+      .json(new ApiResponse(200, `Verification code sent to ${name}`));
+  } catch (error) {
+    // console.error("❌ Error in sendVerificationCode:", error);
+    return next(new ApiError("Server error.Please try later...!"));
+  }
+}
+
+//user registration
+const userRegistration = AsyncHandler(async (req, res, next) => {
+  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+    folder: "avatars",
+    width: 150,
+    crop: "scale",
+  });
+  // console.log(myCloud.public_id);
+
+  // console.log("✅ Entering userRegistration function"); // Debugging log
+  // console.log("👉 Type of next:", typeof next); // Check if next is defined
+  if (!next) {
+    // console.error("❌ next is undefined in userRegistration!");
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error: next is undefined",
+    });
+  }
+
+  const { name, email, password, avatar, phone } = req.body;
+  // console.log(name, password, email, avatar, phone);
+  // console.log(name, email, password, role);
+  // console.log(next());
+
+  //checking data comes or not
+  if (
+    [name, email, password, avatar, phone].some((field) => field?.trim() === "")
+  ) {
+    // console.log("❌ Missing required fields!");
+    return next(new ApiError(`All fields are required...!`, 400));
+  }
+
+  // 3=Now verify phone format by regex
+  function verifyPhone(phone) {
+    const phoneRegex = /^(\+92|92|0)?3\d{9}$/;
+    return phoneRegex.test(phone);
+  }
+
+  //checking if phone number is valid  means
+  if (!verifyPhone(phone)) {
+    return next(new ApiError("Please enter a valid phone number", 400));
+  }
+
+  try {
+    //Checking user already exist or not
+    const isUserExist = await User.findOne({ email });
+    // console.log(isUserExist);
+
+    //check is verified user exist or not
+    if (isUserExist && isUserExist.accountVerified) {
+      // console.log("❌ User already exists and is verified.");
+      return next(new ApiError("User already exists", 400));
+    }
+
+    // If the user exists but isn't verified, increment their registration attempts
+    if (isUserExist && !isUserExist.accountVerified) {
+      // console.log("❌ User exists but is NOT verified.");
+
+      if (isUserExist.registrationAttempts >= 2) {
+        console.log("❌ Too many registration attempts.");
+        return next(
+          new ApiError(
+            "You have exceeded the maximum number of registration attempts",
+            400
+          )
+        );
+      }
+
+      // Increment registration attempts
+      isUserExist.registrationAttempts++;
+      await isUserExist.save();
+
+      // console.log("✅ Generating verification code...");
+      const verificationCode = await isUserExist.generateVerificationCode();
+      // console.log(verificationCode);
+
+      await isUserExist.save({ validateBeforeSave: false });
+      // console.log(isUserExist.verificationCode);
+
+      // console.log("✅ Sending verification code...");
+      sendVerificationCode(verificationCode, email, phone, res, name, next);
+
+      return res.status(200).json({
+        message:
+          "You have attempted to register before. Please check your email for the verification code.",
+      });
+    }
+
+    //user data
+    const userData = {
+      name,
+      email,
+      password,
+      phone,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+    };
+
+    // console.log("✅ Creating new user...");
+    //Creating new user
+    const user = await User.create(userData);
+    // console.log(user);
+
+    //check user created or not
+    if (!user) {
+      // console.log("❌ Failed to create user.");
+      return next(
+        new ApiError(`Internal Server Error while creating new user...!`, 500)
+      );
+    }
+
+    // console.log("✅ Generating verification code for new user...");
+    // 7=generate verification code of 5 digits comes from userModel
+    const verificationCode = await user.generateVerificationCode();
+
+    await user.save();
+    // console.log(user.verificationCode);
+
+    // 8=send verification code via node mailer with html template
+    // console.log("✅ Sending verification email...");
+    sendVerificationCode(verificationCode, email, phone, res, name);
+  } catch (error) {
+    // console.log(error.message);
+
+    return next(new ApiError(`${error.message}`, 500));
+  }
+});
+
+//verify otp
+export const verifyOTP = AsyncHandler(async (req, res, next) => {
+  const { email, otp, phone } = req.body;
+  if (!email || !otp || !phone) {
+    return next(new ApiError("Please fill all fields", 400));
+  }
+
+  // 3=Now verify phone format by regex
+  function verifyPhone(phone) {
+    const phoneRegex = /^(\+92|92|0)?3\d{9}$/;
+    return phoneRegex.test(phone);
+  }
+
+  //checking if phone number is valid  means
+  if (!verifyPhone(phone)) {
+    return next(new ApiError("Please enter a valid phone number", 400));
+  }
+
+  try {
+    const userAllEntries = await User.find({
+      email,
+      accountVerified: false,
+    }).sort({ createdAt: -1 });
+
+    let user;
+    // If there are multiple entries, delete all except the first one and if not then use the first one
+    if (userAllEntries.length > 1) {
+      user = userAllEntries[0];
+      await User.deleteMany({
+        _id: { $ne: user._id }, //delete all entries except the first one
+        email,
+        accountVerified: false,
+      });
+    } else {
+      user = userAllEntries[0];
+    }
+
+    // console.log(user);
+
+    //if opt is correct mean otp match with user database otp
+    if (user.verificationCode && user.verificationCode !== Number(otp)) {
+      return next(new ApiError("Invalid OTP", 400));
+    }
+
+    //now code for expiry verification code
+    const currentTime = new Date();
+    // console.log(currentTime);
+
+    const verificationCodeExpire = new Date(
+      user.verificationCodeExpiry
+    ).getTime(); //get time of expiry verification code mean this block of code will get the time of expiry verification code from the database and convert it into milliseconds and store it in verificationCodeExpire variable
+
+    // console.log(verificationCodeExpire);
+
+    if (currentTime > verificationCodeExpire) {
+      return next(new ApiError("OTP Expired.", 400));
+    }
+
+    //if user otp is correct then make account verified
+    user.accountVerified = true;
+    user.verificationCode = null;
+    user.verificationCodeExpiry = null;
+    user.registrationAttempts = 0;
+    await user.save();
+    // console.log(user);
+
+    //creating cookie to send
+    const { accessToken } = await createAccessToken(user._id);
+    // console.log(accessToken);
+
+    //options for cookie of accessToken
+    const options = {
+      expireIn: new Date(
+        Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+      secure: true,
+    };
+    //send cookie
+    return res.status(200).cookie("accessToken", accessToken, options).json(
+      new ApiResponse(
+        200,
+        {
+          user,
+          accessToken,
+        },
+        "User created and verified successfully and direct login to access resources...!"
+      )
+    );
+  } catch (error) {
+    return next(new ApiError(error.message, 500));
+  }
+});
 
 /* Code for generating token */
 const createAccessToken = async (userId) => {
@@ -19,74 +297,6 @@ const createAccessToken = async (userId) => {
     );
   }
 };
-
-//user registration
-const userRegistration = AsyncHandler(async (req, res, next) => {
-  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "avatars",
-    width: 150,
-    crop: "scale",
-  });
-  // console.log(myCloud.public_id);
-
-  const { name, email, password, avatar } = req.body;
-  // console.log(name, password, email, avatar);
-  // console.log(name, email, password, role);
-
-  //checking data comes or not
-  if (
-    [name, email, password, avatar].some((field) => {
-      field?.trim() === "";
-    })
-  ) {
-    return next(new ApiError(`All fields are required...!`, 400));
-  }
-
-  //Checking user already exist or not
-  const isUserExist = await User.findOne({ email });
-  //If user already exist
-  if (isUserExist) {
-    return next(
-      new ApiError(
-        `User with these credentials is already registered. So, you can direct login...!`,
-        400
-      )
-    );
-  }
-
-  //Creating new user
-  const user = await User.create({
-    name,
-    email,
-    password,
-    avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    },
-  });
-
-  //check user created or not
-  if (!user) {
-    return next(
-      new ApiError(`Internal Server Error while creating new user...!`, 500)
-    );
-  }
-
-  //options for cookie of accessToken
-  const options = {
-    expireIn: new Date(
-      Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-    secure: true,
-  };
-  const { accessToken } = await createAccessToken(user._id);
-
-  return res
-    .status(201)
-    .cookie("accessToken", accessToken, options)
-    .json(new ApiResponse(201, user, `User created successfully...!`));
-});
 
 //User login
 const userLogin = AsyncHandler(async (req, res, next) => {
@@ -246,6 +456,9 @@ const getAllUsers = AsyncHandler(async (req, res, next) => {
 const getSingleUser = AsyncHandler(async (req, res, next) => {
   // getting single user by req.params.id
   const singleUser = await User.findById(req.params.id);
+  if (!singleUser) {
+    return next(new ApiError("User not found with this id...!", 401));
+  }
   res.status(200).json(new ApiResponse(200, singleUser, `Single User...!`));
 });
 
@@ -267,7 +480,7 @@ const updateUser = AsyncHandler(async (req, res, next) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updateUser, `Updated Role Successfully...!`));
+    .json(new ApiResponse(200, updatedUser, `Updated Role Successfully...!`));
 });
 
 //Delete User --->Admin

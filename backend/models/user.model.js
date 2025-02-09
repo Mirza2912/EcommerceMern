@@ -7,26 +7,19 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required...!"],
-      min: [3, "Name must be at least of 3 characters...!"],
-      max: [50, "Name must be not exceed to 50 characters...!"],
-      trim: true,
-      // unique: [true, "Name must be unique...!"],
+      required: true,
     },
     email: {
       type: String,
-      required: [true, "Email is required...!"],
-      trim: true,
-      unique: [true, "email must be unique...!"],
-      validate: [validator.isEmail, "Invalid email...!"],
+      required: true,
     },
     password: {
       type: String,
-      required: true,
-      trim: true,
-      minLength: [8, "Password must be at least of 8 characters...!"],
+      minLength: [8, "Password must be at least 6 characters long"],
+      maxLength: [20, "Password must be at most 20 characters long"],
       select: false,
     },
+
     avatar: {
       public_id: {
         type: String,
@@ -43,6 +36,17 @@ const userSchema = new Schema(
       type: String,
       default: "user",
     },
+    phone: {
+      type: String,
+      required: true,
+    },
+    accountVerified: {
+      type: Boolean,
+      default: false,
+    },
+    registrationAttempts: { type: Number, default: 0 },
+    verificationCode: Number,
+    verificationCodeExpiry: Date,
     resetPasswordToken: String,
     resetPasswordExpiry: Date,
   },
@@ -50,7 +54,7 @@ const userSchema = new Schema(
 );
 
 //Hashing user password
-userSchema.pre("save", async function () {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
@@ -74,7 +78,7 @@ userSchema.methods.comparePassword = async function (password) {
 //Creating jsonWebToken for user
 userSchema.methods.generateAccessToken = async function () {
   try {
-    const accessToken = await jwt.sign(
+    const accessToken = jwt.sign(
       {
         _id: this._id,
         email: this.email,
@@ -89,6 +93,25 @@ userSchema.methods.generateAccessToken = async function () {
   } catch (error) {
     console.log(`Error while generating accessToken : ${error}`);
   }
+};
+
+//code for generating verification code
+userSchema.methods.generateVerificationCode = function () {
+  function generateFiveDigits() {
+    //this line will generate a random number between 1 and 9
+    const firstDigit = Math.floor(Math.random() * 9) + 1;
+    //this line will generate a random number between 1000 and 9999 mean 4 digits
+    const remainingDigits = Math.floor(Math.random() * 10000)
+      .toString() //convert number to string
+      .padStart(4, "0"); //if number is less than 4 digits then add 0 at the start
+    return parseInt(firstDigit + remainingDigits); //return 5 digits number
+  }
+  const verificationCode = generateFiveDigits();
+  console.log(verificationCode);
+
+  this.verificationCode = verificationCode;
+  this.verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); //10 minutes
+  return verificationCode;
 };
 
 export const User = model("User", userSchema);

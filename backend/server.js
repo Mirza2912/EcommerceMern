@@ -30,7 +30,6 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Server is working on http://localhost:${process.env.PORT}`);
 });
 
-// mongodb+srv://mirzaTayyab2912:J5DN5X4yyWJCpHKm@cluster0.vsiwk.mongodb.net
 // Unhandled Promise Rejection(handle if mongodb occur error)
 process.on("unhandledRejection", (err) => {
   console.log(`Error: ${err.message}`);
