@@ -5,7 +5,7 @@ import { userReducer } from "./layout/store/Reducer/userReducers.js";
 export const store = configureStore({
   reducer: {
     products: productSlice,
-    // user: userSlice,
-    user: userReducer,
+    auth: userSlice,
+    // user: userReducer,
   },
 });

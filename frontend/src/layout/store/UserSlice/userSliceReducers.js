@@ -41,9 +41,14 @@ export const registerUser = createAsyncThunk(
   "registerUser",
   async (registerCredentials, { rejectWithValue }) => {
     // console.log(registerCredentials);
+    // console.log(rejectWithValue);
 
     //config for post request
-    const config = { headers: { "Content-Type": "multipart/form-data" } };
+    const config = {
+      headers: {
+        "Content-Type": "application/json", // Telling the server we're sending JSON data
+      },
+    };
 
     try {
       /*making api call with axios for sending user data and picking response from backend */
@@ -53,11 +58,41 @@ export const registerUser = createAsyncThunk(
         config
       );
 
-      console.log(data);
+      // console.log(data);
       return data; //returning fetched data
     } catch (error) {
-      // console.log(error.response.data.message);
-      return rejectWithValue(error.response.data.message);
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+//For user verification
+export const verifyUser = createAsyncThunk(
+  "verifyUser",
+  async (userData, { rejectWithValue }) => {
+    console.log(userData);
+
+    //config for post request
+    const config = {
+      headers: {
+        "Content-Type": "application/json", // Telling the server we're sending JSON data
+      },
+    };
+
+    try {
+      /*making api call with axios for sending user data and picking response from backend */
+      const { data } = await axios.post(
+        "/api/v1/users/opt-verification",
+        userData,
+        config
+      );
+
+      // console.log(data);
+      return data; //returning fetched data
+    } catch (error) {
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -68,11 +103,11 @@ export const userDetails = createAsyncThunk("userDetails", async () => {
     /*making api call with axios for getting user details from backend */
     const { data } = await axios.get("/api/v1/users/user");
 
-    console.log(data);
+    // console.log(data);
 
     return data; //returning fetched data
   } catch (error) {
-    console.log(error.response);
+    // console.log(error.response);
     // if (error.response && error.response.status === 401) {
     //   return "User not logged In...!";
     // }

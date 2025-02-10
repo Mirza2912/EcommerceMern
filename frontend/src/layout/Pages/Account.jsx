@@ -8,7 +8,7 @@ import { userLogout } from "../store/Action/userActions.js";
 
 const Account = () => {
   //For checking for title
-  const [isLogin, setIsLogin] = useState(true);
+  // const [isLogin, setIsLogin] = useState(true);
   const Navigate = useNavigate();
   const Dispatch = useDispatch();
 

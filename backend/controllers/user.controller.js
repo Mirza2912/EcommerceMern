@@ -36,7 +36,8 @@ async function sendVerificationCode(
   name,
   next
 ) {
-  // console.log("✅ Entering sendVerificationCode function"); // Debugging log
+  const data = { phone: phone, email: email };
+  // console.log("✅ data", data); // Debugging log
   // console.log("👉 Type of next in sendVerificationCode:", typeof next);
   try {
     //generate message template
@@ -47,11 +48,11 @@ async function sendVerificationCode(
       subject: "Your Verification Code",
       message,
     });
-    // console.log("✅ Verification code sent!");
+    // console.log("✅ isUserExit", isUserExist);
     //sending response
     return res
       .status(200)
-      .json(new ApiResponse(200, `Verification code sent to ${name}`));
+      .json(new ApiResponse(200, data, `Verification code sent to ${name}`));
   } catch (error) {
     // console.error("❌ Error in sendVerificationCode:", error);
     return next(new ApiError("Server error.Please try later...!"));
@@ -60,6 +61,9 @@ async function sendVerificationCode(
 
 //user registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
+  const { name, email, password, avatar, phone } = req.body;
+  // console.log(name, password, email, avatar, phone);
+
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "avatars",
     width: 150,
@@ -69,16 +73,14 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
   // console.log("✅ Entering userRegistration function"); // Debugging log
   // console.log("👉 Type of next:", typeof next); // Check if next is defined
-  if (!next) {
-    // console.error("❌ next is undefined in userRegistration!");
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error: next is undefined",
-    });
-  }
+  // if (!next) {
+  //   // console.error("❌ next is undefined in userRegistration!");
+  //   return res.status(500).json({
+  //     success: false,
+  //     message: "Internal Server Error: next is undefined",
+  //   });
+  // }
 
-  const { name, email, password, avatar, phone } = req.body;
-  // console.log(name, password, email, avatar, phone);
   // console.log(name, email, password, role);
   // console.log(next());
 
@@ -117,7 +119,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       // console.log("❌ User exists but is NOT verified.");
 
       if (isUserExist.registrationAttempts >= 2) {
-        console.log("❌ Too many registration attempts.");
+        // console.log("❌ Too many registration attempts.");
         return next(
           new ApiError(
             "You have exceeded the maximum number of registration attempts",
@@ -191,6 +193,8 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 //verify otp
 export const verifyOTP = AsyncHandler(async (req, res, next) => {
   const { email, otp, phone } = req.body;
+  // console.log(otp, email, phone);
+
   if (!email || !otp || !phone) {
     return next(new ApiError("Please fill all fields", 400));
   }

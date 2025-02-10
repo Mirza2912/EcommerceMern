@@ -17,19 +17,20 @@ import { ProtectedRoute } from "./layout/Routes/protectedRoute.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import UpdateProfile from "./layout/Components/User/UpdateProfile.jsx";
 import Search from "./layout/Pages/Search.jsx";
+import Verification from "./layout/Components/User/Verification.jsx";
 
 /*--------------------------------------*/
 /*     Defining Routes of Website
 /*--------------------------------------*/
 const App = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.user);
+  // const { isAuthenticated, user } = useSelector((state) => state.user);
   // console.log(isAuthenticated, user);
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // //useEffect for loading loggedIn user details
-  useEffect(() => {
-    dispatch(userDetails());
-  }, []);
+  // useEffect(() => {
+  //   dispatch(userDetails());
+  // }, []);
 
   // const optionsForToast = {
   //   position: "top-right",
@@ -63,27 +64,32 @@ const App = () => {
       <Header />
 
       {/* for showing speed dial to every where in whole website */}
-      {isAuthenticated && <UserSpeedDial user={user} />}
+      {/* {isAuthenticated && <UserSpeedDial user={user} />} */}
 
       {/* All routes  */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/products/:keyword" element={<Products />} />
+        {/* <Route path="/products" element={<Products />} /> */}
+        {/* <Route path="/products/:keyword" element={<Products />} /> */}
         <Route path="/contact" element={<Contact />} />
-        <Route
+        {/* <Route
           path="/account"
           element={<ProtectedRoute component={Account} />}
-        />
+        /> */}
+        <Route path="/register" element={<UserForms />} />
         <Route
+          path="/register/otp-verification/:email/:phone"
+          element={<Verification />}
+        />
+        {/* <Route
           path="/me/update"
           element={<ProtectedRoute component={UpdateProfile} />}
-        />
+        /> */}
 
-        <Route path="/login" element={<UserForms />} />
-        <Route path="/product/:id" element={<SingleProductDetail />} />
-        <Route path="/search" element={<Search />} />
+        {/* <Route path="/login" element={<UserForms />} /> */}
+        {/* <Route path="/product/:id" element={<SingleProductDetail />} /> */}
+        {/* <Route path="/search" element={<Search />} /> */}
       </Routes>
     </Router>
   );
