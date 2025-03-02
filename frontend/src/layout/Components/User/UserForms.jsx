@@ -6,25 +6,23 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../Home/Toast.js";
 import { Link, useNavigate } from "react-router-dom";
-// import {
-//   clearError,
-//   login,
-//   registerUser,
-// } from "../../store/Action/userActions.js";
-import { registerUser } from "../../store/UserSlice/userSliceReducers.js";
+import {
+  login,
+  registerUser,
+} from "../../store/UserSlice/userSliceReducers.js";
+import { clearError } from "../../store/UserSlice/userSlice.js";
 
 const UserForms = () => {
   //For checking user is loggedIn or not
-  // const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
 
   const Dispatch = useDispatch(); //useDispatch fro dispatch action
   const Navigate = useNavigate();
 
   //fetching data from user state
-  const { isLoading, error, isAuthenticated, user } = useSelector(
+  const { isLoading, error, isVerify, user, isAuthenticated } = useSelector(
     (state) => state.auth
   );
-  // console.log(user && user.data.name);
 
   //useState for storing registration data of user
   const [signUpData, setSignUpData] = useState({
@@ -34,12 +32,11 @@ const UserForms = () => {
     phone: "",
   });
 
-  ////useState for storing login data of user
-  // const [loginData, setLoginData] = useState({
-  //   email: "",
-  //   password: "",
-  // });
-  // console.log(loginData);
+  //useState for storing login data of user
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
 
   //for registration avatar input
   const [avatar, setAvatar] = useState("/images/profile.jpg");
@@ -70,46 +67,48 @@ const UserForms = () => {
   };
 
   // Handle input changes (when user insert data data will automatically store in login state)
-  // const handleLoginChange = (e) => {
-  //   const { name, value } = e.target; //extracting name and value from event
-  //   setLoginData({ ...loginData, [name]: value }); //Dynamically change value of name
-  // };
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target; //extracting name and value from event
+    setLoginData({ ...loginData, [name]: value }); //Dynamically change value of name
+  };
 
   // Toggle between login and signUp forms
-  // const toggleForm = () => {
-  //   setIsLogin(!isLogin);
-  // };
-
-  // useEffect(() => {
-  //   if (error) {
-  //     Toast(error, "error");
-  //     Dispatch(clearError());
-  //   }
-  //   if (isAuthenticated) {
-  //     Navigate("/account");
-  //     Toast(`${user.message}`, "success");
-  //   }
-  // }, [Dispatch, error, Toast, isAuthenticated, Navigate]);
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+  };
 
   //Login Form handler
-  // const loginFormHandler = (e) => {
-  //   e.preventDefault();
+  const loginFormHandler = (e) => {
+    e.preventDefault(); //form not reload
 
-  //   Dispatch(login(loginData));
-  //   if (isAuthenticated !== false) {
-  //     setLoginData({ email: "", password: "" });
-  //   }
-  // };
+    Dispatch(login(loginData));
+    if (isVerify !== false) {
+      //when login success then clear login data
+      setLoginData({ email: "", password: "" });
+    }
+  };
 
   //useEffect for navigation to otp-verification
   useEffect(() => {
+    //if any error comes then show error
+    if (error) {
+      Toast(error.message, "error");
+      Dispatch(clearError());
+    }
+
+    //when user register and otp verify pages appeare then it will run mean when register complete its mean user registered and authenticated not verified
     if (isAuthenticated && isAuthenticated === true) {
+      Toast(`${user && user.message}`, "success");
       Navigate(
         `/register/otp-verification/${user.data.email}/${user.data.phone}`
       );
-      Toast(`${user && user.data.email}`, "success");
     }
-  }, [isAuthenticated, Navigate, user]);
+
+    //when user login successfully then automatically isVerify becomes true and if user is verified then navigate to home page for now  i will change
+    if (isVerify && isVerify === true) {
+      Navigate("/profile");
+    }
+  }, [isAuthenticated, Navigate, user, clearError, Dispatch, error]);
 
   //Register Form handler
   const registerFormHandler = (e) => {
@@ -117,6 +116,16 @@ const UserForms = () => {
 
     //dispatch for registration
     Dispatch(registerUser(signUpData));
+
+    if (isAuthenticated && isAuthenticated === true) {
+      //when register success then clear register data
+      setSignUpData({
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+      });
+    }
   };
 
   return (
@@ -128,14 +137,14 @@ const UserForms = () => {
           </h2>
           <h2 className="text-white font-roboto text-md mt-2">
             <Link to="/"> Home </Link> `{">>"}`
-            <Link to="/register">Account</Link>
+            <Link to="/profile">Account</Link>
           </h2>
         </div>
 
         <div className="flex items-center justify-center w-[95%] xsm:w-[100%] slg:w-[75%] h-[90vh] bg-bg-color">
           <div className="w-full xsm:w-[90%] max-w-xl p-8 bg-transparent border border-[#c9c8c8] rounded-lg shadow-lg ">
             {/* Toggle Buttons */}
-            {/* <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-6">
               <button
                 onClick={() => setIsLogin(true)}
                 className={`w-1/2 py-2.5 font-semibold text-center rounded-s-md ${
@@ -156,9 +165,9 @@ const UserForms = () => {
               >
                 Register
               </button>
-            </div> */}
+            </div>
             {/* Form */}
-            {/* {isLogin ? (
+            {isLogin ? (
               <form className="space-y-4" onSubmit={loginFormHandler}>
                 <div className="flex items-center justify-center relative">
                   <MdOutlineMailOutline className=" absolute top-4 left-2 text-2xl" />
@@ -194,93 +203,93 @@ const UserForms = () => {
                   Login
                 </button>
               </form>
-            // ) : ( */}
-            <form className="space-y-4" onSubmit={registerFormHandler}>
-              <div className="flex items-center justify-center relative">
-                <BiSolidFace className=" absolute top-4 left-2 text-2xl" />
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={signUpData.name}
-                  autoComplete="username"
-                  onChange={handleSignUpChange}
-                  required
-                  placeholder="username *Required"
-                  className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
-                />
-              </div>
-              <div className="flex items-center justify-center relative">
-                <MdOutlineMailOutline className=" absolute top-4 left-2 text-2xl" />
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={signUpData.email}
-                  onChange={handleSignUpChange}
-                  required
-                  placeholder="email address *Required"
-                  className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
-                />
-              </div>
-              <div className="flex items-center justify-center relative">
-                <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={signUpData.password}
-                  autoComplete="new-password"
-                  onChange={handleSignUpChange}
-                  required
-                  placeholder="password *Required"
-                  className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
-                />
-              </div>
-
-              <div className="flex items-center justify-center relative">
-                <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
-                <input
-                  type="phone"
-                  id="phone"
-                  name="phone"
-                  value={signUpData.phone}
-                  autoComplete="phone"
-                  onChange={handleSignUpChange}
-                  required
-                  placeholder="phone *Required"
-                  className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
-                />
-              </div>
-
-              <div className="flex items-center justify-center gap-2">
-                {preview && (
-                  <img
-                    src={preview}
-                    alt="Avatar Preview"
-                    className="w-16 h-16 object-cover rounded-full shadow-md"
+            ) : (
+              <form className="space-y-4" onSubmit={registerFormHandler}>
+                <div className="flex items-center justify-center relative">
+                  <BiSolidFace className=" absolute top-4 left-2 text-2xl" />
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={signUpData.name}
+                    autoComplete="username"
+                    onChange={handleSignUpChange}
+                    required
+                    placeholder="username *Required"
+                    className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
                   />
-                )}
-                <input
-                  type="file"
-                  id="avatar"
-                  name="avatar"
-                  accept="image/*"
-                  onChange={handleSignUpChange}
-                  className="w-full text-gray-700 focus:outline-none bg-white py-3.5 px-2 rounded-md "
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-3.5 mt-4 font-semibold text-white bg-transparent rounded-full border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]"
-                disabled={isLoading}
-              >
-                {isLoading && isLoading === true
-                  ? "Registering..."
-                  : "Register"}
-              </button>
-            </form>
-            {/* )} */}
+                </div>
+                <div className="flex items-center justify-center relative">
+                  <MdOutlineMailOutline className=" absolute top-4 left-2 text-2xl" />
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={signUpData.email}
+                    onChange={handleSignUpChange}
+                    required
+                    placeholder="email address *Required"
+                    className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
+                  />
+                </div>
+                <div className="flex items-center justify-center relative">
+                  <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={signUpData.password}
+                    autoComplete="new-password"
+                    onChange={handleSignUpChange}
+                    required
+                    placeholder="password *Required"
+                    className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
+                  />
+                </div>
+
+                <div className="flex items-center justify-center relative">
+                  <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
+                  <input
+                    type="phone"
+                    id="phone"
+                    name="phone"
+                    value={signUpData.phone}
+                    autoComplete="phone"
+                    onChange={handleSignUpChange}
+                    required
+                    placeholder="phone *Required"
+                    className="w-full ps-10 py-3.5 border rounded-md focus:outline-none placeholder-[#aeabab]"
+                  />
+                </div>
+
+                <div className="flex items-center justify-center gap-2">
+                  {preview && (
+                    <img
+                      src={preview}
+                      alt="Avatar Preview"
+                      className="w-16 h-16 object-cover rounded-full shadow-md"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    id="avatar"
+                    name="avatar"
+                    accept="image/*"
+                    onChange={handleSignUpChange}
+                    className="w-full text-gray-700 focus:outline-none bg-white py-3.5 px-2 rounded-md "
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3.5 mt-4 font-semibold text-white bg-transparent rounded-full border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]"
+                  disabled={isLoading}
+                >
+                  {isLoading && isLoading === true
+                    ? "Registering..."
+                    : "Register"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>

@@ -32,16 +32,6 @@ const isAuthenticatedUser = AsyncHandler(async (req, res, next) => {
   } catch (error) {
     return next(new ApiError("Invalid token", 401)); // Unauthorized if token is invalid
   }
-
-  // //   if accessToken available and decodedToken will hold {_id , name , email} because we created token on the basis of these three things
-  // const decodedToken = jwt.verify(
-  //   accessToken,
-  //   process.env.ACCESS_TOKEN_SECRET_KEY
-  // );
-
-  // const user = await User.findById(decodedToken._id);
-  // req.user = user;
-  // next();
 });
 
 //check is user's role admin or not

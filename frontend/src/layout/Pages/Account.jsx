@@ -4,28 +4,26 @@ import Title from "../Components/Home/Title.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../Components/Home/Toast.js";
-import { userLogout } from "../store/Action/userActions.js";
+import { userLogout } from "../store/UserSlice/userSliceReducers.js";
 
 const Account = () => {
   //For checking for title
-  // const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
   const Navigate = useNavigate();
   const Dispatch = useDispatch();
 
   //fetching data from user state
-  const { isAuthenticated, user, error } = useSelector((state) => state.user);
-  // console.log(user.message);
+  const { isVerify, user, error } = useSelector((state) => state.auth);
+  // console.log(isVerify, user, error);
+  useEffect(() => {
+    if (!isVerify) {
+      Navigate("/account");
+    }
+  }, [Navigate, isVerify]);
 
   // destructuring all data of user
-  const { name, email, role, avatar, createdAt } = user.data.user;
+  // const { name, email, role, avatar, createdAt } = user && user.data?.user;
   // console.log(u);
-
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      Navigate("/login");
-      // Toast(error, "error");
-    }
-  }, [Navigate, isAuthenticated]);
 
   return (
     <>
@@ -36,28 +34,28 @@ const Account = () => {
           <h2 className="text-white mb-10 uppercase font-roboto font-semibold text-6xl xsm:text-5xl ">
             Account Details
           </h2>
-          <div className=" w-[100%] flex  ">
+          {/* <div className=" w-[100%] flex  ">
             <div className="w-[50%] flex flex-col items-center justify-center gap-10">
               <img
                 className="w-[300px] h-[300px] bg-cover bg-center rounded-full"
                 src={`${avatar.url}`}
                 alt={`${name}`}
               />
-              {/* <button
-            className="text-white py-2 px-3 bg-red-400 hover:bg-red-800"
-            onClick={() => {
-              Dispatch(userLogout());
-              Navigate("/login");
-              Toast("success", "Logged out Successfully");
-            }}
-          >
-            logout
-          </button> */}
+              <button
+                className="text-white py-2 px-3 bg-red-400 hover:bg-red-800"
+                onClick={() => {
+                  Dispatch(userLogout());
+                  Navigate("/login");
+                  Toast("success", "Logged out Successfully");
+                }}
+              >
+                logout
+              </button>
               <button
                 className=" py-2 px-14 bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold"
-                onClick={() => {
-                  Navigate("/me/update");
-                }}
+                // onClick={() => {
+                //   Navigate("/me/update");
+                // }}
               >
                 Update Profile
               </button>
@@ -91,14 +89,14 @@ const Account = () => {
               </button>
               <button
                 className=" py-2 w-[300px] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold"
-                onClick={() => {
-                  Navigate("/me/update");
-                }}
+                // onClick={() => {
+                //   Navigate("/me/update");
+                // }}
               >
                 Update Password
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

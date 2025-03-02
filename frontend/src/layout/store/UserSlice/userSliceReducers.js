@@ -5,11 +5,6 @@ import axios from "axios";
 export const login = createAsyncThunk(
   "login",
   async ({ email, password }, { rejectWithValue }) => {
-    // console.log({ email, password });
-
-    //config for post request
-    // const config = { headers: { "Content-Type": "application/json" } };
-
     try {
       /*making api call with axios for getting product from backend */
       const { data } = await axios.post(
@@ -24,10 +19,7 @@ export const login = createAsyncThunk(
           },
         }
       );
-      // console.log(response);
-      // const { data } = response;
 
-      // console.log(data);
       return data; //returning fetched data
     } catch (error) {
       // console.log(error.response.data.message);
@@ -103,7 +95,7 @@ export const userDetails = createAsyncThunk("userDetails", async () => {
     /*making api call with axios for getting user details from backend */
     const { data } = await axios.get("/api/v1/users/user");
 
-    // console.log(data);
+    console.log(data);
 
     return data; //returning fetched data
   } catch (error) {
@@ -119,6 +111,8 @@ export const userDetails = createAsyncThunk("userDetails", async () => {
     //   // Specific error handling for unauthorized access
     //   return rejectWithValue("User not logged in");
     // }
+    console.log(error.response.data.message);
+
     return error.response.data.message;
   }
 });
@@ -132,6 +126,6 @@ export const userLogout = createAsyncThunk("userLogout", async () => {
     // console.log(data); //returning fetched data
   } catch (error) {
     // console.log(error.response.data.message);
-    return error.response.data.message;
+    return error.response?.data || error.message;
   }
 });

@@ -3,14 +3,14 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 export const ProtectedRoute = ({ component: Component }) => {
-  // //fetching data from user state
-  const { loading, error, isAuthenticated, user } = useSelector(
-    (state) => state.user
+  //fetching data from user state
+  const { isLoading, error, isVerify, user } = useSelector(
+    (state) => state.auth
   );
-  //   console.log(loading, error, isAuthenticated, user);
+  // console.log(isVerify);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+  if (!isVerify) {
+    return <Navigate to="/account" />;
   }
 
   return <Component />;

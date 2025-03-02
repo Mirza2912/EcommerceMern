@@ -8,9 +8,10 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
-import { userLogout } from "../../store/Action/userActions";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { userLogout } from "../../store/UserSlice/userSliceReducers";
+import Toast from "./Toast";
 
 const UserSpeedDial = ({ user }) => {
   // for showing backdrop/blackish screen when focus on speed dial
@@ -31,10 +32,10 @@ const UserSpeedDial = ({ user }) => {
     { icon: <ExitToAppIcon />, name: "Logout", func: LogoutUser },
   ];
 
-  console.log(user && user);
+  // console.log(user && user);
 
   //   If admin ios active then dashboard also displayed
-  if (user.data.user.role && user.data.user.role === "admin") {
+  if (user.data.role && user.data.role === "admin") {
     options.unshift({
       icon: <DashboardIcon />,
       name: "Dashboard",
@@ -51,14 +52,14 @@ const UserSpeedDial = ({ user }) => {
     Navigate("/");
   }
   function Account() {
-    Navigate("/account");
+    Navigate("/profile");
   }
   function Cart() {
     Navigate("/");
   }
   function LogoutUser() {
     Dispatch(userLogout());
-    // Toast("success", "Logged out successfully");
+    Toast("success", "Logged out successfully");
   }
   return (
     <>
@@ -74,8 +75,8 @@ const UserSpeedDial = ({ user }) => {
           <img
             className="speedDialIcon w-[56px] h-[56px] bg-cover bg-center  rounded-full"
             src={
-              user.data.user.avatar.url && user.data.user.avatar.url
-                ? user.data.user.avatar.url
+              user.data.avatar.url && user.data.avatar.url
+                ? user.data.avatar.url
                 : "/Profile.png"
             }
             alt="Profile"

@@ -102,7 +102,7 @@ const Header = () => {
                       : "text-white hover:text-gold"
                   } hover:text-white`
                 }
-                to="/account"
+                to="/profile"
                 onClick={() => setnavItem(false)}
               >
                 <span className="absolute left-0 bottom-[-2px] w-full h-[2px] bg-gold scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>

@@ -12,25 +12,27 @@ import "./App.css";
 import SingleProductDetail from "./layout/Pages/SingleProductDetail";
 import { useDispatch, useSelector } from "react-redux";
 import UserForms from "./layout/Components/User/UserForms.jsx";
-import { userDetails } from "./layout/store/Action/userActions.js";
+
 import { ProtectedRoute } from "./layout/Routes/protectedRoute.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import UpdateProfile from "./layout/Components/User/UpdateProfile.jsx";
 import Search from "./layout/Pages/Search.jsx";
 import Verification from "./layout/Components/User/Verification.jsx";
+import { userDetails } from "./layout/store/UserSlice/userSliceReducers.js";
+import { clearError } from "./layout/store/UserSlice/userSlice.js";
 
 /*--------------------------------------*/
 /*     Defining Routes of Website
 /*--------------------------------------*/
 const App = () => {
-  // const { isAuthenticated, user } = useSelector((state) => state.user);
-  // console.log(isAuthenticated, user);
+  const { isVerify, user, error } = useSelector((state) => state.auth);
+  // console.log(user);
 
-  // const dispatch = useDispatch();
-  // //useEffect for loading loggedIn user details
-  // useEffect(() => {
-  //   dispatch(userDetails());
-  // }, []);
+  const Dispatch = useDispatch();
+  //useEffect for loading loggedIn user details
+  useEffect(() => {
+    Dispatch(userDetails());
+  }, [Dispatch]);
 
   // const optionsForToast = {
   //   position: "top-right",
@@ -64,7 +66,7 @@ const App = () => {
       <Header />
 
       {/* for showing speed dial to every where in whole website */}
-      {/* {isAuthenticated && <UserSpeedDial user={user} />} */}
+      {isVerify && isVerify === true && <UserSpeedDial user={user} />}
 
       {/* All routes  */}
       <Routes>
@@ -73,11 +75,11 @@ const App = () => {
         {/* <Route path="/products" element={<Products />} /> */}
         {/* <Route path="/products/:keyword" element={<Products />} /> */}
         <Route path="/contact" element={<Contact />} />
-        {/* <Route
-          path="/account"
+        <Route
+          path="/profile"
           element={<ProtectedRoute component={Account} />}
-        /> */}
-        <Route path="/register" element={<UserForms />} />
+        />
+        <Route path="/account" element={<UserForms />} />
         <Route
           path="/register/otp-verification/:email/:phone"
           element={<Verification />}
@@ -87,7 +89,6 @@ const App = () => {
           element={<ProtectedRoute component={UpdateProfile} />}
         /> */}
 
-        {/* <Route path="/login" element={<UserForms />} /> */}
         {/* <Route path="/product/:id" element={<SingleProductDetail />} /> */}
         {/* <Route path="/search" element={<Search />} /> */}
       </Routes>

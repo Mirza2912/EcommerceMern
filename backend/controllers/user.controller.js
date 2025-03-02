@@ -5,6 +5,37 @@ import { User } from "../models/user.model.js";
 import cloudinary from "cloudinary";
 import { sendEmail } from "../utils/SendEmail.js";
 
+// Function to check if email is valid using EmailValidation.io
+async function isEmailValid(email) {
+  // console.log(`Validating email: ${email}`);
+
+  // my api key for emailValidatio.io
+  const EMAIL_VALIDATION_API_KEY = process.env.EMAIL_VALIDATION_API_KEY;
+
+  try {
+    //making proper url for calling
+    let url = `https://api.emailvalidation.io/v1/info?apikey=${EMAIL_VALIDATION_API_KEY}&email=${email}`;
+
+    // response from api calling
+    let res = await fetch(url);
+
+    // console.log("Response of api call : ", res);
+
+    //convert response to proper json object
+    let result = await res.json();
+
+    // console.log("Result of api call : ", result);
+
+    // console.log(result);
+
+    // console.log("Email validation result:", result.state);
+
+    return result.state;
+  } catch (error) {
+    console.error(`Error validating email ${email}:`, error);
+    return false; // Return false if there's an error in the request
+  }
+}
 //template for sending verification code
 function generateMessageTemplate(verificationCode, name) {
   return `
@@ -64,26 +95,6 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
   // console.log(name, password, email, avatar, phone);
 
-  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "avatars",
-    width: 150,
-    crop: "scale",
-  });
-  // console.log(myCloud.public_id);
-
-  // console.log("✅ Entering userRegistration function"); // Debugging log
-  // console.log("👉 Type of next:", typeof next); // Check if next is defined
-  // if (!next) {
-  //   // console.error("❌ next is undefined in userRegistration!");
-  //   return res.status(500).json({
-  //     success: false,
-  //     message: "Internal Server Error: next is undefined",
-  //   });
-  // }
-
-  // console.log(name, email, password, role);
-  // console.log(next());
-
   //checking data comes or not
   if (
     [name, email, password, avatar, phone].some((field) => field?.trim() === "")
@@ -100,10 +111,28 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
   //checking if phone number is valid  means
   if (!verifyPhone(phone)) {
+    console.log("❌ Invalid phone number.");
+
     return next(new ApiError("Please enter a valid phone number", 400));
   }
 
   try {
+    //check email is valid or not
+    const isEmailValidResponse = await isEmailValid(email);
+    // console.log("Email is invalid...!", isEmailValidResponse);
+
+    //if email is not valid
+    if (isEmailValidResponse !== "deliverable") {
+      return next(new ApiError("Email is not valid...!", 404));
+    }
+
+    //upload image to coludinary
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+      folder: "avatars",
+      width: 150,
+      crop: "scale",
+    });
+    //in this i will check email is valid or not using emailvalidation.io api
     //Checking user already exist or not
     const isUserExist = await User.findOne({ email });
     // console.log(isUserExist);
@@ -116,13 +145,13 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
     // If the user exists but isn't verified, increment their registration attempts
     if (isUserExist && !isUserExist.accountVerified) {
-      // console.log("❌ User exists but is NOT verified.");
+      console.log("❌ User exists but is NOT verified.");
 
       if (isUserExist.registrationAttempts >= 2) {
         // console.log("❌ Too many registration attempts.");
         return next(
           new ApiError(
-            "You have exceeded the maximum number of registration attempts",
+            "You have exceeded the maximum number of registration attempts. Please try again after one hour.",
             400
           )
         );
@@ -130,7 +159,6 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
       // Increment registration attempts
       isUserExist.registrationAttempts++;
-      await isUserExist.save();
 
       // console.log("✅ Generating verification code...");
       const verificationCode = await isUserExist.generateVerificationCode();
@@ -142,10 +170,15 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       // console.log("✅ Sending verification code...");
       sendVerificationCode(verificationCode, email, phone, res, name, next);
 
-      return res.status(200).json({
-        message:
-          "You have attempted to register before. Please check your email for the verification code.",
-      });
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            isUserExist,
+            "You have attempted to register before. Please check your email for the verification code."
+          )
+        );
     }
 
     //user data
@@ -346,10 +379,9 @@ const userLogin = AsyncHandler(async (req, res, next) => {
   return res.status(200).cookie("accessToken", accessToken, options).json(
     new ApiResponse(
       200,
-      {
-        user,
-        accessToken,
-      },
+
+      user,
+
       "User logged In successfully...!"
     )
   );
@@ -375,9 +407,7 @@ const userDetails = AsyncHandler(async (req, res, next) => {
   const user = await User.findById(_id);
   // console.log(user);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, { user }, "User Details...!"));
+  return res.status(200).json(new ApiResponse(200, user, "User Details...!"));
 });
 
 //update user profile
