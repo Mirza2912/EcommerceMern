@@ -23,6 +23,7 @@ const UserForms = () => {
   const { isLoading, error, isVerify, user, isAuthenticated } = useSelector(
     (state) => state.auth
   );
+  console.log(isVerify);
 
   //useState for storing registration data of user
   const [signUpData, setSignUpData] = useState({
@@ -92,6 +93,8 @@ const UserForms = () => {
   useEffect(() => {
     //if any error comes then show error
     if (error) {
+      // console.log(error);
+
       Toast(error.message, "error");
       Dispatch(clearError());
     }
@@ -105,7 +108,10 @@ const UserForms = () => {
     }
 
     //when user login successfully then automatically isVerify becomes true and if user is verified then navigate to home page for now  i will change
-    if (isVerify && isVerify === true) {
+    if (isVerify) {
+      // console.log("okay");
+
+      Toast(`${user && user.message}`, "success");
       Navigate("/profile");
     }
   }, [isAuthenticated, Navigate, user, clearError, Dispatch, error]);
@@ -199,8 +205,9 @@ const UserForms = () => {
                 <button
                   type="submit"
                   className="w-full  mt-4 font-semibold py-3.5 rounded-full text-white border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]"
+                  disabled={isLoading}
                 >
-                  Login
+                  {isLoading && isLoading === true ? "Login..." : "Login"}
                 </button>
               </form>
             ) : (

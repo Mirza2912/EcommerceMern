@@ -22,8 +22,31 @@ const Account = () => {
   }, [Navigate, isVerify]);
 
   // destructuring all data of user
-  // const { name, email, role, avatar, createdAt } = user && user.data?.user;
-  // console.log(u);
+  const { name, email, role, avatar, createdAt, phone } = user && user.data;
+
+  let list = [
+    {
+      name: "Name",
+      value: name,
+    },
+    {
+      name: "Email",
+      value: email,
+    },
+    {
+      name: "Role",
+      value: role,
+    },
+    {
+      name: "Phone",
+      value: phone,
+    },
+    {
+      name: "Created At",
+      value: createdAt,
+    },
+  ];
+  // console.log(name, email, role, avatar, createdAt);
 
   return (
     <>
@@ -34,69 +57,58 @@ const Account = () => {
           <h2 className="text-white mb-10 uppercase font-roboto font-semibold text-6xl xsm:text-5xl ">
             Account Details
           </h2>
-          {/* <div className=" w-[100%] flex  ">
-            <div className="w-[50%] flex flex-col items-center justify-center gap-10">
+          <div className=" w-[100%] space-y-10 flex sm:flex-col xsm:flex-col slg:flex-row items-center justify-center">
+            <div className="w-[50%] xsm:w-[100%] flex items-center  justify-center rounded-full">
               <img
                 className="w-[300px] h-[300px] bg-cover bg-center rounded-full"
                 src={`${avatar.url}`}
                 alt={`${name}`}
               />
-              <button
-                className="text-white py-2 px-3 bg-red-400 hover:bg-red-800"
-                onClick={() => {
-                  Dispatch(userLogout());
-                  Navigate("/login");
-                  Toast("success", "Logged out Successfully");
-                }}
-              >
-                logout
-              </button>
-              <button
-                className=" py-2 px-14 bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold"
-                // onClick={() => {
-                //   Navigate("/me/update");
-                // }}
-              >
-                Update Profile
-              </button>
             </div>
-            <div className="w-[50%] text-white flex flex-col gap-7 items-center justify-center">
-              <h2 className="flex flex-col ">
-                <span className="text-gold text-xl">Name : </span>
-                <span className="text-white text-2xl">{name}</span>
-              </h2>
-              <h2 className="flex flex-col mr-10">
-                <span className="text-gold text-xl">Email : </span>
-                <span className="text-white text-2xl">{email}</span>
-              </h2>
-              <h2 className="flex flex-col mr-6">
-                <span className="text-gold text-xl">Joining : </span>
-                <span className="text-white text-2xl">{createdAt}</span>
-              </h2>
-              <h2 className="flex flex-col mr-[13.5rem]">
-                <span className="text-gold text-xl">Joined As : </span>
-                <span className="text-white text-2xl">{role}</span>
-              </h2>
-              <button
-                className=" py-2 w-[300px] bg-red-500 text-black text-xl font-semibold  hover:bg-red-700 hover:font-semibold hover:text-black hover:border-gold"
-                onClick={() => {
-                  Dispatch(userLogout());
-                  Navigate("/login");
-                  Toast("success", "Logged out Successfully");
-                }}
-              >
-                Log Out
-              </button>
-              <button
-                className=" py-2 w-[300px] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold"
-                // onClick={() => {
-                //   Navigate("/me/update");
-                // }}
-              >
-                Update Password
-              </button>
+            <div className="w-[50%] xsm:w-[100%] text-left text-white flex flex-col gap-7 items-center justify-center">
+              <ul className="space-y-2">
+                {list.map((item, index) => (
+                  <li key={index}>
+                    <span className="text-gold text-xl">{item.name} : </span>
+                    <span className="text-white text-2xl">{item.value}</span>
+                  </li>
+                ))}
+
+                <li>
+                  <button
+                    className=" py-2 w-[100%] bg-red-500 text-black text-xl font-semibold  hover:bg-red-700 hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
+                    onClick={() => {
+                      Dispatch(userLogout());
+                      Navigate("/account");
+                      Toast("success", "Logged out Successfully");
+                    }}
+                  >
+                    Log Out
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=" py-2 w-[100%] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
+                    onClick={() => {
+                      Navigate("/me/update-password");
+                    }}
+                  >
+                    Change Password
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=" py-2 w-[100%] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
+                    // onClick={() => {
+                    //   Navigate("/me/update");
+                    // }}
+                  >
+                    Edit Profile
+                  </button>
+                </li>
+              </ul>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </>

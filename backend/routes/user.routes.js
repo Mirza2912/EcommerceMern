@@ -28,11 +28,11 @@ router.route("/login").post(userLogin);
 // for logout
 router.route("/logout").get(userLogout);
 // for user details
-router.route("/user").get(isAuthenticatedUser, userDetails);
+router.route("/me").get(isAuthenticatedUser, userDetails);
 // for update user profile
-router.route("/user/updateProfile").put(isAuthenticatedUser, updateProfile);
+router.route("/me/updateProfile").put(isAuthenticatedUser, updateProfile);
 // for update user password
-router.route("/password/update").put(isAuthenticatedUser, updatePassword);
+router.route("/me/password/update").put(isAuthenticatedUser, updatePassword);
 // for getting all users --->Admin
 router
   .route("/admin/users")

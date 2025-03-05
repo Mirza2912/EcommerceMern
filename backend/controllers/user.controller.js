@@ -24,11 +24,11 @@ async function isEmailValid(email) {
     //convert response to proper json object
     let result = await res.json();
 
-    // console.log("Result of api call : ", result);
+    console.log("Result of api call : ", result);
 
     // console.log(result);
 
-    // console.log("Email validation result:", result.state);
+    console.log("Email validation result:", result.state);
 
     return result.state;
   } catch (error) {
@@ -347,8 +347,19 @@ const userLogin = AsyncHandler(async (req, res, next) => {
   }
 
   //if given email and password then this code will execute
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({
+    email,
+  }).select("+password");
   // console.log(user);
+
+  if (user && !user.accountVerified) {
+    return next(
+      new ApiError(
+        `You are already registered but not verified.please again fill registeration form...!`,
+        401
+      )
+    );
+  }
 
   //if user not find
   if (!user) {

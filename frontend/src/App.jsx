@@ -20,6 +20,7 @@ import Search from "./layout/Pages/Search.jsx";
 import Verification from "./layout/Components/User/Verification.jsx";
 import { userDetails } from "./layout/store/UserSlice/userSliceReducers.js";
 import { clearError } from "./layout/store/UserSlice/userSlice.js";
+import UpdatePassword from "./layout/Components/User/UpdatePassword.jsx";
 
 /*--------------------------------------*/
 /*     Defining Routes of Website
@@ -31,6 +32,13 @@ const App = () => {
   const Dispatch = useDispatch();
   //useEffect for loading loggedIn user details
   useEffect(() => {
+    //if any error comes then show error
+    if (error) {
+      // console.log(error);
+
+      Toast(error.message, "error");
+      Dispatch(clearError());
+    }
     Dispatch(userDetails());
   }, [Dispatch]);
 
@@ -84,10 +92,14 @@ const App = () => {
           path="/register/otp-verification/:email/:phone"
           element={<Verification />}
         />
-        {/* <Route
+        <Route
           path="/me/update"
           element={<ProtectedRoute component={UpdateProfile} />}
-        /> */}
+        />
+        <Route
+          path="/me/update-password"
+          element={<ProtectedRoute component={UpdatePassword} />}
+        />
 
         {/* <Route path="/product/:id" element={<SingleProductDetail />} /> */}
         {/* <Route path="/search" element={<Search />} /> */}

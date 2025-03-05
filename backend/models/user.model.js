@@ -107,7 +107,7 @@ userSchema.methods.generateVerificationCode = function () {
     return parseInt(firstDigit + remainingDigits); //return 5 digits number
   }
   const verificationCode = generateFiveDigits();
-  console.log(verificationCode);
+  // console.log(verificationCode);
 
   this.verificationCode = verificationCode;
   this.verificationCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); //10 minutes

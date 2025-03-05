@@ -1,6 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+//config for post request
+const config = {
+  headers: {
+    "Content-Type": "application/json", // Telling the server we're sending JSON data
+  },
+};
 //For Login user
 export const login = createAsyncThunk(
   "login",
@@ -22,8 +28,8 @@ export const login = createAsyncThunk(
 
       return data; //returning fetched data
     } catch (error) {
-      // console.log(error.response.data.message);
-      return rejectWithValue(error.response.data.message);
+      // console.log(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -34,13 +40,6 @@ export const registerUser = createAsyncThunk(
   async (registerCredentials, { rejectWithValue }) => {
     // console.log(registerCredentials);
     // console.log(rejectWithValue);
-
-    //config for post request
-    const config = {
-      headers: {
-        "Content-Type": "application/json", // Telling the server we're sending JSON data
-      },
-    };
 
     try {
       /*making api call with axios for sending user data and picking response from backend */
@@ -65,13 +64,6 @@ export const verifyUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     console.log(userData);
 
-    //config for post request
-    const config = {
-      headers: {
-        "Content-Type": "application/json", // Telling the server we're sending JSON data
-      },
-    };
-
     try {
       /*making api call with axios for sending user data and picking response from backend */
       const { data } = await axios.post(
@@ -93,9 +85,9 @@ export const verifyUser = createAsyncThunk(
 export const userDetails = createAsyncThunk("userDetails", async () => {
   try {
     /*making api call with axios for getting user details from backend */
-    const { data } = await axios.get("/api/v1/users/user");
+    const { data } = await axios.get("/api/v1/users/me");
 
-    console.log(data);
+    // console.log(data);
 
     return data; //returning fetched data
   } catch (error) {
@@ -111,9 +103,9 @@ export const userDetails = createAsyncThunk("userDetails", async () => {
     //   // Specific error handling for unauthorized access
     //   return rejectWithValue("User not logged in");
     // }
-    console.log(error.response.data.message);
+    // console.log(error.response.data);
 
-    return error.response.data.message;
+    return error.response.data;
   }
 });
 
@@ -129,3 +121,26 @@ export const userLogout = createAsyncThunk("userLogout", async () => {
     return error.response?.data || error.message;
   }
 });
+
+export const updatePassword = createAsyncThunk(
+  "updatePassword",
+  async (userData, { rejectWithValue }) => {
+    console.log(userData);
+
+    try {
+      /*making api call with axios for getting user details from backend */
+      const { data } = await axios.put(
+        "/api/v1/users/me/password/update",
+        userData,
+        config
+      );
+
+      console.log(data);
+
+      return data; //returning fetched data
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);

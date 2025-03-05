@@ -2,11 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   login,
   registerUser,
+  updatePassword,
   userDetails,
   userLogout,
   verifyUser,
 } from "./userSliceReducers.js";
-import { act } from "react";
 
 export const userSlice = createSlice({
   name: "auth",
@@ -86,8 +86,9 @@ export const userSlice = createSlice({
       .addCase(userDetails.fulfilled, (state, action) => {
         state.isLoading = false;
         if (
-          action.payload === "User not found" ||
-          action.payload === "You need to login to access this resource...!"
+          action.payload.message === "User not found" ||
+          action.payload.message ===
+            "You need to login to access this resource...!"
         ) {
           state.isVerify = false;
         } else {
@@ -108,6 +109,19 @@ export const userSlice = createSlice({
         state.isVerify = false;
       })
       .addCase(userLogout.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      //for updatePassword
+      .addCase(updatePassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

@@ -32,7 +32,7 @@ const UserSpeedDial = ({ user }) => {
     { icon: <ExitToAppIcon />, name: "Logout", func: LogoutUser },
   ];
 
-  // console.log(user && user);
+  console.log(user && user.data.role);
 
   //   If admin ios active then dashboard also displayed
   if (user.data.role && user.data.role === "admin") {
