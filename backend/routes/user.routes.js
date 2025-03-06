@@ -30,7 +30,7 @@ router.route("/logout").get(userLogout);
 // for user details
 router.route("/me").get(isAuthenticatedUser, userDetails);
 // for update user profile
-router.route("/me/updateProfile").put(isAuthenticatedUser, updateProfile);
+router.route("/me/profile/update").put(isAuthenticatedUser, updateProfile);
 // for update user password
 router.route("/me/password/update").put(isAuthenticatedUser, updatePassword);
 // for getting all users --->Admin

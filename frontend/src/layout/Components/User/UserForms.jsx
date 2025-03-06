@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { BiSolidFace } from "react-icons/bi";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { FaRegUserCircle } from "react-icons/fa";
+import { IoCallOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../Home/Toast.js";
 import { Link, useNavigate } from "react-router-dom";
@@ -255,7 +255,7 @@ const UserForms = () => {
                 </div>
 
                 <div className="flex items-center justify-center relative">
-                  <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
+                  <IoCallOutline className=" absolute top-4 left-2 text-2xl" />
                   <input
                     type="phone"
                     id="phone"

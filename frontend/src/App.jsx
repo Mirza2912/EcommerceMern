@@ -15,12 +15,13 @@ import UserForms from "./layout/Components/User/UserForms.jsx";
 import Template from "./layout/Components/Home/template.jsx";
 import { ProtectedRoute } from "./layout/Routes/protectedRoute.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
-import UpdateProfile from "./layout/Components/User/UpdateProfile.jsx";
 import Search from "./layout/Pages/Search.jsx";
 import Verification from "./layout/Components/User/Verification.jsx";
 import { userDetails } from "./layout/store/UserSlice/userSliceReducers.js";
 import { clearError } from "./layout/store/UserSlice/userSlice.js";
 import UpdatePassword from "./layout/Components/User/UpdatePassword.jsx";
+import EditProfile from "./layout/Components/User/EditProfile.jsx";
+import Toast from "./layout/Components/Home/Toast.js";
 
 /*--------------------------------------*/
 /*     Defining Routes of Website
@@ -39,21 +40,10 @@ const App = () => {
       Toast(error.message, "error");
       Dispatch(clearError());
     }
-    Dispatch(userDetails());
-  }, [Dispatch]);
-
-  // const optionsForToast = {
-  //   position: "top-right",
-  //   autoClose: 5000,
-  //   hideProgressBar: false,
-  //   newestOnTop: false,
-  //   closeOnClick: true,
-  //   rtl: false,
-  //   pauseOnFocusLoss: false,
-  //   draggable: true,
-  //   pauseOnHover: true,
-  //   theme: "dark",
-  // };
+    if (!user) {
+      Dispatch(userDetails());
+    }
+  }, [Dispatch, error]);
   return (
     <Router>
       <ToastContainer
@@ -93,8 +83,8 @@ const App = () => {
           element={<Verification />}
         />
         <Route
-          path="/me/update"
-          element={<ProtectedRoute component={UpdateProfile} />}
+          path="/me/profile/update"
+          element={<ProtectedRoute component={EditProfile} />}
         />
         <Route
           path="/me/update-password"

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../Components/Home/Toast.js";
 import { userLogout } from "../store/UserSlice/userSliceReducers.js";
+import { format } from "date-fns";
 
 const Account = () => {
   //For checking for title
@@ -14,7 +15,7 @@ const Account = () => {
 
   //fetching data from user state
   const { isVerify, user, error } = useSelector((state) => state.auth);
-  // console.log(isVerify, user, error);
+  // console.log(user);
   useEffect(() => {
     if (!isVerify) {
       Navigate("/account");
@@ -22,7 +23,7 @@ const Account = () => {
   }, [Navigate, isVerify]);
 
   // destructuring all data of user
-  const { name, email, role, avatar, createdAt, phone } = user?.data;
+  const { name, email, role, avatar, createdAt, phone } = user.data;
 
   let list = [
     {
@@ -43,7 +44,7 @@ const Account = () => {
     },
     {
       name: "Created At",
-      value: createdAt,
+      value: format(new Date(createdAt), "yyyy-MM-dd hh:mm:ss a"),
     },
   ];
   // console.log(name, email, role, avatar, createdAt);
@@ -100,7 +101,7 @@ const Account = () => {
                   <button
                     className=" py-2 w-[100%] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
                     onClick={() => {
-                      Navigate("/me/update");
+                      Navigate("/me/profile/update");
                     }}
                   >
                     Edit Profile

@@ -91,21 +91,7 @@ export const userDetails = createAsyncThunk("userDetails", async () => {
 
     return data; //returning fetched data
   } catch (error) {
-    // console.log(error.response);
-    // if (error.response && error.response.status === 401) {
-    //   return "User not logged In...!";
-    // }
-    // if (
-    //   error.response &&
-    //   error.response.data.message ===
-    //     "You need to login to access this resource...!"
-    // ) {
-    //   // Specific error handling for unauthorized access
-    //   return rejectWithValue("User not logged in");
-    // }
-    // console.log(error.response.data);
-
-    return error.response.data;
+    return error.response?.data || error.message;
   }
 });
 
@@ -122,6 +108,7 @@ export const userLogout = createAsyncThunk("userLogout", async () => {
   }
 });
 
+//for update password
 export const updatePassword = createAsyncThunk(
   "updatePassword",
   async (userData, { rejectWithValue }) => {
@@ -131,6 +118,30 @@ export const updatePassword = createAsyncThunk(
       /*making api call with axios for getting user details from backend */
       const { data } = await axios.put(
         "/api/v1/users/me/password/update",
+        userData,
+        config
+      );
+
+      // console.log(data);
+
+      return data; //returning fetched data
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+//for update password
+export const updateProfile = createAsyncThunk(
+  "updateProfile",
+  async (userData, { rejectWithValue }) => {
+    // console.log(userData);
+
+    try {
+      /*making api call with axios for getting user details from backend */
+      const { data } = await axios.put(
+        "/api/v1/users/me/profile/update",
         userData,
         config
       );

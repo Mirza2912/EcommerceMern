@@ -3,6 +3,7 @@ import {
   login,
   registerUser,
   updatePassword,
+  updateProfile,
   userDetails,
   userLogout,
   verifyUser,
@@ -14,7 +15,8 @@ export const userSlice = createSlice({
     isLoading: false,
     isVerify: false,
     isAuthenticated: false,
-    successMessage: "",
+    updatePasswordSuccessMessage: "",
+    updateProfileSuccessMessage: "",
     user: null,
     error: null,
   },
@@ -121,9 +123,23 @@ export const userSlice = createSlice({
       .addCase(updatePassword.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.successMessage = action.payload.message;
+        state.updatePasswordSuccessMessage = action.payload.message;
       })
       .addCase(updatePassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      //for update profile
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.updateProfileSuccessMessage = action.payload.message;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

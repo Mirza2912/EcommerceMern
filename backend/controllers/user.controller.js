@@ -160,6 +160,9 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       // Increment registration attempts
       isUserExist.registrationAttempts++;
 
+      //delete already existing image if user reregister(when user not verified)
+      await cloudinary.v2.uploader.destroy(isUserExist.avatar.public_id);
+
       // console.log("✅ Generating verification code...");
       const verificationCode = await isUserExist.generateVerificationCode();
       // console.log(verificationCode);
@@ -418,21 +421,59 @@ const userDetails = AsyncHandler(async (req, res, next) => {
 
 //update user profile
 const updateProfile = AsyncHandler(async (req, res, next) => {
-  //Data which will update
-  const userNewData = {
-    name: req.body.name,
-    email: req.body.email,
-  };
+  // console.log(req.body.oldAvatarId);
+  try {
+    //destroy old image
+    if (req.body.oldAvatarId) {
+      await cloudinary.v2.uploader.destroy(req.body.oldAvatarId);
+    }
+    //upload image to coludinary
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+      folder: "avatars",
+      width: 150,
+      crop: "scale",
+    });
+    //Data which will update
+    const userNewData = {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+    };
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      userNewData,
+      {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+      }
+    );
 
-  const updatedUser = await User.findByIdAndUpdate(req.user._id, userNewData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
+    //creating cookie to send
+    const { accessToken } = await createAccessToken(updatedUser._id);
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, {}, `User updated successfully...!`));
+    //options for cookie of accessToken
+    const options = {
+      expireIn: new Date(
+        Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+      secure: true,
+    };
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .json(new ApiResponse(200, updatedUser, `User updated successfully...!`));
+  } catch (error) {
+    return next(
+      new ApiError("Something went wrong while updatinging profile...!", 500)
+    );
+  }
 });
 
 //update user password
@@ -466,25 +507,6 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
       );
     }
 
-    //if all thing are correct then hashed the new or confirm password
-    const genSaltRound = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, genSaltRound); //if both are same
-    // console.log("hashedPassword", hashedPassword);
-
-    // console.log("Hashed password length", hashedPassword.length);
-
-    //options for cookie of accessToken
-    const options = {
-      expireIn: new Date(
-        Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
-      secure: true,
-    };
-
-    //creating cookie to send
-    const { accessToken } = await createAccessToken(user._id);
-
     user.password = newPassword;
     //saving new password
     await user.save();
@@ -492,7 +514,6 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
       .json(
         new ApiResponse(200, user, "User password updated successfully...!")
       );

@@ -5,14 +5,21 @@ import { updatePassword } from "../../store/UserSlice/userSliceReducers";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { clearError } from "../../store/UserSlice/userSlice";
 import Toast from "../Home/Toast.js";
+
 const UpdatePassword = () => {
   const Dispatch = useDispatch(); //useDispatch fro dispatch action
   const Navigate = useNavigate();
 
   //fetching data from user state
-  const { isLoading, error, isVerify, user, isAuthenticated, successMessage } =
-    useSelector((state) => state.auth);
-  console.log(successMessage);
+  const {
+    isLoading,
+    error,
+    isVerify,
+    user,
+    isAuthenticated,
+    updatePasswordSuccessMessage,
+  } = useSelector((state) => state.auth);
+  // console.log(successMessage);
 
   //useState for storing registration data of user
   const [formData, setFormData] = useState({
@@ -43,8 +50,8 @@ const UpdatePassword = () => {
     }
 
     //ifuser update password successfully then show success message and navigate to profile page
-    if (successMessage) {
-      Toast(successMessage, "success");
+    if (updatePasswordSuccessMessage) {
+      Toast(updatePasswordSuccessMessage, "success");
       Navigate("/profile");
 
       //clearing state
@@ -54,7 +61,7 @@ const UpdatePassword = () => {
         confirmPassword: "",
       });
     }
-  }, [clearError, Dispatch, error, Navigate, successMessage]);
+  }, [Dispatch, error, Navigate, updatePasswordSuccessMessage, Toast]);
 
   return (
     <div className="w-[100%] h-auto py-[10rem] flex items-center justify-center flex-col bg-[url('/images/body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover ">
@@ -110,7 +117,7 @@ const UpdatePassword = () => {
               className="w-full  mt-4 font-semibold py-3.5 rounded-full text-white border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]"
               disabled={isLoading}
             >
-              {isLoading && isLoading === true ? "Editing..." : "Submit"}
+              {isLoading && isLoading === true ? "Editing..." : "Update"}
             </button>
           </form>
         </div>
