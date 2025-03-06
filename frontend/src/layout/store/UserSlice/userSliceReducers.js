@@ -62,7 +62,7 @@ export const registerUser = createAsyncThunk(
 export const verifyUser = createAsyncThunk(
   "verifyUser",
   async (userData, { rejectWithValue }) => {
-    console.log(userData);
+    // console.log(userData);
 
     try {
       /*making api call with axios for sending user data and picking response from backend */
@@ -125,7 +125,7 @@ export const userLogout = createAsyncThunk("userLogout", async () => {
 export const updatePassword = createAsyncThunk(
   "updatePassword",
   async (userData, { rejectWithValue }) => {
-    console.log(userData);
+    // console.log(userData);
 
     try {
       /*making api call with axios for getting user details from backend */
@@ -135,7 +135,7 @@ export const updatePassword = createAsyncThunk(
         config
       );
 
-      console.log(data);
+      // console.log(data);
 
       return data; //returning fetched data
     } catch (error) {

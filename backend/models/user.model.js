@@ -16,7 +16,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       minLength: [8, "Password must be at least 6 characters long"],
-      maxLength: [20, "Password must be at most 20 characters long"],
+      maxLength: [100, "Password must be at most 100 characters long"],
       select: false,
     },
 
@@ -71,7 +71,7 @@ userSchema.pre("save", async function (next) {
 //Comparing password when login
 userSchema.methods.comparePassword = async function (password) {
   const isPassword = await bcrypt.compare(password, this.password);
-  //   console.log(isPassword);
+  // console.log("is hashed password compare..", isPassword);
   return isPassword;
 };
 

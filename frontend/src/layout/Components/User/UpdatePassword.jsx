@@ -10,13 +10,13 @@ const UpdatePassword = () => {
   const Navigate = useNavigate();
 
   //fetching data from user state
-  const { isLoading, error, isVerify, user, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
+  const { isLoading, error, isVerify, user, isAuthenticated, successMessage } =
+    useSelector((state) => state.auth);
+  console.log(successMessage);
 
   //useState for storing registration data of user
   const [formData, setFormData] = useState({
-    currentPassword: "",
+    oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
@@ -30,7 +30,7 @@ const UpdatePassword = () => {
   //Login Form handler
   const updatePasswordHandler = (e) => {
     e.preventDefault(); //form not reload
-    console.log(formData);
+    // console.log(formData);
 
     Dispatch(updatePassword(formData)); //dispatching action for update password
   };
@@ -41,7 +41,20 @@ const UpdatePassword = () => {
       Toast(error.message, "error");
       Dispatch(clearError());
     }
-  }, [clearError, Dispatch, error]);
+
+    //ifuser update password successfully then show success message and navigate to profile page
+    if (successMessage) {
+      Toast(successMessage, "success");
+      Navigate("/profile");
+
+      //clearing state
+      setFormData({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    }
+  }, [clearError, Dispatch, error, Navigate, successMessage]);
 
   return (
     <div className="w-[100%] h-auto py-[10rem] flex items-center justify-center flex-col bg-[url('/images/body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover ">
@@ -57,9 +70,9 @@ const UpdatePassword = () => {
               <RiLockPasswordLine className=" absolute top-4 left-2 text-2xl" />
               <input
                 type="password"
-                id="currentPassword"
-                name="currentPassword"
-                value={formData.currentPassword}
+                id="oldPassword"
+                name="oldPassword"
+                value={formData.oldPassword}
                 onChange={handleUpdatePasswrdChange}
                 required
                 placeholder="current password *Required"

@@ -14,6 +14,7 @@ export const userSlice = createSlice({
     isLoading: false,
     isVerify: false,
     isAuthenticated: false,
+    successMessage: "",
     user: null,
     error: null,
   },
@@ -120,6 +121,7 @@ export const userSlice = createSlice({
       .addCase(updatePassword.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
+        state.successMessage = action.payload.message;
       })
       .addCase(updatePassword.rejected, (state, action) => {
         state.isLoading = false;

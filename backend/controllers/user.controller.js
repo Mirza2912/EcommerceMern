@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "cloudinary";
 import { sendEmail } from "../utils/SendEmail.js";
-
+import bcrypt from "bcrypt";
 // Function to check if email is valid using EmailValidation.io
 async function isEmailValid(email) {
   // console.log(`Validating email: ${email}`);
@@ -24,11 +24,11 @@ async function isEmailValid(email) {
     //convert response to proper json object
     let result = await res.json();
 
-    console.log("Result of api call : ", result);
+    // console.log("Result of api call : ", result);
 
     // console.log(result);
 
-    console.log("Email validation result:", result.state);
+    // console.log("Email validation result:", result.state);
 
     return result.state;
   } catch (error) {
@@ -304,16 +304,16 @@ export const verifyOTP = AsyncHandler(async (req, res, next) => {
       secure: true,
     };
     //send cookie
-    return res.status(200).cookie("accessToken", accessToken, options).json(
-      new ApiResponse(
-        200,
-        {
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new ApiResponse(
+          200,
           user,
-          accessToken,
-        },
-        "User created and verified successfully and direct login to access resources...!"
-      )
-    );
+          "User created and verified successfully and direct login to access resources...!"
+        )
+      );
   } catch (error) {
     return next(new ApiError(error.message, 500));
   }
@@ -342,7 +342,7 @@ const userLogin = AsyncHandler(async (req, res, next) => {
   //   console.log(email, password);
 
   //if email or password is empty or not given
-  if (!(email || password)) {
+  if (!email || !password) {
     return next(new ApiError(`Please fill all fields for login...!`, 400));
   }
 
@@ -387,15 +387,10 @@ const userLogin = AsyncHandler(async (req, res, next) => {
   //creating cookie to send
   const { accessToken } = await createAccessToken(user._id);
 
-  return res.status(200).cookie("accessToken", accessToken, options).json(
-    new ApiResponse(
-      200,
-
-      user,
-
-      "User logged In successfully...!"
-    )
-  );
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .json(new ApiResponse(200, user, "User logged In successfully...!"));
 });
 
 //user logout
@@ -443,52 +438,71 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
 //update user password
 const updatePassword = AsyncHandler(async (req, res, next) => {
   const { oldPassword, newPassword, confirmPassword } = req.body;
+  // console.log(oldPassword, newPassword, confirmPassword);
 
-  //getting user who want to update password by using req.user._id from middleware
-  const user = await User.findById(req.user._id).select("+password");
-
-  //comparing oldPassword with already exist password
-  const isOldPasswordCorrect = await user.comparePassword(oldPassword);
-
-  //if oldPAssword is not matched
-  if (!isOldPasswordCorrect) {
-    return next(new ApiError(`Incorrect OldPassword...!`, 400));
+  //if any field is empty
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return next(new ApiError(`Please fill all fields...!`, 400));
   }
 
-  //checking newPassword and confirmPassword are same
-  if (newPassword !== confirmPassword) {
+  try {
+    //getting user who want to update password by using req.user._id from middleware
+    const user = await User.findById(req.user._id).select("+password");
+    // console.log("user", user);
+
+    //comparing oldPassword with already exist password
+    const isOldPasswordCorrect = await user.comparePassword(oldPassword);
+    // console.log("isOldPasswordCorrect", isOldPasswordCorrect);
+
+    //if oldPAssword is not matched
+    if (!isOldPasswordCorrect) {
+      return next(new ApiError(`Incorrect OldPassword...!`, 400));
+    }
+
+    //checking newPassword and confirmPassword are same
+    if (newPassword !== confirmPassword) {
+      return next(
+        new ApiError(`NewPassword and ConfirmPassword must be same...!`, 400)
+      );
+    }
+
+    //if all thing are correct then hashed the new or confirm password
+    const genSaltRound = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, genSaltRound); //if both are same
+    // console.log("hashedPassword", hashedPassword);
+
+    // console.log("Hashed password length", hashedPassword.length);
+
+    //options for cookie of accessToken
+    const options = {
+      expireIn: new Date(
+        Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
+      ),
+      httpOnly: true,
+      secure: true,
+    };
+
+    //creating cookie to send
+    const { accessToken } = await createAccessToken(user._id);
+
+    user.password = newPassword;
+    //saving new password
+    await user.save();
+    // console.log(user);
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .json(
+        new ApiResponse(200, user, "User password updated successfully...!")
+      );
+  } catch (error) {
+    // console.log("error", error);
+
     return next(
-      new ApiError(`NewPassword and ConfirmPassword must be same...!`, 400)
+      new ApiError("Something went wrong while updatinging password...!", 500)
     );
   }
-
-  //if both are same
-  user.password = confirmPassword;
-  //saving new password
-  await user.save();
-
-  //options for cookie of accessToken
-  const options = {
-    expireIn: new Date(
-      Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-    secure: true,
-  };
-
-  //creating cookie to send
-  const { accessToken } = await createAccessToken(user._id);
-
-  return res.status(200).cookie("accessToken", accessToken, options).json(
-    new ApiResponse(
-      200,
-      {
-        user,
-        accessToken,
-      },
-      "User password updated successfully...!"
-    )
-  );
 });
 
 //get all users --->Admin

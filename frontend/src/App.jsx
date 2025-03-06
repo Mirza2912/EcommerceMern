@@ -12,7 +12,7 @@ import "./App.css";
 import SingleProductDetail from "./layout/Pages/SingleProductDetail";
 import { useDispatch, useSelector } from "react-redux";
 import UserForms from "./layout/Components/User/UserForms.jsx";
-
+import Template from "./layout/Components/Home/template.jsx";
 import { ProtectedRoute } from "./layout/Routes/protectedRoute.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import UpdateProfile from "./layout/Components/User/UpdateProfile.jsx";

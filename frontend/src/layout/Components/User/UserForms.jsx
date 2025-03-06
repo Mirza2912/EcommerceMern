@@ -23,7 +23,7 @@ const UserForms = () => {
   const { isLoading, error, isVerify, user, isAuthenticated } = useSelector(
     (state) => state.auth
   );
-  console.log(isVerify);
+  // console.log(isVerify);
 
   //useState for storing registration data of user
   const [signUpData, setSignUpData] = useState({
@@ -103,7 +103,7 @@ const UserForms = () => {
     if (isAuthenticated && isAuthenticated === true) {
       Toast(`${user && user.message}`, "success");
       Navigate(
-        `/register/otp-verification/${user.data.email}/${user.data.phone}`
+        `/register/otp-verification/${user.data?.email}/${user.data?.phone}`
       );
     }
 

@@ -32,10 +32,10 @@ const UserSpeedDial = ({ user }) => {
     { icon: <ExitToAppIcon />, name: "Logout", func: LogoutUser },
   ];
 
-  console.log(user && user.data.role);
+  // console.log(user?.data?.role);
 
   //   If admin ios active then dashboard also displayed
-  if (user.data.role && user.data.role === "admin") {
+  if (user.data?.role === "admin") {
     options.unshift({
       icon: <DashboardIcon />,
       name: "Dashboard",
@@ -74,11 +74,7 @@ const UserSpeedDial = ({ user }) => {
         icon={
           <img
             className="speedDialIcon w-[56px] h-[56px] bg-cover bg-center  rounded-full"
-            src={
-              user.data.avatar.url && user.data.avatar.url
-                ? user.data.avatar.url
-                : "/Profile.png"
-            }
+            src={user.data?.avatar?.url ? user.data.avatar.url : "/Profile.png"}
             alt="Profile"
           />
         }

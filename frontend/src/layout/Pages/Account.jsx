@@ -22,7 +22,7 @@ const Account = () => {
   }, [Navigate, isVerify]);
 
   // destructuring all data of user
-  const { name, email, role, avatar, createdAt, phone } = user && user.data;
+  const { name, email, role, avatar, createdAt, phone } = user?.data;
 
   let list = [
     {
@@ -99,9 +99,9 @@ const Account = () => {
                 <li>
                   <button
                     className=" py-2 w-[100%] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
-                    // onClick={() => {
-                    //   Navigate("/me/update");
-                    // }}
+                    onClick={() => {
+                      Navigate("/me/update");
+                    }}
                   >
                     Edit Profile
                   </button>
