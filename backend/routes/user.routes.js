@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deleteAccount,
   deleteUser,
   getAllUsers,
   getSingleUser,
@@ -33,6 +34,8 @@ router.route("/me").get(isAuthenticatedUser, userDetails);
 router.route("/me/profile/update").put(isAuthenticatedUser, updateProfile);
 // for update user password
 router.route("/me/password/update").put(isAuthenticatedUser, updatePassword);
+// for delete account
+router.route("/me/delete/account").delete(isAuthenticatedUser, deleteAccount);
 // for getting all users --->Admin
 router
   .route("/admin/users")

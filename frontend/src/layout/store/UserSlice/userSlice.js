@@ -7,6 +7,7 @@ import {
   userDetails,
   userLogout,
   verifyUser,
+  userDelete,
 } from "./userSliceReducers.js";
 
 export const userSlice = createSlice({
@@ -26,10 +27,9 @@ export const userSlice = createSlice({
     clearError: (state) => {
       return { ...state, error: null };
     },
-    //logout
-    logOut: (state) => {
-      state.isVerify = false;
-      state.user = null;
+    clearUpdateMessage: (state) => {
+      //when user updated succesfully then clear the message
+      state.updateProfileSuccessMessage = "";
     },
   },
 
@@ -142,9 +142,20 @@ export const userSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      //for user logout
+      .addCase(userDelete.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isVerify = false;
+        state.isAuthenticated = false;
+      })
+      .addCase(userDelete.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError, logOut } = userSlice.actions;
+export const { clearError, clearUpdateMessage } = userSlice.actions;
 export default userSlice.reducer;

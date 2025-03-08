@@ -155,3 +155,16 @@ export const updateProfile = createAsyncThunk(
     }
   }
 );
+
+//fro user logout
+export const userDelete = createAsyncThunk("userDelete", async () => {
+  try {
+    /*making api call with axios for getting user details from backend */
+    await axios.delete("/api/v1/users/me/delete/account");
+
+    // console.log(data); //returning fetched data
+  } catch (error) {
+    // console.log(error.response.data.message);
+    return error.response?.data || error.message;
+  }
+});

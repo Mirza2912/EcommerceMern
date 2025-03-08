@@ -423,26 +423,27 @@ const userDetails = AsyncHandler(async (req, res, next) => {
 const updateProfile = AsyncHandler(async (req, res, next) => {
   // console.log(req.body.oldAvatarId);
   try {
-    //destroy old image
-    if (req.body.oldAvatarId) {
-      await cloudinary.v2.uploader.destroy(req.body.oldAvatarId);
-    }
-    //upload image to coludinary
-    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-      folder: "avatars",
-      width: 150,
-      crop: "scale",
-    });
     //Data which will update
     const userNewData = {
       name: req.body.name,
       email: req.body.email,
       phone: req.body.phone,
-      avatar: {
+    };
+    //destroy old image
+    if (req.body.oldAvatarId) {
+      await cloudinary.v2.uploader.destroy(req.body.oldAvatarId);
+      //upload image to coludinary
+      const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+        folder: "avatars",
+        width: 150,
+        crop: "scale",
+      });
+      userNewData.avatar = {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,
-      },
-    };
+      };
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       userNewData,
@@ -526,6 +527,22 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
   }
 });
 
+//user delete
+const deleteAccount = AsyncHandler(async (req, res, next) => {
+  //getting user who want to delete account by using req.user._id from middleware
+  const user = await User.findByIdAndDelete(req.user._id);
+  console.log(user);
+
+  res.cookie("accessToken", null, {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "User deleted successfully...!"));
+});
+
 //get all users --->Admin
 const getAllUsers = AsyncHandler(async (req, res, next) => {
   const users = await User.find();
@@ -577,6 +594,7 @@ export {
   updateProfile,
   userDetails,
   updatePassword,
+  deleteAccount,
   getAllUsers,
   getSingleUser,
   updateUser,

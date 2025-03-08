@@ -4,8 +4,12 @@ import Title from "../Components/Home/Title.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../Components/Home/Toast.js";
-import { userLogout } from "../store/UserSlice/userSliceReducers.js";
+import {
+  userDelete,
+  userLogout,
+} from "../store/UserSlice/userSliceReducers.js";
 import { format } from "date-fns";
+import { clearUpdateMessage } from "../store/UserSlice/userSlice.js";
 
 const Account = () => {
   //For checking for title
@@ -14,13 +18,22 @@ const Account = () => {
   const Dispatch = useDispatch();
 
   //fetching data from user state
-  const { isVerify, user, error } = useSelector((state) => state.auth);
+  const { isVerify, user, error, updateProfileSuccessMessage } = useSelector(
+    (state) => state.auth
+  );
   // console.log(user);
   useEffect(() => {
     if (!isVerify) {
       Navigate("/account");
     }
-  }, [Navigate, isVerify]);
+    if (updateProfileSuccessMessage) {
+      const timer = setTimeout(() => {
+        Dispatch(clearUpdateMessage());
+      }, 5000);
+
+      return () => clearTimeout(timer); // Cleanup to avoid memory leaks
+    }
+  }, [Navigate, isVerify, updateProfileSuccessMessage]);
 
   // destructuring all data of user
   const { name, email, role, avatar, createdAt, phone } = user.data;
@@ -77,18 +90,6 @@ const Account = () => {
 
                 <li>
                   <button
-                    className=" py-2 w-[100%] bg-red-500 text-black text-xl font-semibold  hover:bg-red-700 hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
-                    onClick={() => {
-                      Dispatch(userLogout());
-                      Navigate("/account");
-                      Toast("success", "Logged out Successfully");
-                    }}
-                  >
-                    Log Out
-                  </button>
-                </li>
-                <li>
-                  <button
                     className=" py-2 w-[100%] bg-black text-gold border border-gold hover:bg-gold hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
                     onClick={() => {
                       Navigate("/me/update-password");
@@ -105,6 +106,30 @@ const Account = () => {
                     }}
                   >
                     Edit Profile
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=" py-2 w-[100%] bg-red-500 text-black text-xl font-semibold  hover:bg-red-700 hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
+                    onClick={() => {
+                      Dispatch(userLogout());
+                      Navigate("/account");
+                      Toast("success", "Logged out Successfully");
+                    }}
+                  >
+                    Log Out
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className=" py-2 w-[100%] bg-red-500 text-black text-xl font-semibold  hover:bg-red-700 hover:font-semibold hover:text-black hover:border-gold hover:rounded-full"
+                    onClick={() => {
+                      Dispatch(userDelete());
+                      Navigate("/account");
+                      Toast("success", "Account deleted successfully");
+                    }}
+                  >
+                    Delete Account
                   </button>
                 </li>
               </ul>
