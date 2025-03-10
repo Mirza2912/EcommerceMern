@@ -8,6 +8,7 @@ import {
   userLogout,
   verifyUser,
   userDelete,
+  forgotPassword,
 } from "./userSliceReducers.js";
 
 export const userSlice = createSlice({
@@ -28,8 +29,11 @@ export const userSlice = createSlice({
       return { ...state, error: null };
     },
     clearUpdateMessage: (state) => {
-      //when user updated succesfully then clear the message
-      state.updateProfileSuccessMessage = "";
+      if (state.updatePasswordSuccessMessage) {
+        return { ...state, updatePasswordSuccessMessage: "" };
+      } else if (state.updateProfileSuccessMessage) {
+        return { ...state, updateProfileSuccessMessage: "" };
+      }
     },
   },
 
@@ -151,6 +155,18 @@ export const userSlice = createSlice({
         state.isAuthenticated = false;
       })
       .addCase(userDelete.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      //for forgot password
+      .addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

@@ -156,15 +156,42 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-//fro user logout
-export const userDelete = createAsyncThunk("userDelete", async () => {
-  try {
-    /*making api call with axios for getting user details from backend */
-    await axios.delete("/api/v1/users/me/delete/account");
+//for forgot password
+export const forgotPassword = createAsyncThunk(
+  "forgotPassword",
+  async (userData, { rejectWithValue }) => {
+    // console.log(userData);
 
-    // console.log(data); //returning fetched data
-  } catch (error) {
-    // console.log(error.response.data.message);
-    return error.response?.data || error.message;
+    try {
+      /*making api call with axios for fetching response from backend when we call forgot function */
+      const { data } = await axios.post(
+        "/api/v1/users/me/password/forgot",
+        userData,
+        config
+      );
+
+      // console.log(data);
+
+      return data; //returning fetched data
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(error.response?.data || error.message);
+    }
   }
-});
+);
+
+//fro user logout
+export const userDelete = createAsyncThunk(
+  "userDelete",
+  async (_, { rejectWithValue }) => {
+    try {
+      /*making api call with axios for getting user details from backend */
+      await axios.delete("/api/v1/users/me/delete/account");
+
+      // console.log(data); //returning fetched data
+    } catch (error) {
+      // console.log(error.response.data.message);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);

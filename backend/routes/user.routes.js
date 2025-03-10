@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   deleteAccount,
   deleteUser,
+  forgotPassword,
+  resetPassword,
   getAllUsers,
   getSingleUser,
   updatePassword,
@@ -34,6 +36,12 @@ router.route("/me").get(isAuthenticatedUser, userDetails);
 router.route("/me/profile/update").put(isAuthenticatedUser, updateProfile);
 // for update user password
 router.route("/me/password/update").put(isAuthenticatedUser, updatePassword);
+// for forgot password
+router.route("/me/password/forgot").post(isAuthenticatedUser, forgotPassword);
+// for reset password
+router
+  .route("/me/password/reset:token")
+  .post(isAuthenticatedUser, resetPassword);
 // for delete account
 router.route("/me/delete/account").delete(isAuthenticatedUser, deleteAccount);
 // for getting all users --->Admin

@@ -8,7 +8,7 @@ const Home = () => {
     <>
       <Title title="Home" />
 
-      <div className="w-[100%]  flex items-center justify-center flex-col bg-[url('/images/body-bg-free-img.jpg')] h-auto bg-center bg-no-repeat bg-fixed bg-cover ">
+      <div className="w-[100%]  flex items-center justify-center flex-col bg-[url('/images/body-bg-free-img.jpg')] h-[100vh] bg-center bg-no-repeat bg-fixed bg-cover ">
         {/* Hero Section  */}
         <Hero />
         {/* Feature Products  */}

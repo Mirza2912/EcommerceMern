@@ -288,8 +288,8 @@ export const verifyOTP = AsyncHandler(async (req, res, next) => {
 
     //if user otp is correct then make account verified
     user.accountVerified = true;
-    user.verificationCode = null;
-    user.verificationCodeExpiry = null;
+    user.verificationCode = undefined;
+    user.verificationCodeExpiry = undefined;
     user.registrationAttempts = 0;
     await user.save();
     // console.log(user);
@@ -410,13 +410,20 @@ const userLogout = AsyncHandler(async (req, res, next) => {
 
 //getting user details
 const userDetails = AsyncHandler(async (req, res, next) => {
-  // fetching _id of user who want to access details from req.user which we set in middleware
-  const { _id } = req.user;
+  try {
+    // fetching _id of user who want to access details from req.user which we set in middleware
+    const { _id } = req.user;
 
-  const user = await User.findById(_id);
-  // console.log(user);
+    const user = await User.findById(_id);
+    console.log(user);
 
-  return res.status(200).json(new ApiResponse(200, user, "User Details...!"));
+    return res.status(200).json(new ApiResponse(200, user, "User Details...!"));
+  } catch (error) {
+    console.log("userDetails error", error);
+    return next(
+      new ApiError("Something went wrong while getting user details...!", 500)
+    );
+  }
 });
 
 //update user profile
@@ -543,6 +550,98 @@ const deleteAccount = AsyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, "User deleted successfully...!"));
 });
 
+//for forgot password
+const forgotPassword = AsyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    //checking user exist or not
+    const user = await User.findOne({
+      email,
+    });
+
+    //if user not found
+    if (!user) {
+      return next(new ApiError(`User not found with this email...!`, 404));
+    }
+
+    //generating reset token
+    const resetPasswordToken = await user.generateResetPasswordToken();
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordExpiry = Date.now() + 10 * 60 * 1000; //10 minutes
+    await user.save({ validateBeforeSave: false });
+
+    //making url on which we send email
+    const resetPasswordUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/me/password/reset/${resetPasswordToken}`;
+
+    //calling sendEmail function to send email with resetPassworUrl
+    await sendEmail({
+      email,
+      subject: "RESET PASSWORD",
+      message: `<p>Click <a href="${resetPasswordUrl}">here</a> to reset your password. This link expires in 10 minutes.\n\nIf you have not requested this email then, please ignore it.</p>`,
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Reset password link sent to your email...!"));
+  } catch (error) {
+    console.log(error);
+    return next(
+      new ApiError("Something went wrong while reseting password...!")
+    );
+  }
+});
+
+//for reset password
+const resetPassword = AsyncHandler(async (req, res, next) => {
+  const { token } = req.params;
+  const { newPassword, confirmPassword } = req.body;
+  try {
+    //first of all check tokenis come or not
+    if (!token) {
+      return next(new ApiError(`Token required...!`, 400));
+    }
+
+    //getting user by token
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpiry: { $gt: Date.now() }, //if token expiry date available then check it
+    });
+
+    //now check user exist or not
+    if (!user) {
+      return next(new ApiError(`Invalid or Expired Token...!`, 400));
+    }
+
+    //now check passwords given or not
+    if (!newPassword || !confirmPassword) {
+      return next(new ApiError(`Please fill all fields...!`, 400));
+    }
+
+    //now check passwords are matched or not
+    if (newPassword !== confirmPassword) {
+      return next(
+        new ApiError(`NewPassword and ConfirmPassword must be same...!`, 400)
+      );
+    }
+
+    //now update password
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpiry = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "Password reset successfully...!"));
+  } catch (error) {
+    console.log(error);
+    return next(
+      new ApiError("Something went wrong while reseting password...!")
+    );
+  }
+});
 //get all users --->Admin
 const getAllUsers = AsyncHandler(async (req, res, next) => {
   const users = await User.find();
@@ -599,4 +698,6 @@ export {
   getSingleUser,
   updateUser,
   deleteUser,
+  forgotPassword,
+  resetPassword,
 };

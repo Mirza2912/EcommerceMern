@@ -95,6 +95,24 @@ userSchema.methods.generateAccessToken = async function () {
   }
 };
 
+//Creating jsonWebToken for user
+userSchema.methods.generateResetPasswordToken = async function () {
+  try {
+    const resetPasswordToken = jwt.sign(
+      {
+        _id: this._id,
+      },
+      process.env.RESET_PASSWORD_TOKEN_SECRET_KEY,
+      {
+        expiresIn: process.env.RESET_PASSWORD_TOKEN_EXPIRY,
+      }
+    );
+    return resetPasswordToken;
+  } catch (error) {
+    console.log(`Error while generating reset token : ${error}`);
+  }
+};
+
 //code for generating verification code
 userSchema.methods.generateVerificationCode = function () {
   function generateFiveDigits() {

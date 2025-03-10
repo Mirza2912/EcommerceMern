@@ -8,8 +8,8 @@ import {
   userDelete,
   userLogout,
 } from "../store/UserSlice/userSliceReducers.js";
-import { format } from "date-fns";
 import { clearUpdateMessage } from "../store/UserSlice/userSlice.js";
+import { format } from "date-fns";
 
 const Account = () => {
   //For checking for title
@@ -18,22 +18,31 @@ const Account = () => {
   const Dispatch = useDispatch();
 
   //fetching data from user state
-  const { isVerify, user, error, updateProfileSuccessMessage } = useSelector(
-    (state) => state.auth
-  );
+  const {
+    isVerify,
+    user,
+    error,
+    updateProfileSuccessMessage,
+    updatePasswordSuccessMessage,
+  } = useSelector((state) => state.auth);
   // console.log(user);
   useEffect(() => {
     if (!isVerify) {
       Navigate("/account");
     }
-    if (updateProfileSuccessMessage) {
+    if (updateProfileSuccessMessage || updatePasswordSuccessMessage) {
       const timer = setTimeout(() => {
         Dispatch(clearUpdateMessage());
       }, 5000);
 
       return () => clearTimeout(timer); // Cleanup to avoid memory leaks
     }
-  }, [Navigate, isVerify, updateProfileSuccessMessage]);
+  }, [
+    Navigate,
+    isVerify,
+    updateProfileSuccessMessage,
+    updatePasswordSuccessMessage,
+  ]);
 
   // destructuring all data of user
   const { name, email, role, avatar, createdAt, phone } = user.data;
