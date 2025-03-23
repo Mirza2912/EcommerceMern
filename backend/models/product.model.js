@@ -12,8 +12,8 @@ const productSchema = new Schema(
       unique: true,
     },
     category: {
-      type: String,
-      enum: ["book", "note book", "stationary"],
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductCategory",
       required: [true, "Category is required...!"],
     },
     description: {
@@ -50,7 +50,7 @@ const productSchema = new Schema(
     isReturnAble: {
       type: Boolean,
       required: [true, "isReturnAble field is required...!"],
-      default: true,
+      default: false,
     },
     rating: {
       type: Number,
@@ -90,6 +90,10 @@ const productSchema = new Schema(
     productDetails: {
       type: mongoose.Schema.Types.Mixed, //scalable field
       default: {},
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
