@@ -93,7 +93,7 @@ async function sendVerificationCode(
 //user registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
-  // console.log(name, password, email, avatar, phone);
+  console.log(name, password, email, avatar, phone);
 
   //checking data comes or not
   if (
@@ -415,7 +415,7 @@ const userDetails = AsyncHandler(async (req, res, next) => {
     const { _id } = req.user;
 
     const user = await User.findById(_id);
-    console.log(user);
+    // console.log(user);
 
     return res.status(200).json(new ApiResponse(200, user, "User Details...!"));
   } catch (error) {

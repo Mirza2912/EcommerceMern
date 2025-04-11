@@ -9,7 +9,9 @@ import cloudinary from "cloudinary";
 //get all products from Product model
 const getAllProducts = AsyncHandler(async (req, res) => {
   //extracting data from query(if user add any filter or search a product)
-  const { keyword, minPrice, maxPrice, category, page } = req.query;
+  const { keyword, minPrice, maxPrice, category, page, stock, rating } =
+    req.query;
+  // console.log(keyword, minPrice, maxPrice, category, page, stock, rating);
 
   //creating a query object for apply query on product at the end of all disscussion
   const query = {};
@@ -20,6 +22,26 @@ const getAllProducts = AsyncHandler(async (req, res) => {
       $regex: keyword,
       $options: "i",
     };
+  }
+
+  //if user use stock option
+  if (stock) {
+    // console.log(stock);
+
+    if (stock === "true") {
+      // console.log(stock);
+
+      query.stock = { $gt: 0 };
+    } else {
+      query.stock = { $eq: 0 };
+    }
+  }
+
+  //if user use rating option
+  if (rating) {
+    // console.log(rating);
+
+    query.rating = { $gte: Number(rating) };
   }
 
   //if user add category to get products
@@ -55,7 +77,10 @@ const getAllProducts = AsyncHandler(async (req, res) => {
   const skip = (currentPage - 1) * productsPerPage;
 
   // Fetch filtered products with pagination
-  const products = await Product.find(query).limit(productsPerPage).skip(skip);
+  const products = await Product.find(query)
+    .populate("category")
+    .limit(productsPerPage)
+    .skip(skip);
   //length of filtered products
   let filteredProductCount = products?.length;
   // console.log(filteredProductCount);
@@ -67,7 +92,6 @@ const getAllProducts = AsyncHandler(async (req, res) => {
         products,
         productsPerPage,
         filteredProductCount,
-        productsPerPage,
       },
       "All Searched  Products...!"
     )
@@ -76,7 +100,11 @@ const getAllProducts = AsyncHandler(async (req, res) => {
 
 //getting product details(single)
 const singleProductDetails = AsyncHandler(async (req, res, next) => {
-  const singleProduct = await Product.findById(req.params.id);
+  const { id } = req.params;
+  // console.log("singleProductsDetails : " + id);
+
+  const singleProduct = await Product.findById(id).populate("category");
+  // console.log(singleProduct);
 
   if (!singleProduct) {
     return next(
@@ -100,6 +128,7 @@ const getFeaturedProducts = AsyncHandler(async (req, res, next) => {
     const featuredProductsCount = await Product.find({
       isFeatured: true,
     }).countDocuments();
+    // console.log("featuredProductsCount : " + featuredProductsCount);
 
     const currentPage = Number(page) || 1;
     const skip = (currentPage - 1) * productsPerPage;
@@ -108,8 +137,10 @@ const getFeaturedProducts = AsyncHandler(async (req, res, next) => {
     const featuredProducts = await Product.find({
       isFeatured: true,
     })
+      .populate("category")
       .skip(skip)
       .limit(productsPerPage);
+    // console.log("featuredProducts : " + featuredProducts);
 
     if (!featuredProducts) {
       return next(new ApiError(`Featured products not found...!`, 500));
@@ -156,6 +187,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
       if (categoryObj) {
         //add category._id because we add feature of caterofgy by ref of category model
         data.category = categoryObj._id;
+        // console.log(categoryObj.category);
       } else {
         const newCategory = await ProductCategory.create({
           category: data.category,
@@ -170,7 +202,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
     }
 
     //upload images of product on cloudinary
-    if (req.files?.images || req.body.data?.images) {
+    if (req.files?.images || data?.images) {
       //validation
       const allowedFormats = ["image/jpeg", "image/png", "image/webp"];
       const maxSize = 5 * 1024 * 1024; // 5MB
@@ -189,6 +221,8 @@ const createProduct = AsyncHandler(async (req, res, next) => {
       // console.log(typeof imagesArray);
 
       const uploadedImages = await UploadProductImagesCloudinary(req, next);
+      // console.log("upploadImages" + uploadedImages);
+
       data.images = uploadedImages;
     } else {
       return next(new ApiError(`Images are required...!`, 401));
@@ -256,7 +290,7 @@ const updateProduct = AsyncHandler(async (req, res, next) => {
       product._id,
       updateData,
       { new: true, runValidators: true, useFindAndModify: false }
-    );
+    ).populate("category");
     res
       .status(200)
       .json(
@@ -297,10 +331,23 @@ const deleteProduct = AsyncHandler(async (req, res, next) => {
     .json(
       new ApiResponse(
         200,
-        deletedProduct,
+        { deletedProduct },
         `Product deleted with ${product.name} name successfully...!`
       )
     );
+});
+
+//get all category
+const getAllCategory = AsyncHandler(async (req, res, next) => {
+  const categories = await ProductCategory.find();
+
+  if (!categories) {
+    return next(new ApiError(`Categories not found...!`, 500));
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, { categories }, `All Categories...!`));
 });
 export {
   getAllProducts,
@@ -309,4 +356,5 @@ export {
   deleteProduct,
   singleProductDetails,
   getFeaturedProducts,
+  getAllCategory,
 };

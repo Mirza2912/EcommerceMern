@@ -11,7 +11,7 @@ const Header = () => {
   // console.log(navItem);
   // bg-bg-color
   return (
-    <nav className="w-[100%] sm:absolute sm:bg-transparent sm:z-50 bg-bg-color font-roboto h-[4rem] sm:h-auto sm:mt-5 sm:py-[1rem] lg:h-[5rem] lg:py-0 flex items-center justify-center">
+    <nav className="w-[100%]  sm:fixed sm:bg-transparent sm:z-50 bg-bg-color font-roboto h-[4rem] sm:h-auto sm:mt-5 sm:py-[1rem] lg:h-[5rem] lg:py-0 flex items-center justify-center">
       <div className="container xxsm:px-[1rem] xsm:flex xsm:items-center xsm:justify-between xsm:w-[100%] xsm:px-[2rem] sm:w-[100%] sm:block lg:w-[100%] lg:px-[2rem] lg:flex xl:w-[80%] items-center justify-between">
         {/* Logo Image */}
         <div className="logo sm:w-[100%] sm:text-center sm:mb-[0.5rem] lg:w-auto lg:mb-0">

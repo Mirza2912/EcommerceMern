@@ -4,6 +4,8 @@ import Rating from "@mui/material/Rating";
 import "./Card.css";
 
 const Card = ({ product }) => {
+  // console.log(product.category.category);
+
   return (
     <NavLink
       to={`/product/${product._id}`}
@@ -21,7 +23,7 @@ const Card = ({ product }) => {
           />
         </figure>
         <figcaption className="absolute top-2 text-black right-2 bmd:right-4 px-3 py-[3px] bg-[#ca9d2d] rounded-full">
-          {product.category}
+          {product.category?.category}
         </figcaption>
         {product.discount ? (
           <figcaption className="absolute top-2 text-black left-2 bmd:right-4 px-3 py-[3px] bg-[#ca9d2d] rounded-full">
@@ -33,7 +35,7 @@ const Card = ({ product }) => {
       </div>
       <div className="card-properties text-white font-roboto mt-5 mb-2 px-2 flex flex-col gap-3 items-center ">
         <h2 className="w-[90%] text-center leading-tight text-[#a1a1a2]">
-          {product.category}
+          {product.category?.category}
         </h2>
         <h2 className="w-[90%] text-center leading-tight">{product.name}</h2>
         <div className="w-[100%] flex items-center justify-center gap-1 -my-2">

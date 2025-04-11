@@ -4,14 +4,16 @@ import Toast from "./Toast.js";
 // import "../../Toast.css";
 import Card from "./Card.jsx";
 import { clearError } from "../../store/ProductSlice/productSlice.js";
-import { getAllProducts } from "../../store/ProductSlice/productSliceReducers.js";
+import { getFeaturedProducts } from "../../store/ProductSlice/productSliceReducers.js";
 
 const FeatureProducts = () => {
   const dispatch = useDispatch();
 
   //fetching products loading and error from state
-  const { products, loading, error } = useSelector((state) => state.products);
-  console.log(products);
+  const { featuredProducts, loading, error } = useSelector(
+    (state) => state.product
+  );
+  // console.log(featuredProducts[7]);
 
   // /*--------------------------------------*/
   // /*     Get All Products using useEffect
@@ -21,7 +23,7 @@ const FeatureProducts = () => {
       Toast(error, "error");
       dispatch(clearError());
     }
-    dispatch(getAllProducts());
+    dispatch(getFeaturedProducts());
     // Toast("Data fetched successfully", "success");
   }, [dispatch, error, Toast]);
   return (
@@ -35,8 +37,8 @@ const FeatureProducts = () => {
 
       {/* Feature Products  */}
       <div className="flex flex-wrap  justify-center xlg:gap-5 gap-10 my-[6vmax] xxsm:w-[100%]">
-        {products &&
-          products.map((product) => {
+        {featuredProducts &&
+          featuredProducts.map((product) => {
             return <Card key={product._id} product={product} />;
           })}
       </div>

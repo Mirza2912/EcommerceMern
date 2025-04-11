@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  getAllCategories,
   getAllProducts,
+  getFeaturedProducts,
   singleProductDetails,
 } from "./productSliceReducers.js";
 
@@ -8,12 +10,15 @@ import {
 /*     Products Slice
 /*--------------------------------------*/
 export const productSlice = createSlice({
-  name: "productSlice",
+  name: "products",
   initialState: {
     products: [], //for storing all products in state
     productCount: 0,
-    singleProduct: {},
     filteredProductCount: 0,
+    featuredProducts: [],
+    featuredProductsCount: 0,
+    singleProduct: {},
+    categories: [],
     loading: false,
     error: null,
   },
@@ -33,16 +38,13 @@ export const productSlice = createSlice({
       .addCase(getAllProducts.pending, (state) => {
         state.loading = true;
         state.products = [];
-        state.productCount = 0;
-        state.singleProduct = {};
-        state.filteredProductCount = 0;
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload.data.products;
-        state.productCount = action.payload.data.productCount;
-        state.filteredProductCount = action.payload.data.filteredProductCount;
-        state.productsPerPage = action.payload.data.productsPerPage;
+        state.products = action.payload.products;
+        state.productCount = action.payload.productCount;
+        state.filteredProductCount = action.payload.filteredProductCount;
+        state.productsPerPage = action.payload.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
         state.loading = false;
@@ -56,12 +58,38 @@ export const productSlice = createSlice({
       })
       .addCase(singleProductDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.singleProduct = action.payload.data;
+        state.singleProduct = action.payload.singleProduct;
       })
       .addCase(singleProductDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.singleProduct = null;
+      })
+
+      //getAllcategories
+      .addCase(getAllCategories.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllCategories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categories = action.payload.categories;
+      })
+      .addCase(getAllCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //getFeaturedProducts
+      .addCase(getFeaturedProducts.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getFeaturedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.featuredProducts = action.payload.featuredProducts;
+        state.featuredProductsCount = action.payload.featuredProductsCount;
+      })
+      .addCase(getFeaturedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
