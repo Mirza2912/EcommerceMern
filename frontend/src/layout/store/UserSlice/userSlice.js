@@ -1,177 +1,212 @@
+// src/features/user/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  login,
-  registerUser,
-  updatePassword,
-  updateProfile,
-  userDetails,
-  userLogout,
-  verifyUser,
-  userDelete,
+  changeUserPassword,
   forgotPassword,
-} from "./userSliceReducers.js";
+  loadUser,
+  registerUser,
+  resetPassword,
+  updateUserProfile,
+  userDelete,
+  userLogin,
+  userLogOut,
+  verifyUser,
+} from "./userSliceReducers";
 
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: "auth",
   initialState: {
+    user: null, //for storing user data
+    tempUser: null, //when user give credentials and got otp
+    isVerified: false, //when user verify the otp now user is authenticated
     isLoading: false,
-    isVerify: false,
-    isAuthenticated: false,
-    updatePasswordSuccessMessage: "",
-    updateProfileSuccessMessage: "",
-    user: null,
     error: null,
+    resgisterMessage: "",
+    logOutMessage: "",
+    updateProfileMessage: "",
+    changeUserPasswordMessage: "",
+    forgotPasswordMessage: "",
+    resetPasswordMessage: "",
+    deleteUserMessage: "",
+    verificationMessage: "",
+    loginMessage: "",
   },
-  //Simple reducers(Functions)
   reducers: {
-    //reducer for clearing all errors
     clearError: (state) => {
-      return { ...state, error: null };
+      state.error = null;
     },
-    clearUpdateMessage: (state) => {
-      if (state.updatePasswordSuccessMessage) {
-        return { ...state, updatePasswordSuccessMessage: "" };
-      } else if (state.updateProfileSuccessMessage) {
-        return { ...state, updateProfileSuccessMessage: "" };
-      }
+    clearRegisterMessage: (state) => {
+      state.resgisterMessage = "";
+    },
+    clearVerificationMessage: (state) => {
+      state.verificationMessage = "";
+    },
+    clearLoginMessage: (state) => {
+      state.loginMessage = "";
+    },
+    clearLogoutMessage: (state) => {
+      state.logOutMessage = "";
+    },
+    cleareUpdateProfileMessage: (state) => {
+      state.updateProfileMessage = "";
+    },
+    clearUserPasswordMessage: (state) => {
+      state.changeUserPasswordMessage = "";
+    },
+    clearForgotPasswordMessage: (state) => {
+      state.forgotPasswordMessage = "";
+    },
+    cleareResetPasswordMessage: (state) => {
+      state.resetPasswordMessage = "";
+    },
+    cleareUserDeleteMessage: (state) => {
+      state.deleteUserMessage = "";
     },
   },
-
   extraReducers: (builder) => {
-    //builder for registration
     builder
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload;
+        state.tempUser = action.payload;
+        state.resgisterMessage = action.payload?.message;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.isAuthenticated = false;
         state.error = action.payload;
       })
-
-      //for verify user
       .addCase(verifyUser.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
       .addCase(verifyUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isVerify = true;
-        state.isAuthenticated = true;
+        state.tempUser = null;
+        state.isVerified = true;
+        state.verificationMessage = action.payload?.message;
         state.user = action.payload;
       })
       .addCase(verifyUser.rejected, (state, action) => {
-        state.isVerify = false;
-        state.isAuthenticated = false;
+        state.isLoading = false;
         state.error = action.payload;
       })
-
-      //builder for login
-      .addCase(login.pending, (state) => {
+      .addCase(userLogin.pending, (state) => {
         state.isLoading = true;
-        state.isVerify = false;
+        state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(userLogin.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isVerify = true;
         state.user = action.payload;
+        state.isVerified = true;
+        state.loginMessage = action.payload?.message;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(userLogin.rejected, (state, action) => {
         state.isLoading = false;
-        state.isVerify = false;
         state.error = action.payload;
       })
-
-      //builder for userDetails
-      .addCase(userDetails.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(userDetails.fulfilled, (state, action) => {
-        state.isLoading = false;
-        if (
-          action.payload.message === "User not found" ||
-          action.payload.message ===
-            "You need to login to access this resource...!"
-        ) {
-          state.isVerify = false;
-        } else {
-          state.isVerify = true;
-        }
-        state.user = action.payload;
-      })
-      .addCase(userDetails.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isVerify = false;
-        state.error = action.payload;
-      })
-
-      //for user logout
-      .addCase(userLogout.fulfilled, (state, action) => {
+      .addCase(userLogOut.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = null;
-        state.isVerify = false;
+        state.isVerified = false;
+        state.tempUser = null;
+        state.logOutMessage = action.payload;
       })
-      .addCase(userLogout.rejected, (state, action) => {
+      .addCase(userLogOut.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-
-      //for updatePassword
-      .addCase(updatePassword.pending, (state) => {
+      .addCase(loadUser.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
-      .addCase(updatePassword.fulfilled, (state, action) => {
+      .addCase(loadUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.updatePasswordSuccessMessage = action.payload.message;
+        state.isVerified = true;
       })
-      .addCase(updatePassword.rejected, (state, action) => {
+      .addCase(loadUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-
-      //for update profile
-      .addCase(updateProfile.pending, (state) => {
+      .addCase(updateUserProfile.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
-      .addCase(updateProfile.fulfilled, (state, action) => {
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.updateProfileSuccessMessage = action.payload.message;
+        state.updateProfileMessage = action.payload?.message;
+        state.isVerified = true;
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(updateUserProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-      //for user logout
-      .addCase(userDelete.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.user = null;
-        state.isVerify = false;
-        state.isAuthenticated = false;
+      .addCase(changeUserPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
-      .addCase(userDelete.rejected, (state, action) => {
+      .addCase(changeUserPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        state.changeUserPasswordMessage = action.payload?.message;
+      })
+      .addCase(changeUserPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-      //for forgot password
       .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
       .addCase(forgotPassword.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        state.forgotPasswordMessage = "Reset password link sent to your email";
       })
       .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.resetPasswordMessage = action.payload?.message;
+        state.isVerified = false;
+        state.user = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(userDelete.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = null;
+        state.isVerified = false;
+        state.deleteUserMessage = action.payload?.data;
+      })
+      .addCase(userDelete.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { clearError, clearUpdateMessage } = userSlice.actions;
 export default userSlice.reducer;
+export const {
+  clearError,
+  clearLogoutMessage,
+  cleareUpdateProfileMessage,
+  clearUserPasswordMessage,
+  clearForgotPasswordMessage,
+  cleareResetPasswordMessage,
+  cleareUserDeleteMessage,
+  clearRegisterMessage,
+  clearVerificationMessage,
+  clearLoginMessage,
+} = userSlice.actions;

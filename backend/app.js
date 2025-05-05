@@ -24,6 +24,7 @@ app.use(fileUpload({ useTempFiles: true }));
 import productRouter from "./routes/product.routes.js";
 import userRouter from "./routes/user.routes.js";
 import orderRouter from "./routes/order.routes.js";
+import categoryRouter from "./routes/category.routes.js";
 
 //For Products
 app.use("/api/v1/products", productRouter);
@@ -33,6 +34,9 @@ app.use("/api/v1/users", userRouter);
 
 //For Orders
 app.use("/api/v1/orders", orderRouter);
+
+//For category
+app.use("/api/v1/categories", categoryRouter);
 
 //Using error() middleware for throwing ApiError
 app.use(error);

@@ -13,10 +13,10 @@ const UploadProductImagesCloudinary = async (req, next) => {
 
     //check is images given by local machine
     if (req.files?.images) {
-      //if images not in the form of array
-      const imagesArray = Array.isArray(req.files.images)
-        ? req.files.images
-        : [req.files.images];
+      //if images not in the form of array then convert to array
+      const imagesArray = Array.isArray(req.files?.images)
+        ? req.files?.images
+        : [req.files?.images];
       // const start = Date.now();
       //loop for upload image on cloudinary one by one and then store every image url and id in uploadedImages array
       const uploadedLocalImages = await Promise.all(

@@ -4,12 +4,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "cloudinary";
 import { sendEmail } from "../utils/SendEmail.js";
-import bcrypt from "bcrypt";
+
 // Function to check if email is valid using EmailValidation.io
 async function isEmailValid(email) {
-  // console.log(`Validating email: ${email}`);
-
-  // my api key for emailValidatio.io
+  // my api key for mail trap
   const EMAIL_VALIDATION_API_KEY = process.env.EMAIL_VALIDATION_API_KEY;
 
   try {
@@ -19,18 +17,10 @@ async function isEmailValid(email) {
     // response from api calling
     let res = await fetch(url);
 
-    // console.log("Response of api call : ", res);
-
     //convert response to proper json object
     let result = await res.json();
 
-    // console.log("Result of api call : ", result);
-
-    // console.log(result);
-
-    // console.log("Email validation result:", result.state);
-
-    return result.state;
+    return result?.state;
   } catch (error) {
     console.error(`Error validating email ${email}:`, error);
     return false; // Return false if there's an error in the request
@@ -93,12 +83,10 @@ async function sendVerificationCode(
 //user registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
-  console.log(name, password, email, avatar, phone);
+  // console.log(name, password, email, avatar, phone);
 
   //checking data comes or not
-  if (
-    [name, email, password, avatar, phone].some((field) => field?.trim() === "")
-  ) {
+  if (!name || !email || !password || !avatar || !phone) {
     // console.log("❌ Missing required fields!");
     return next(new ApiError(`All fields are required...!`, 400));
   }
@@ -111,15 +99,17 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
   //checking if phone number is valid  means
   if (!verifyPhone(phone)) {
-    console.log("❌ Invalid phone number.");
+    // console.log("❌ Invalid phone number.");
 
     return next(new ApiError("Please enter a valid phone number", 400));
   }
 
   try {
+    // console.log("try block start");
+
     //check email is valid or not
     const isEmailValidResponse = await isEmailValid(email);
-    // console.log("Email is invalid...!", isEmailValidResponse);
+    // console.log("Email valid result...!", isEmailValidResponse);
 
     //if email is not valid
     if (isEmailValidResponse !== "deliverable") {
@@ -132,7 +122,6 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       width: 150,
       crop: "scale",
     });
-    //in this i will check email is valid or not using emailvalidation.io api
     //Checking user already exist or not
     const isUserExist = await User.findOne({ email });
     // console.log(isUserExist);
@@ -145,7 +134,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
     // If the user exists but isn't verified, increment their registration attempts
     if (isUserExist && !isUserExist.accountVerified) {
-      console.log("❌ User exists but is NOT verified.");
+      // console.log("❌ User exists but is NOT verified.");
 
       if (isUserExist.registrationAttempts >= 2) {
         // console.log("❌ Too many registration attempts.");
@@ -161,7 +150,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       isUserExist.registrationAttempts++;
 
       //delete already existing image if user reregister(when user not verified)
-      await cloudinary.v2.uploader.destroy(isUserExist.avatar.public_id);
+      await cloudinary.v2.uploader.destroy(isUserExist.avatar?.public_id);
 
       // console.log("✅ Generating verification code...");
       const verificationCode = await isUserExist.generateVerificationCode();
@@ -342,8 +331,6 @@ const createAccessToken = async (userId) => {
 const userLogin = AsyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  //   console.log(email, password);
-
   //if email or password is empty or not given
   if (!email || !password) {
     return next(new ApiError(`Please fill all fields for login...!`, 400));
@@ -398,9 +385,9 @@ const userLogin = AsyncHandler(async (req, res, next) => {
 
 //user logout
 const userLogout = AsyncHandler(async (req, res, next) => {
-  res.cookie("accessToken", null, {
+  res.clearCookie("accessToken", {
     httpOnly: true,
-    expires: new Date(Date.now()),
+    secure: process.env.NODE_ENV === "production", // clear secure cookie in production
   });
 
   return res
@@ -410,12 +397,20 @@ const userLogout = AsyncHandler(async (req, res, next) => {
 
 //getting user details
 const userDetails = AsyncHandler(async (req, res, next) => {
+  // console.log(req.user);
+
   try {
     // fetching _id of user who want to access details from req.user which we set in middleware
-    const { _id } = req.user;
+    // const { _id } = req.user;
+    // console.log(_id);
 
-    const user = await User.findById(_id);
+    // const user = await User.findById(_id);
     // console.log(user);
+
+    if (!req.user) {
+      return next(new ApiError("User not found with this id...!", 404));
+    }
+    const user = req.user;
 
     return res.status(200).json(new ApiResponse(200, user, "User Details...!"));
   } catch (error) {
@@ -437,7 +432,7 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
       phone: req.body.phone,
     };
     //destroy old image
-    if (req.body.oldAvatarId) {
+    if (req.body?.oldAvatarId) {
       await cloudinary.v2.uploader.destroy(req.body.oldAvatarId);
       //upload image to coludinary
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
@@ -538,11 +533,17 @@ const updatePassword = AsyncHandler(async (req, res, next) => {
 const deleteAccount = AsyncHandler(async (req, res, next) => {
   //getting user who want to delete account by using req.user._id from middleware
   const user = await User.findByIdAndDelete(req.user._id);
-  console.log(user);
+  // console.log(user);
 
-  res.cookie("accessToken", null, {
+  if (!user) {
+    return next(new ApiError("User not found with this id...!", 404));
+  }
+
+  // Clear the authentication cookie
+  res.clearCookie("accessToken", {
     httpOnly: true,
-    expires: new Date(Date.now()),
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
 
   return res
@@ -553,6 +554,8 @@ const deleteAccount = AsyncHandler(async (req, res, next) => {
 //for forgot password
 const forgotPassword = AsyncHandler(async (req, res, next) => {
   const { email } = req.body;
+  // console.log(req.protocol + "   " + req.get("host"));
+
   try {
     //checking user exist or not
     const user = await User.findOne({
@@ -570,10 +573,10 @@ const forgotPassword = AsyncHandler(async (req, res, next) => {
     user.resetPasswordExpiry = Date.now() + 10 * 60 * 1000; //10 minutes
     await user.save({ validateBeforeSave: false });
 
+    const frontendUrl = process.env.FRONTEND_URL;
+
     //making url on which we send email
-    const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/me/password/reset/${resetPasswordToken}`;
+    const resetPasswordUrl = `${frontendUrl}/user/password/reset/${resetPasswordToken}`;
 
     //calling sendEmail function to send email with resetPassworUrl
     await sendEmail({

@@ -7,60 +7,37 @@ const config = {
     "Content-Type": "application/json", // Telling the server we're sending JSON data
   },
 };
-//For Login user
-export const login = createAsyncThunk(
-  "login",
-  async ({ email, password }, { rejectWithValue }) => {
-    try {
-      /*making api call with axios for getting product from backend */
-      const { data } = await axios.post(
-        "/api/v1/users/login",
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
 
-      return data; //returning fetched data
-    } catch (error) {
-      // console.log(error.response.data);
-      return rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
-
-//For user registration
+//function for registeration of user
 export const registerUser = createAsyncThunk(
-  "registerUser",
-  async (registerCredentials, { rejectWithValue }) => {
-    // console.log(registerCredentials);
-    // console.log(rejectWithValue);
+  "user/register",
+  async (userData, { rejectWithValue }) => {
+    // console.log(userData);
 
     try {
-      /*making api call with axios for sending user data and picking response from backend */
       const { data } = await axios.post(
         "/api/v1/users/register",
-        registerCredentials,
+        userData,
         config
       );
 
       // console.log(data);
-      return data; //returning fetched data
+
+      return data;
     } catch (error) {
-      // console.log(error.response?.data || error.message);
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Registration failed"
+      );
     }
   }
 );
 
 //For user verification
 export const verifyUser = createAsyncThunk(
-  "verifyUser",
+  "user/verification",
   async (userData, { rejectWithValue }) => {
     // console.log(userData);
 
@@ -75,71 +52,87 @@ export const verifyUser = createAsyncThunk(
       // console.log(data);
       return data; //returning fetched data
     } catch (error) {
-      // console.log(error.response?.data || error.message);
-      return rejectWithValue(error.response?.data || error.message);
+      console.log(error.response?.data);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Verification failed"
+      );
     }
   }
 );
 
-//For user details
-export const userDetails = createAsyncThunk("userDetails", async () => {
-  try {
-    /*making api call with axios for getting user details from backend */
-    const { data } = await axios.get("/api/v1/users/me");
-
-    // console.log(data);
-
-    return data; //returning fetched data
-  } catch (error) {
-    return error.response?.data || error.message;
-  }
-});
-
-//fro user logout
-export const userLogout = createAsyncThunk("userLogout", async () => {
-  try {
-    /*making api call with axios for getting user details from backend */
-    await axios.get("/api/v1/users/logout");
-
-    // console.log(data); //returning fetched data
-  } catch (error) {
-    // console.log(error.response.data.message);
-    return error.response?.data || error.message;
-  }
-});
-
-//for update password
-export const updatePassword = createAsyncThunk(
-  "updatePassword",
+//For login
+export const userLogin = createAsyncThunk(
+  "user/login",
   async (userData, { rejectWithValue }) => {
     // console.log(userData);
 
     try {
-      /*making api call with axios for getting user details from backend */
-      const { data } = await axios.put(
-        "/api/v1/users/me/password/update",
+      const { data } = await axios.post(
+        "/api/v1/users/login",
         userData,
         config
       );
-
       // console.log(data);
 
-      return data; //returning fetched data
+      return data;
     } catch (error) {
-      console.log(error.response.data);
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Login failed"
+      );
     }
   }
 );
 
-//for update password
-export const updateProfile = createAsyncThunk(
-  "updateProfile",
-  async (userData, { rejectWithValue }) => {
-    // console.log(userData);
+//For logout
+export const userLogOut = createAsyncThunk("user/logOut", async () => {
+  // console.log(userData);
 
+  try {
+    const { data } = await axios.get("/api/v1/users/logout");
+
+    return data?.data;
+  } catch (error) {
+    return (
+      error.response.data?.errors ||
+      error.response.data?.message ||
+      error.message ||
+      "Failed to logout user"
+    );
+  }
+});
+
+//For fetching userdetails
+export const loadUser = createAsyncThunk(
+  "user/loadUser",
+  async (_, { rejectWithValue }) => {
     try {
-      /*making api call with axios for getting user details from backend */
+      const { data } = await axios.get("/api/v1/users/me", config); // secure route to get current user
+      // console.log(data);
+
+      return data;
+    } catch (error) {
+      // console.log(error);
+
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to load user"
+      );
+    }
+  }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  "user/updateProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
       const { data } = await axios.put(
         "/api/v1/users/me/profile/update",
         userData,
@@ -148,25 +141,55 @@ export const updateProfile = createAsyncThunk(
 
       // console.log(data);
 
-      return data; //returning fetched data
+      return data;
     } catch (error) {
-      console.log(error.response.data);
-      return rejectWithValue(error.response?.data || error.message);
+      // console.log(error.response.data);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update user profile"
+      );
+    }
+  }
+);
+
+//for update password
+export const changeUserPassword = createAsyncThunk(
+  "user/changePassword",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.put(
+        "/api/v1/users/me/password/update",
+        userData,
+        config
+      );
+
+      // console.log(data);
+
+      return data;
+    } catch (error) {
+      // console.log(error.response.data);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update user profile"
+      );
     }
   }
 );
 
 //for forgot password
 export const forgotPassword = createAsyncThunk(
-  "forgotPassword",
-  async (userData, { rejectWithValue }) => {
-    // console.log(userData);
+  "user/forgotPassword",
+  async (email, { rejectWithValue }) => {
+    console.log(email);
 
     try {
-      /*making api call with axios for fetching response from backend when we call forgot function */
       const { data } = await axios.post(
-        "/api/v1/users/me/password/forgot",
-        userData,
+        "/api/v1/users/password/forgot",
+        { email },
         config
       );
 
@@ -174,24 +197,69 @@ export const forgotPassword = createAsyncThunk(
 
       return data; //returning fetched data
     } catch (error) {
-      console.log(error.response.data);
-      return rejectWithValue(error.response?.data || error.message);
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to load user"
+      );
     }
   }
 );
 
-//fro user logout
+//for reset password
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async (userData, { rejectWithValue }) => {
+    // console.log(userData);
+
+    try {
+      const { data } = await axios.post(
+        `/api/v1/users/user/password/reset/${userData?.token}`,
+        userData,
+        config
+      );
+
+      // console.log(data?.data);
+
+      return data; //returning fetched data
+    } catch (error) {
+      // console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to reset password"
+      );
+    }
+  }
+);
+
+//fro user delete permanently
 export const userDelete = createAsyncThunk(
-  "userDelete",
-  async (_, { rejectWithValue }) => {
+  "user/userDelete",
+  async (imageId, { rejectWithValue }) => {
+    // console.log(imageId);
+
     try {
       /*making api call with axios for getting user details from backend */
-      await axios.delete("/api/v1/users/me/delete/account");
+      const { data } = await axios.delete(
+        "/api/v1/users/me/delete/account",
+        imageId,
+        config
+      );
 
       // console.log(data); //returning fetched data
+      return data;
     } catch (error) {
       // console.log(error.response.data.message);
-      return rejectWithValue(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update user profile"
+      );
     }
   }
 );

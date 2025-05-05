@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Toast from "../Components/Home/Toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { clearError } from "../store/ProductSlice/productSlice";
 import { getAllProducts } from "../store/ProductSlice/productSliceReducers";
@@ -13,6 +12,7 @@ import "./Product.css";
 import Pagination from "react-js-pagination";
 import { IoCloseSharp } from "react-icons/io5";
 import Slider from "@mui/material/Slider";
+import { toast } from "react-toastify";
 
 const Products = () => {
   //useState for selecting category all notebook et
@@ -48,7 +48,7 @@ const Products = () => {
     productCount,
     filteredProductCount,
     productsPerPage,
-  } = useSelector((state) => state.products);
+  } = useSelector((state) => state.product);
 
   let count = 5;
 
@@ -111,7 +111,7 @@ const Products = () => {
 
   useEffect(() => {
     if (error) {
-      Toast(error, "error");
+      toast.error(error);
       Dispatch(clearError());
     }
     Dispatch(getAllProducts(filters));
@@ -119,7 +119,6 @@ const Products = () => {
   }, [
     Dispatch,
     error,
-    Toast,
     category,
     rating,
     price,

@@ -95,6 +95,10 @@ const productSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isBannerProduct: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

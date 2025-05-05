@@ -3,17 +3,14 @@ import axios from "axios";
 
 //getAllProducts(with filters)
 export const getAllProducts = createAsyncThunk(
-  "getAllProducts",
-  async ({
-    category,
-    rating = 0,
-    price = [0, 3000],
-    currentPage = 1,
-    inStock,
-    outStock,
-    keyword = "",
-  }) => {
+  "products/getAllProducts",
+  async (
+    { category, price = [0, 3000], page = 1, stock = true, keyword = "" } = {},
+    { rejectWithValue }
+  ) => {
     try {
+      // console.log("start");
+
       const params = new URLSearchParams();
 
       // console.log(inStock, outStock);
@@ -23,23 +20,30 @@ export const getAllProducts = createAsyncThunk(
       if (price[0] !== undefined) params.append("minPrice", price[0]);
       if (price[1] !== undefined) params.append("maxPrice", price[1]);
       if (category) params.append("category", category);
-      if (rating !== undefined) params.append("rating", rating);
-      if (currentPage !== undefined) params.append("page", currentPage);
-      if (inStock !== undefined) {
-        if (inStock === true) {
-          params.append("stock", "true");
+      // if (rating !== undefined) params.append("rating", rating);
+      if (page !== undefined) params.append("page", page);
+      if (stock !== undefined) {
+        if (stock === true) {
+          params.append("stock", true);
         } else {
-          params.append("stock", "false");
+          params.append("stock", false);
         }
       }
 
+      // console.log(params.toString());
+
       /*making api call with axios for getting product from backend */
-      const { data } = await axios.get(`/api/v1/products?${params}`);
-      // console.log(data);
+      const { data } = await axios.get(`/api/v1/products`, { params });
+      // console.log(data?.data);
       return data?.data; //returning fetched data
     } catch (error) {
       console.log(error);
-      return error.response?.data || error.message;
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch products"
+      );
     }
   }
 );
@@ -47,52 +51,65 @@ export const getAllProducts = createAsyncThunk(
 //get single product details
 export const singleProductDetails = createAsyncThunk(
   "singleProductDetails",
-  async (id) => {
-    // console.log(id);
+  async (id, { rejectWithValue }) => {
+    console.log(id);
 
     try {
       /*making api call with axios for getting single product details from backend */
-      const { data } = await axios.get(`/api/v1/products/single/${id}`);
+      const { data } = await axios.get(`/api/v1/products/single-product/${id}`);
       // console.log(data);
 
-      // fetching data of single product whose id is {id}
-      // const singleProduct = data.filter((elem) => elem._id === id);
-      // console.log(singleProduct);
-
-      return data?.data; //returning fetched data
+      return data; //returning fetched data
     } catch (error) {
       // console.log(error);
-      return error.response?.data || error.message;
-    }
-  }
-);
-
-//get all available catregories
-export const getAllCategories = createAsyncThunk(
-  "getAllCategories",
-  async () => {
-    try {
-      const { data } = axios.get(`/api/v1/products/product-categories`);
-      return data?.data;
-    } catch (error) {
-      console.log(error.response?.data || error.message);
-      return error.response?.data || error.message;
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch featured product details"
+      );
     }
   }
 );
 
 //get Featured products
 export const getFeaturedProducts = createAsyncThunk(
-  "getFeaturedProducts",
-  async () => {
+  "products/getFeaturedProducts",
+  async (_, { rejectWithValue }) => {
     try {
       const { data } = await axios.get(`/api/v1/products/featured-products`);
-      // console.log(data.data);
+      console.log(data?.data);
 
       return data?.data;
     } catch (error) {
-      console.log(error.response?.data || error.message);
-      return error.response?.data || error.message;
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch featured products"
+      );
+    }
+  }
+);
+
+//get banner products
+export const getBannerProducts = createAsyncThunk(
+  "products/getBannerProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/api/v1/products/banner-products`);
+      // console.log(data?.data);
+
+      return data?.data;
+    } catch (error) {
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch banner products"
+      );
     }
   }
 );

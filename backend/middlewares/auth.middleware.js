@@ -6,7 +6,9 @@ import jwt from "jsonwebtoken";
 //Check is user logged in or not
 const isAuthenticatedUser = AsyncHandler(async (req, res, next) => {
   // fetching accessToken from req.cookies
-  const { accessToken } = req.cookies;
+  const accessToken =
+    req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
+  // console.log(accessToken);
 
   const isAuthenticated = false;
 

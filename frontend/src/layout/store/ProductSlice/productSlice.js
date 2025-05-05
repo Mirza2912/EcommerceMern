@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  getAllCategories,
   getAllProducts,
+  getBannerProducts,
   getFeaturedProducts,
   singleProductDetails,
 } from "./productSliceReducers.js";
@@ -16,7 +16,10 @@ export const productSlice = createSlice({
     productCount: 0,
     filteredProductCount: 0,
     featuredProducts: [],
+    bannerProducts: [],
     featuredProductsCount: 0,
+    bannerProductsCount: 0,
+    singleProductDetailsMessage: "",
     singleProduct: {},
     categories: [],
     loading: false,
@@ -27,7 +30,11 @@ export const productSlice = createSlice({
   reducers: {
     //reducer for clearing all errors
     clearError: (state) => {
-      return { ...state, error: null };
+      state.error = null;
+    },
+
+    clearSingleProductDetailsMessage: (state) => {
+      state.singleProductDetailsMessage = "";
     },
   },
 
@@ -37,14 +44,14 @@ export const productSlice = createSlice({
     builder
       .addCase(getAllProducts.pending, (state) => {
         state.loading = true;
-        state.products = [];
+        state.error = null;
       })
       .addCase(getAllProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload.products;
-        state.productCount = action.payload.productCount;
-        state.filteredProductCount = action.payload.filteredProductCount;
-        state.productsPerPage = action.payload.productsPerPage;
+        state.products = action.payload?.products;
+        state.productCount = action.payload?.productCount;
+        state.filteredProductCount = action.payload?.filteredProductCount;
+        state.productsPerPage = action.payload?.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
         state.loading = false;
@@ -55,25 +62,14 @@ export const productSlice = createSlice({
 
       .addCase(singleProductDetails.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(singleProductDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.singleProduct = action.payload.singleProduct;
+        state.singleProduct = action.payload?.data?.products;
+        state.singleProductDetailsMessage = action.payload?.message;
       })
       .addCase(singleProductDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-
-      //getAllcategories
-      .addCase(getAllCategories.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getAllCategories.fulfilled, (state, action) => {
-        state.loading = false;
-        state.categories = action.payload.categories;
-      })
-      .addCase(getAllCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -81,18 +77,35 @@ export const productSlice = createSlice({
       //getFeaturedProducts
       .addCase(getFeaturedProducts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(getFeaturedProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.featuredProducts = action.payload.featuredProducts;
-        state.featuredProductsCount = action.payload.featuredProductsCount;
+        state.featuredProducts = action.payload?.products;
+        state.featuredProductsCount = action.payload?.featuredProductsCount;
       })
       .addCase(getFeaturedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //getBannerProducts
+      .addCase(getBannerProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBannerProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bannerProducts = action.payload?.products;
+        state.bannerProductsCount = action.payload?.bannerProductsCount;
+      })
+      .addCase(getBannerProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { clearError } = productSlice.actions;
+export const { clearError, clearSingleProductDetailsMessage } =
+  productSlice.actions;
 export default productSlice.reducer;

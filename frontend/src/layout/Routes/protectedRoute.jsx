@@ -1,17 +1,12 @@
+// src/components/ProtectedRoute.jsx
 import React from "react";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-export const ProtectedRoute = ({ component: Component }) => {
-  //fetching data from user state
-  const { isLoading, error, isVerify, user } = useSelector(
-    (state) => state.auth
-  );
-  // console.log(isVerify);
+const ProtectedRoute = () => {
+  const { isVerified } = useSelector((state) => state.auth);
 
-  if (!isVerify) {
-    return <Navigate to="/account" />;
-  }
-
-  return <Component />;
+  return isVerified ? <Outlet /> : <Navigate to="/account" replace />;
 };
+
+export default ProtectedRoute;
