@@ -4,7 +4,7 @@ import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { IoCallOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   registerUser,
   userLogin,
@@ -38,6 +38,8 @@ const Account = () => {
     email: "",
     password: "",
   });
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/user/profile";
 
   //for registration avatar input
   const [avatar, setAvatar] = useState("/src/assets/profile.jpg");
@@ -115,6 +117,12 @@ const Account = () => {
   //     }
   //   }
   // }, [error]);
+
+  useEffect(() => {
+    if (isVerified) {
+      navigate(from, { replace: true });
+    }
+  });
 
   return (
     <>

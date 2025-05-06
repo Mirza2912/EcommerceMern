@@ -159,7 +159,7 @@ const SingleProductDetails = () => {
                 </p>
                 {product?.discount > 0 && (
                   <p className="text-2xl font-semibold text-white/90 mb-4">
-                    Rs.{product?.discount}
+                    -Rs.{product?.discount}
                   </p>
                 )}
                 <p

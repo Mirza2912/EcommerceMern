@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
       <div className=" border bg-transparent border-gray-600 rounded-lg shadow-lg hover:shadow-xl transition-all p-4 relative">
         {/* Category */}
         <div className="absolute top-4 left-4 text-sm font-semibold text-white/90 bg-gold px-3 py-1 rounded-full">
-          {category || "hello"}
+          {category?.category || "hello"}
         </div>
 
         {/* Discount */}
@@ -73,8 +73,8 @@ const ProductCard = ({ product }) => {
 
           {/* Description */}
           <p className="text-sm text-white/80 text-center mb-2">
-            {description?.length > 100
-              ? `${description.slice(0, 100)}...`
+            {description?.length > 50
+              ? `${description.slice(0, 50)}...`
               : description}
           </p>
 

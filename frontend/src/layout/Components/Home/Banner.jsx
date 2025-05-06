@@ -23,6 +23,8 @@ const BannerSlider = () => {
   const navigate = useNavigate();
 
   const { loading, bannerProducts } = useSelector((state) => state.product);
+  // console.log(bannerProducts);
+
   useEffect(() => {
     setShuffledProducts(shuffleArray(bannerProducts));
   }, [bannerProducts]);
@@ -53,7 +55,7 @@ const BannerSlider = () => {
                     <img
                       src={product?.images[0]?.url || ""}
                       alt={product?.images[0]?.public_id || ""}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute  text-center  inset-0 bg-black/40 flex flex-col items-center justify-center">
                       <h2 className="text-white/90 text-6xl font-bold uppercase">

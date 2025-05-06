@@ -19,7 +19,7 @@ const orderSchema = new Schema(
         type: String,
         required: [true, "Shipping Country is required...!"],
       },
-      pinCode: {
+      postalCode: {
         type: Number,
         required: [true, "PinCode is required...!"],
       },

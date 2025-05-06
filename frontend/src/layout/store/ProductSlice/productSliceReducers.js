@@ -78,7 +78,7 @@ export const getFeaturedProducts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await axios.get(`/api/v1/products/featured-products`);
-      console.log(data?.data);
+      // console.log(data?.data);
 
       return data?.data;
     } catch (error) {

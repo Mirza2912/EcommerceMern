@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FaRegFaceFrown } from "react-icons/fa6";
 
@@ -18,6 +18,7 @@ import {
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { cartItems, error, loading } = useSelector((state) => state.cart);
   //   console.log(cartItems);
@@ -288,9 +289,7 @@ const Cart = () => {
                 </div>
                 <div className="w-full flex items-center justify-center">
                   <button
-                    // onClick={handleAddToCart}
-                    //   disabled={isAnyLoading}
-                    //   onClick={handleAddToCart}
+                    onClick={() => navigate("/checkout/shipping")}
                     className="border-[#ffc253] border hover:bg-[#ffce53] hover:border-[#ffce53]  text-xl text-white/90 ease-in duration-150 rounded-full px-10 py-2 mb-5"
                     type="button"
                   >

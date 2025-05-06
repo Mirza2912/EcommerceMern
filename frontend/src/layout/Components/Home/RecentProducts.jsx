@@ -40,57 +40,60 @@ const RecentAddedProducts = () => {
             1024: { slidesPerView: 3 },
             1280: { slidesPerView: 4 },
           }}
-          loop
+          loop={true}
           className="w-full pb-12 "
         >
-          {recentAddedProducts.map((product) => (
-            <SwiperSlide
-              key={product._id}
-              className="border  bg-transparent border-gray-600 rounded-lg shadow-lg hover:shadow-xl transition-all p-2"
-            >
-              <NavLink
-                to={`/product/${product._id}`}
-                className="relative group bg-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-xl"
+          {recentAddedProducts &&
+            recentAddedProducts.length > 0 &&
+            recentAddedProducts.map((product) => (
+              <SwiperSlide
+                key={product._id}
+                className="border  bg-transparent border-gray-600 rounded-lg shadow-lg hover:shadow-xl transition-all p-2"
               >
-                {/* Category top-left */}
-                <div className="absolute top-2 left-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
-                  {product?.category?.category || "Category"}
-                </div>
-
-                {/* Discount top-right */}
-                {product.discount > 0 && (
-                  <div className="absolute top-2 right-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
-                    {product.discount}% OFF
+                <NavLink
+                  to={`/product/${product._id}`}
+                  className="relative group bg-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-xl"
+                >
+                  {/* Category top-left */}
+                  <div className="absolute top-2 left-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
+                    {product?.category?.category || "Category"}
                   </div>
-                )}
 
-                <img
-                  src={product.images[0]?.url}
-                  alt={product.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
+                  {/* Discount top-right */}
+                  {product.discount > 0 && (
+                    <div className="absolute top-2 right-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
+                      {product.discount}% OFF
+                    </div>
+                  )}
 
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-white/90 text-center mb-2">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm text-white/80 text-center mb-8 h-[30px]">
-                    {product.description?.length > 100
-                      ? `${product.description.slice(0, 70)}...`
-                      : product.description}
-                  </p>
-                  <p className="text-lg font-semibold text-white/90 text-center">
-                    Rs.{product.price}
-                  </p>
-                  <div className="flex items-center justify-center ">
-                    <button className="w-[200px] mt-4 py-2 border text-white/90 text-lg border-[#f0b343] hover:bg-[#f0b343] hover:border-[#f0b343] rounded-full transition duration-200">
-                      Add to Cart
-                    </button>
+                  <img
+                    src={product.images[0]?.url}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-lg mb-4"
+                  />
+
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-white/90 text-center mb-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-sm text-white/80 text-center mb-8 h-[30px]">
+                      {product.description?.length > 100
+                        ? `${product.description.slice(0, 70)}...`
+                        : product.description}
+                    </p>
+                    <p className="text-lg font-semibold text-white/90 text-center">
+                      Rs.{product.price}
+                    </p>
+
+                    <div className="flex items-center justify-center ">
+                      <button className="w-[200px] mt-4 py-2 border text-white/90 text-lg border-[#f0b343] hover:bg-[#f0b343] hover:border-[#f0b343] rounded-full transition duration-200">
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </NavLink>
-            </SwiperSlide>
-          ))}
+                </NavLink>
+              </SwiperSlide>
+            ))}
         </Swiper>
       </section>
       <style>

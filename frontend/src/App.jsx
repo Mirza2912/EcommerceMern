@@ -34,11 +34,6 @@ import UpdatePassword from "./layout/Components/User/UpdatePassword.jsx";
 import ForgotPassword from "./layout/Components/User/ForgotPassword.jsx";
 import ResetPassword from "./layout/Components/User/ResetPassword.jsx";
 
-import {
-  getFeaturedProducts,
-  singleProductDetails,
-} from "./layout/store/ProductSlice/productSliceReducers.js";
-import { getAllCategories } from "./layout/store/CategorySlice/categorySliceReducers.js";
 import Products from "./layout/Pages/Products.jsx";
 import Footer from "./layout/Components/Footer/Footer.jsx";
 import SingleProductDetails from "./layout/Pages/SingleProductDetail.jsx";
@@ -57,6 +52,9 @@ import {
   addToCartBackend,
   getCart,
 } from "./layout/store/CartSlice/CartSliceReducers.js";
+import Checkout from "./layout/Pages/Order/Checkout.jsx";
+import Shipping from "./layout/Pages/Order/Shipping.jsx";
+import ConfirmOrder from "./layout/Pages/Order/ConfirmOrder.jsx";
 
 const App = () => {
   const {
@@ -123,9 +121,6 @@ const App = () => {
     //user login success message show
     if (loginMessage) {
       toast.success(loginMessage);
-      navigate(`/`, {
-        replace: true,
-      });
       dispatch(clearLoginMessage());
     }
 
@@ -226,8 +221,6 @@ const App = () => {
     // updateCartOfLocalMessage,
   ]);
 
-  const id = "67e07f3c4a65673202e599f0";
-
   useEffect(() => {
     dispatch(loadUser());
     if (isVerified) {
@@ -280,6 +273,13 @@ const App = () => {
             <Route path="/user/profile" element={<Profile />} />
             <Route path="/me/profile/update" element={<EditProfile />} />
             <Route path="/me/update-password" element={<UpdatePassword />} />
+            <Route path="/checkout/*" element={<Checkout />}>
+              <Route index element={<Shipping />} />
+
+              <Route path="shipping" element={<Shipping />} />
+              <Route path="order-confirm" element={<ConfirmOrder />} />
+              {/* <Route path="success" element={<OrderComplete />} /> */}
+            </Route>
           </Route>
 
           {/* <Route path="/search" element={<Search />} /> */}
