@@ -10,6 +10,7 @@ import { IoCartOutline } from "react-icons/io5";
 
 const Navbar = () => {
   const { isVerified } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
   const [navItem, setnavItem] = useState(false);
   return (
     <nav className="w-[100%] sm:fixed sm:z-50 bg-bg-color font-roboto h-[4rem] sm:h-auto  sm:py-[1rem] lg:h-[5rem] lg:py-0 flex items-center justify-center">
@@ -143,12 +144,15 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li className="relative group">
+              <p className="absolute bottom-4  text-white/90 text-center  ml-4 w-[25px] h-[25px] rounded-full bg-gold">
+                {cartItems?.length}
+              </p>
               <NavLink
                 className={({ isActive }) =>
                   `relative text-2xl py-1 font-medium transition duration-200
                 ${
                   isActive
-                    ? 'text-gold font-semibold after:content-[""] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-[2.5px] after:w-full after:bg-gold'
+                    ? "text-gold font-semibold "
                     : 'text-white hover:text-white after:content-[""] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-[2.5px]  after:w-0 after:bg-gold hover:after:w-full after:transition-all after:duration-300'
                 }`
                 }

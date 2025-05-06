@@ -1,56 +1,99 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import Rating from "@mui/material/Rating";
-import "./Card.css";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, replace, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import { addToCartBackend } from "../../store/CartSlice/CartSliceReducers";
+import { addToCartLocal } from "../../store/CartSlice/CartSlice";
+import { toast } from "react-toastify";
 
-const Card = ({ product }) => {
-  // console.log(product.category.category);
+const ProductCard = ({ product }) => {
+  const { _id, category, discount, images, name, description, price, stock } =
+    product;
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { isVerified } = useSelector((state) => state.auth);
+  const handleAddToCart = (id, quantity, price, stock) => {
+    // console.log(product?._id);
+
+    //data to send backend to create cart
+    const itemDataToAddToCartBackend = {
+      productId: id,
+      quantity,
+      price,
+    };
+
+    //data to send backend to create cart
+    const itemDataToAddToCartLocal = {
+      product: id,
+      quantity,
+      price,
+      _id: uuidv4(),
+      stock,
+    };
+    //when user logged in
+    if (isVerified) {
+      dispatch(addToCartBackend(itemDataToAddToCartBackend));
+    } else {
+      dispatch(addToCartLocal(itemDataToAddToCartLocal));
+      toast.success("item added to cart successfully");
+    }
+    // navigate("/products");
+  };
   return (
-    <NavLink
-      to={`/product/${product._id}`}
-      className={`card xxsm:w-[90%] xsm:w-[80%] sm:w-[45%] sml:w-[32%] slg:w-[30%] xlg:w-[23%] p-3 sml:p-0 slg:p-3  rounded-md  hover:bg-[#95959611]`}
-    >
-      <div className="card-img relative w-[100%]">
-        <figure
-          className={`w-[100%] h-[350px] slg:h-[300px] xlg:h-[250px] xxl:h-[270px] overflow-hidden  after:content-[''] after:transition-all after:duration-300 after:w-[0%] hover:after:w-[100%] after:h-full after:bg-[#0505052b] after:absolute after:top-0 after:left-0`}
-        >
-          <img
-            className={`${"w-[100%] h-[100%] ease-in duration-300 "}`}
-            src={`${product.images[0].url}`}
-            alt={product.name}
-            loading="lazy"
-          />
-        </figure>
-        <figcaption className="absolute top-2 text-black right-2 bmd:right-4 px-3 py-[3px] bg-[#ca9d2d] rounded-full">
-          {product.category?.category}
-        </figcaption>
-        {product.discount ? (
-          <figcaption className="absolute top-2 text-black left-2 bmd:right-4 px-3 py-[3px] bg-[#ca9d2d] rounded-full">
-            -{product.discount}%
-          </figcaption>
-        ) : (
-          <></>
-        )}
-      </div>
-      <div className="card-properties text-white font-roboto mt-5 mb-2 px-2 flex flex-col gap-3 items-center ">
-        <h2 className="w-[90%] text-center leading-tight text-[#a1a1a2]">
-          {product.category?.category}
-        </h2>
-        <h2 className="w-[90%] text-center leading-tight">{product.name}</h2>
-        <div className="w-[100%] flex items-center justify-center gap-1 -my-2">
-          <Rating
-            name="read-only"
-            value={product.rating}
-            readOnly
-            precision={0.5}
-          />
-          <h2> {` (${product.numOfReviews} Reviews)`}</h2>
+    <div className="group mx-7 sm:mx-20 md:mx-0">
+      <div className=" border bg-transparent border-gray-600 rounded-lg shadow-lg hover:shadow-xl transition-all p-4 relative">
+        {/* Category */}
+        <div className="absolute top-4 left-4 text-sm font-semibold text-white/90 bg-gold px-3 py-1 rounded-full">
+          {category || "hello"}
         </div>
-        <h1 className="text-white">Rs {product.price}</h1>
+
+        {/* Discount */}
+        {discount > 0 && (
+          <div className="absolute top-4 left-4 text-sm font-semibold text-white/90 bg-gold px-3 py-1 rounded-full">
+            -{discount}%
+          </div>
+        )}
+
+        {/* Image */}
+        <NavLink to={`/product/${_id}`}>
+          <div>
+            <img
+              src={images[0]?.url}
+              alt={name}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
+          </div>
+
+          {/* Product Title */}
+          <h3 className="text-lg font-semibold text-white/90 text-center mb-2">
+            {name}
+          </h3>
+
+          {/* Description */}
+          <p className="text-sm text-white/80 text-center mb-2">
+            {description?.length > 100
+              ? `${description.slice(0, 100)}...`
+              : description}
+          </p>
+
+          {/* Price */}
+          <div className="text-lg font-semibold text-white/90 text-center">
+            Rs.{price}
+          </div>
+        </NavLink>
+
+        {/* Add to Cart Button */}
+        <button
+          onClick={() => handleAddToCart(_id, 1, price, stock)}
+          className="w-full mt-4 py-2 border text-white/90 text-lg border-[#f0b343] hover:bg-[#f0b343] hover:border-[#f0b343] rounded-full transition duration-200"
+        >
+          Add to Cart
+        </button>
       </div>
-    </NavLink>
+    </div>
   );
 };
 
-export default Card;
+export default ProductCard;

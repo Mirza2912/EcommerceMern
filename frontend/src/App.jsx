@@ -35,13 +35,28 @@ import ForgotPassword from "./layout/Components/User/ForgotPassword.jsx";
 import ResetPassword from "./layout/Components/User/ResetPassword.jsx";
 
 import {
-  getBannerProducts,
   getFeaturedProducts,
   singleProductDetails,
 } from "./layout/store/ProductSlice/productSliceReducers.js";
-import { clearSingleProductDetailsMessage } from "./layout/store/ProductSlice/productSlice.js";
 import { getAllCategories } from "./layout/store/CategorySlice/categorySliceReducers.js";
 import Products from "./layout/Pages/Products.jsx";
+import Footer from "./layout/Components/Footer/Footer.jsx";
+import SingleProductDetails from "./layout/Pages/SingleProductDetail.jsx";
+import Cart from "./layout/Pages/Cart.jsx";
+import {
+  clearAddToCartBackednMessage,
+  clearAddToCartUpdateBackendMessage,
+  clearDeleteCartItemFromBackendMessage,
+  clearUpdateCartLocal,
+} from "./layout/store/CartSlice/CartSlice.js";
+import {
+  loadCartFromLocalStorage,
+  saveCartToLocalStorage,
+} from "./layout/store/CartSlice/CartLocalStorageHandle.js";
+import {
+  addToCartBackend,
+  getCart,
+} from "./layout/store/CartSlice/CartSliceReducers.js";
 
 const App = () => {
   const {
@@ -55,9 +70,17 @@ const App = () => {
     deleteUserMessage,
     forgotPasswordMessage,
     resetPasswordMessage,
+    isVerified,
   } = useSelector((state) => state.auth);
 
-  const { singleProductDetailsMessage } = useSelector((state) => state.product);
+  const {} = useSelector((state) => state.product);
+
+  const {
+    updateCartOfLocalMessage,
+    addToCartBackendMessage,
+    addToCartUpdateBackendMessage,
+    deleteCartItemFromBackendMessage,
+  } = useSelector((state) => state.cart);
   // const { categories } = useSelector((state) => state.category);
 
   const dispatch = useDispatch();
@@ -79,7 +102,6 @@ const App = () => {
     //user reagisteration success message show
     if (resgisterMessage) {
       toast.success(resgisterMessage);
-      // timeout = setTimeout(() => {
       navigate(
         `/register/otp-verification/${tempUser?.data?.email}/${tempUser?.data?.phone}`,
         {
@@ -87,38 +109,31 @@ const App = () => {
         }
       );
       dispatch(clearRegisterMessage());
-      // }, 1500);
     }
 
     //user verification success message show
     if (verificationMessage) {
       toast.success(verificationMessage);
-      // timeout = setTimeout(() => {
-      navigate(`/user/profile`, {
+      navigate(`/`, {
         replace: true,
       });
       dispatch(clearVerificationMessage());
-      // }, 1500);
     }
 
     //user login success message show
     if (loginMessage) {
       toast.success(loginMessage);
-      // timeout = setTimeout(() => {
-      navigate(`/user/profile`, {
+      navigate(`/`, {
         replace: true,
       });
       dispatch(clearLoginMessage());
-      // }, 1000);
     }
 
     //user logout success message show
     if (logOutMessage) {
       toast.success(logOutMessage);
-      // timeout = setTimeout(() => {
-      navigate(`/account`);
+      navigate(`/`);
       dispatch(clearLogoutMessage());
-      // }, 1500);
     }
     //   dispatch(clearCartLocal());
     //   timeout = setTimeout(() => {
@@ -130,81 +145,65 @@ const App = () => {
     //user update profile success message show
     if (updateProfileMessage) {
       toast.success(updateProfileMessage);
-      // timeout = setTimeout(() => {
       dispatch(cleareUpdateProfileMessage());
       navigate("/user/profile", { replace: true });
-      // }, 1500);
     }
 
     //user update password message success message show
     if (changeUserPasswordMessage) {
       toast.success(changeUserPasswordMessage);
-      // timeout = setTimeout(() => {
       dispatch(clearUserPasswordMessage());
       navigate("/user/profile", { replace: true });
-      // }, 1500);
     }
 
     //user delete success message show
     if (deleteUserMessage) {
       toast.success(deleteUserMessage);
-      // timeout = setTimeout(() => {
       dispatch(cleareUserDeleteMessage());
-      navigate("/account", { replace: true });
-      // }, 1500);
+      navigate("/", { replace: true });
     }
 
     if (forgotPasswordMessage) {
       toast.success(forgotPasswordMessage);
 
-      // timeout = setTimeout(() => {
       dispatch(clearForgotPasswordMessage());
       navigate("/account", { replace: true });
-      // }, 1500);
     }
 
     if (resetPasswordMessage) {
       toast.success(resetPasswordMessage);
 
-      // timeout = setTimeout(() => {
       dispatch(cleareResetPasswordMessage());
       navigate("/account", { replace: true });
-      // }, 1500);
     }
 
     /* FOR Products*/
 
-    if (singleProductDetailsMessage) {
-      toast.success(singleProductDetailsMessage);
-      dispatch(clearSingleProductDetailsMessage());
-      navigate("/account", { replace: true });
-    }
-
     // /* FOR USER CART */
 
-    // //Add to cart item to backend message -->when user logged in
-    // if (addToCartBackendMessage) {
-    //   toast.success(addToCartBackendMessage);
-    //   timeout = setTimeout(() => {
-    //     dispatch(clearAddToCartBackendMessage());
-    //   }, 1500);
-    // }
+    //Add to cart item to backend message -->when user logged in
+    if (addToCartBackendMessage) {
+      toast.success(addToCartBackendMessage);
+      dispatch(clearAddToCartBackednMessage());
+    }
 
-    // //update item of cart to backend message -->when user logged in
-    // if (addToCartUpdateBackendMessage) {
-    //   toast.success(addToCartUpdateBackendMessage);
-    //   timeout = setTimeout(() => {
-    //     dispatch(clearAddToCartUpdateBackendMessage());
-    //   }, 1500);
-    // }
+    //add item of cart to backend message -->when user logged in
+    if (addToCartUpdateBackendMessage) {
+      toast.success(addToCartUpdateBackendMessage);
+      dispatch(clearAddToCartUpdateBackendMessage());
+    }
 
-    // //update item of cart to backend message -->when user is guest
-    // if (updateCartOfLocalMessage) {
-    //   toast.success(updateCartOfLocalMessage);
-    //   timeout = setTimeout(() => {
-    //     dispatch(clearUpdateCartOfLocalMessage());
-    //   }, 1500);
-    // }
+    //update item of cart to backend message
+    if (updateCartOfLocalMessage) {
+      toast.success(updateCartOfLocalMessage);
+      dispatch(clearUpdateCartLocal());
+    }
+
+    //delet item of cart to backend message
+    if (deleteCartItemFromBackendMessage) {
+      toast.success(deleteCartItemFromBackendMessage);
+      dispatch(clearDeleteCartItemFromBackendMessage());
+    }
 
     return () => clearTimeout(timeout);
   }, [
@@ -217,7 +216,11 @@ const App = () => {
     deleteUserMessage,
     forgotPasswordMessage,
     resetPasswordMessage,
-    singleProductDetailsMessage,
+    updateCartOfLocalMessage,
+    addToCartBackendMessage,
+    addToCartUpdateBackendMessage,
+    deleteCartItemFromBackendMessage,
+
     // addToCartBackendMessage,
     // addToCartUpdateBackendMessage,
     // updateCartOfLocalMessage,
@@ -227,11 +230,28 @@ const App = () => {
 
   useEffect(() => {
     dispatch(loadUser());
-    // dispatch(getFeaturedProducts());
-    // dispatch(getBannerProducts());
-    // dispatch(singleProductDetails(id));
-    // dispatch(getAllCategories());
-  }, []);
+    if (isVerified) {
+      const guestCart = loadCartFromLocalStorage(); //this will be an array
+      // console.log(guestCart);
+
+      //if logged in user have alreay select items when loggedout this will be store in backend also
+      if (guestCart?.length > 0) {
+        guestCart.forEach((item) => {
+          dispatch(
+            addToCartBackend({
+              productId: item?.product,
+              quantity: item?.quantity,
+              price: item?.price,
+            })
+          );
+        });
+        saveCartToLocalStorage([]); // Clear Local Cart after sending
+      }
+
+      //if user logged in then fetch user cart
+      dispatch(getCart());
+    }
+  }, [isVerified]);
   return (
     <>
       <Navbar />
@@ -241,6 +261,8 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<SingleProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
           {/* <Route path="/products/:keyword" element={<Products />} /> */}
           <Route path="/contact" element={<Contact />} />
           <Route path="/account" element={<Account />} />
@@ -259,12 +281,11 @@ const App = () => {
             <Route path="/me/profile/update" element={<EditProfile />} />
             <Route path="/me/update-password" element={<UpdatePassword />} />
           </Route>
-          {/* 
 
-          {/* <Route path="/product/:id" element={<SingleProductDetail />} /> */}
           {/* <Route path="/search" element={<Search />} /> */}
         </Routes>
       </div>
+      {/* <Footer /> */}
     </>
   );
 };

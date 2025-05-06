@@ -52,7 +52,7 @@ export const getAllProducts = createAsyncThunk(
 export const singleProductDetails = createAsyncThunk(
   "singleProductDetails",
   async (id, { rejectWithValue }) => {
-    console.log(id);
+    // console.log(id);
 
     try {
       /*making api call with axios for getting single product details from backend */
@@ -109,6 +109,26 @@ export const getBannerProducts = createAsyncThunk(
           error.response.data?.message ||
           error.message ||
           "Failed to fetch banner products"
+      );
+    }
+  }
+);
+
+export const getRecentAddedProducts = createAsyncThunk(
+  "products/getRecentAddedProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`/api/v1/products/recent-products`);
+      // console.log(data?.data);
+
+      return data?.data;
+    } catch (error) {
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch recent added products"
       );
     }
   }

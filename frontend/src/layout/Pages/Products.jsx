@@ -13,15 +13,16 @@ import Pagination from "react-js-pagination";
 import { IoCloseSharp } from "react-icons/io5";
 import Slider from "@mui/material/Slider";
 import { toast } from "react-toastify";
+import CategorySwiper from "../Components/Products/CategorySwiper/CategorySwiper";
 
 const Products = () => {
   //useState for selecting category all notebook et
-  const [category, setCategory] = useState("");
+  // const [category, setCategory] = useState("");
   const [filter, setFilter] = useState(false);
   const [view, setView] = useState("grid");
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [inStock, setInStock] = useState(false);
+  const [stock, setStock] = useState(false);
   const [outStock, setOutStock] = useState(false);
   const [price, setPrice] = useState([0, 3000]);
   const [rating, setRating] = useState(0);
@@ -47,7 +48,7 @@ const Products = () => {
     error,
     productCount,
     filteredProductCount,
-    productsPerPage,
+    productsPerPage = 8,
   } = useSelector((state) => state.product);
 
   let count = 5;
@@ -86,12 +87,11 @@ const Products = () => {
   // console.log(keyword);
 
   let filters = {
-    category,
-    rating,
+    // category,
+    // rating,
     price,
     currentPage,
-    inStock,
-    outStock,
+    stock,
     keyword,
   };
 
@@ -100,7 +100,7 @@ const Products = () => {
       setRating(0),
       setPrice([0, 3000]),
       setCurrentPage(1),
-      setInStock(false),
+      setStock(false),
       setOutStock(false);
     Navigate("/products");
     setFilter(false);
@@ -108,32 +108,23 @@ const Products = () => {
 
   const Dispatch = useDispatch();
   const Navigate = useNavigate();
+  const [activeCategory, setCategory] = useState("");
 
   useEffect(() => {
     if (error) {
       toast.error(error);
       Dispatch(clearError());
     }
-    Dispatch(getAllProducts(filters));
+    Dispatch(getAllProducts());
     // Toast("Data fetched successfully", "success");
-  }, [
-    Dispatch,
-    error,
-    category,
-    rating,
-    price,
-    currentPage,
-    inStock,
-    outStock,
-    keyword,
-  ]);
+  }, []);
 
   return (
-    <div className="w-[100%] min-h-[100vh] font-roboto flex flex-col items-center justify-center gap-20 bg-[url('/images/body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover">
+    <section>
       {/* products selection  */}
 
       {/* Category  */}
-      <div className="w-full mt-[12vmax]  flex items-center justify-center gap-5">
+      {/* <div className="w-full mt-[12vmax]  flex items-center justify-center gap-5">
         {Category.map((child) => {
           return (
             <div
@@ -156,10 +147,16 @@ const Products = () => {
             </div>
           );
         })}
-      </div>
+      </div> */}
+      {/* 
+      <CategorySwiper
+        Category={Category}
+        setCategory={setCategory}
+        activeCategory={activeCategory}
+      /> */}
 
       {/* //All Products  */}
-      <div className="w-[100%]  flex flex-col items-center justify-center xxsm:w-[90%] xsm:w-[80%] sm:w-[95%] md:w-[90%] sml:w-[100%] slg:w-[95%] xlg:w-[1150px] sml:px-3  bg-bg-color font-roboto">
+      <div className="w-[100%] mt-60 flex flex-col items-center justify-center xxsm:w-[90%] xsm:w-[80%] sm:w-[95%] md:w-[90%] sml:w-[100%] slg:w-[95%] xlg:w-[1150px] sml:px-3  bg-bg-color font-roboto">
         <div className="filters text-white flex items-center justify-between w-[100%] px-10 pt-10">
           <div className="flex items-center justify-center gap-10">
             <button
@@ -237,11 +234,8 @@ const Products = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-10 sm:gap-10 sml:gap-4 slg:gap-5 mt-[3vmax] mb-[6vmax] w-[100%]">
-          {products &&
-            products.map((product) => {
-              return <Card key={product._id} product={product} />;
-            })}
+        <div className="grid grid-cols-1  relative md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-6 py-14 rounded-md bg-bg-color">
+          {products && products.map((product) => <Card product={product} />)}
         </div>
       </div>
 
@@ -264,8 +258,9 @@ const Products = () => {
           />
         </div>
       )}
+
       {/* Filter-Section  */}
-      <div
+      {/* <div
         className={`filter-section transition-all duration-300 z-50 font-roboto bg-bg-color w-[320px] min-h-[100vh] text-white ${
           filter === true ? "fixed top-0 left-0 " : "fixed top-0 left-[-100%]"
         }`}
@@ -345,8 +340,8 @@ const Products = () => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </div> */}
+    </section>
   );
 };
 

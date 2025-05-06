@@ -1,0 +1,16 @@
+.swiper-button-next,
+.swiper-button-prev {
+  color: #4c51bf; /* Change to match your theme */
+}
+
+.swiper-pagination-bullet {
+  background: #ccc;
+  width: 8px;
+  height: 8px;
+  opacity: 0.6;
+}
+
+.swiper-pagination-bullet-active {
+  background: #4c51bf;
+  opacity: 1;
+}

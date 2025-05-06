@@ -145,12 +145,13 @@ const getFeaturedProducts = AsyncHandler(async (req, res, next) => {
     const featuredProducts = await Product.find({
       isFeatured: true,
     })
-      .populate({
-        path: "category",
-        select: "category",
-      })
+      .sort({ createAt: -1 })
+      .populate("category")
       .skip(skip)
       .limit(productsPerPage);
+
+    // console.log(featuredProducts);
+
     // console.log("featuredProducts : " + featuredProducts);
 
     if (!featuredProducts) {
@@ -222,27 +223,70 @@ const getBannerProducts = AsyncHandler(async (req, res, next) => {
   }
 });
 
+const getRecentAdded = AsyncHandler(async (req, res, next) => {
+  try {
+    // Fetch filtered products with pagination
+    const recentProducts = await Product.find()
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .limit(8);
+
+    if (!recentProducts) {
+      return next(new ApiError(`Banner products not found...!`, 500));
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { products: recentProducts },
+          "All recent added Products...!"
+        )
+      );
+  } catch (error) {
+    // console.log(error);
+    return next(
+      new ApiError(
+        `Something went wrong while fetching recent added products...!`,
+        500
+      )
+    );
+  }
+});
+
 //Create products in product model
 const createProduct = AsyncHandler(async (req, res, next) => {
   //later
 
   const data = req.body;
+  // console.log(data);
 
   try {
     //make sure product will use category by category model
-    if (data.category) {
+    if (data?.category) {
+      // console.log("category start" + data.category);
+
       //if category first we check that given category exist or not
       const categoryObj = await ProductCategory.findOne({
         category: data.category,
       });
+      // console.log("category obj" + categoryObj?.category);
+
       if (categoryObj) {
         //add category._id because we add feature of caterofgy by ref of category model
         data.category = categoryObj._id;
         // console.log(categoryObj.category);
-      } else {
+      } else if (!categoryObj) {
+        // console.log("not found category");
+        // console.log(req.user._id);
+
         const newCategory = await ProductCategory.create({
-          category: data.category,
+          category: data?.category,
+          maker: req.user._id,
         });
+        // console.log("new category " + newCategory);
+
         if (!newCategory) {
           return next(new ApiError(`Unable to create new category...!`, 404));
         }
@@ -252,8 +296,12 @@ const createProduct = AsyncHandler(async (req, res, next) => {
       return next(new ApiError(`Category is required...!`, 401));
     }
 
+    // console.log(data.category);
+
     //handle images
     if (req.files?.images || data?.images) {
+      console.log(req.files?.images || data?.images);
+
       //validation of image format
       const allowedFormats = ["image/jpeg", "image/png", "image/webp"];
       const maxSize = 5 * 1024 * 1024; // 5MB
@@ -282,6 +330,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
       }
       // then call imageuploader on cloudinary function from utilities by giving parameters both
       const uploadedImages = await UploadProductImagesCloudinary(req, next);
+      // console.log("uploaded : " + uploadedImages);
 
       if (!uploadedImages) {
         return next(
@@ -291,20 +340,25 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 
       //6.now set cloudinary given images urls in data(req.body)
       data.images = uploadedImages;
+      console.log(data);
     } else {
       return next(new ApiError(`Images are required...!`, 400));
     }
 
-    const newProduct = await Product.create(data).populate({
-      path: "category",
-      select: "category",
-    });
+    let newProduct = await Product.create(data);
+    // console.log(newProduct);
 
     if (!newProduct) {
       return next(
         new ApiError(`Something went wrong while creating product...!`, 500)
       );
     }
+    newProduct = await newProduct.populate({
+      path: "category",
+      select: "category",
+    });
+
+    // console.log("populated product : " + newProduct);
 
     res
       .status(201)
@@ -316,6 +370,8 @@ const createProduct = AsyncHandler(async (req, res, next) => {
         )
       );
   } catch (error) {
+    // console.log(error);
+
     return next(
       new ApiError(`Something went wrong while creating product...!`, 500)
     );
@@ -442,4 +498,5 @@ export {
   singleProductDetails,
   getFeaturedProducts,
   getBannerProducts,
+  getRecentAdded,
 };

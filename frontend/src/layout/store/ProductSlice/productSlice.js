@@ -3,6 +3,7 @@ import {
   getAllProducts,
   getBannerProducts,
   getFeaturedProducts,
+  getRecentAddedProducts,
   singleProductDetails,
 } from "./productSliceReducers.js";
 
@@ -17,9 +18,9 @@ export const productSlice = createSlice({
     filteredProductCount: 0,
     featuredProducts: [],
     bannerProducts: [],
+    recentAddedProducts: [],
     featuredProductsCount: 0,
     bannerProductsCount: 0,
-    singleProductDetailsMessage: "",
     singleProduct: {},
     categories: [],
     loading: false,
@@ -31,10 +32,6 @@ export const productSlice = createSlice({
     //reducer for clearing all errors
     clearError: (state) => {
       state.error = null;
-    },
-
-    clearSingleProductDetailsMessage: (state) => {
-      state.singleProductDetailsMessage = "";
     },
   },
 
@@ -66,8 +63,8 @@ export const productSlice = createSlice({
       })
       .addCase(singleProductDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.singleProduct = action.payload?.data?.products;
-        state.singleProductDetailsMessage = action.payload?.message;
+        const product = action.payload?.data?.products;
+        state.singleProduct[product._id] = product;
       })
       .addCase(singleProductDetails.rejected, (state, action) => {
         state.loading = false;
@@ -102,10 +99,22 @@ export const productSlice = createSlice({
       .addCase(getBannerProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      .addCase(getRecentAddedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getRecentAddedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.recentAddedProducts = action.payload?.products;
+      })
+      .addCase(getRecentAddedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError, clearSingleProductDetailsMessage } =
-  productSlice.actions;
+export const { clearError } = productSlice.actions;
 export default productSlice.reducer;

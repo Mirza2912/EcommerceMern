@@ -41,9 +41,7 @@ const createProductValidation = [
     .notEmpty()
     .withMessage("Stock is required")
     .isInt({ min: 0 })
-    .withMessage("Stock must be a non-negative integer")
-    .isBoolean()
-    .withMessage("Stock must be true or false"),
+    .withMessage("Stock must be a non-negative integer"),
   body("discount")
     .optional()
     .isFloat({ min: 0 })

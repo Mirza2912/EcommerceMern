@@ -7,6 +7,7 @@ import {
   singleProductDetails,
   getFeaturedProducts,
   getBannerProducts,
+  getRecentAdded,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
@@ -29,6 +30,7 @@ router
   .route("/single-product/:id")
   .get(singleProductValidation, singleProductDetails);
 router.route("/featured-products").get(getFeaturedProducts);
+router.route("/recent-products").get(getRecentAdded);
 router.route("/banner-products").get(getBannerProducts);
 router
   .route("/create")

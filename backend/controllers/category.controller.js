@@ -20,4 +20,35 @@ const getAllCategory = AsyncHandler(async (req, res, next) => {
     .json(new ApiResponse(200, { categories }, `All Categories...!`));
 });
 
-export { getAllCategory };
+const createCategory = AsyncHandler(async (req, res, next) => {
+  const { category } = req.body;
+  const maker = req.user._id;
+
+  if (!category) {
+    return next(new ApiError(`Category is required...!`, 400));
+  }
+
+  const iscategoryExist = await ProductCategory.findOne({ category });
+
+  if (iscategoryExist) {
+    return next(new ApiError(`${category} is already exist...!`, 400));
+  }
+
+  let newCategory = await ProductCategory.create({
+    category,
+    maker,
+  });
+
+  if (!newCategory) {
+    return next(
+      new ApiError(`Something went wrong to create new category...!`, 500)
+    );
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, { categories: newCategory }, `All Categories...!`)
+    );
+});
+export { getAllCategory, createCategory };

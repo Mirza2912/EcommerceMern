@@ -10,7 +10,7 @@ const productCategorySchema = new Schema(
     maker: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: [true, "Maker is required...!"],
     },
   },
   { timestamps: true }
