@@ -145,7 +145,7 @@ const Navbar = () => {
             </li>
             <li className="relative group">
               <p className="absolute bottom-4  text-white/90 text-center  ml-4 w-[25px] h-[25px] rounded-full bg-gold">
-                {cartItems?.length}
+                {cartItems?.length > 0 ? cartItems?.lenght : 0}
               </p>
               <NavLink
                 className={({ isActive }) =>

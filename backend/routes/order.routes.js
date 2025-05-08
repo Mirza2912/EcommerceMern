@@ -10,10 +10,14 @@ import {
   isAuthenticatedUser,
   isAuthorizedRoles,
 } from "../middlewares/auth.middleware.js";
+import { createOrderValidation } from "../validations/order.validations.js";
+import { validate } from "../validations/validate.errors.js";
 const router = Router();
 
 //Route for placing/creating new order
-router.route("/new").post(isAuthenticatedUser, newOrder);
+router
+  .route("/new")
+  .post(isAuthenticatedUser, createOrderValidation, validate, newOrder);
 
 //get all orders of loggedIn user
 router.route("/allOrders").get(isAuthenticatedUser, allOrders);

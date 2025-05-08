@@ -43,6 +43,7 @@ import {
   clearAddToCartUpdateBackendMessage,
   clearDeleteCartItemFromBackendMessage,
   clearUpdateCartLocal,
+  clearCartLocal,
 } from "./layout/store/CartSlice/CartSlice.js";
 import {
   loadCartFromLocalStorage,
@@ -50,11 +51,15 @@ import {
 } from "./layout/store/CartSlice/CartLocalStorageHandle.js";
 import {
   addToCartBackend,
+  clearWholeCartBackend,
   getCart,
 } from "./layout/store/CartSlice/CartSliceReducers.js";
 import Checkout from "./layout/Pages/Order/Checkout.jsx";
 import Shipping from "./layout/Pages/Order/Shipping.jsx";
 import ConfirmOrder from "./layout/Pages/Order/ConfirmOrder.jsx";
+import Payment from "./layout/Pages/Order/Payment.jsx";
+import { clearOrderPlaceMessage } from "./layout/store/OrderSlice/orderSlice.js";
+import Order from "./layout/Pages/Order/Order.jsx";
 
 const App = () => {
   const {
@@ -80,6 +85,9 @@ const App = () => {
     deleteCartItemFromBackendMessage,
   } = useSelector((state) => state.cart);
   // const { categories } = useSelector((state) => state.category);
+
+  const { orderPlacedMessage } = useSelector((state) => state.order);
+  // console.log(orderPlacedMessage);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -200,6 +208,15 @@ const App = () => {
       dispatch(clearDeleteCartItemFromBackendMessage());
     }
 
+    ///* Order */
+    if (orderPlacedMessage) {
+      toast.success(orderPlacedMessage);
+      dispatch(clearOrderPlaceMessage());
+      dispatch(clearCartLocal());
+      dispatch(clearWholeCartBackend());
+      navigate("/user/orders");
+    }
+
     return () => clearTimeout(timeout);
   }, [
     resgisterMessage,
@@ -215,6 +232,7 @@ const App = () => {
     addToCartBackendMessage,
     addToCartUpdateBackendMessage,
     deleteCartItemFromBackendMessage,
+    orderPlacedMessage,
 
     // addToCartBackendMessage,
     // addToCartUpdateBackendMessage,
@@ -275,11 +293,11 @@ const App = () => {
             <Route path="/me/update-password" element={<UpdatePassword />} />
             <Route path="/checkout/*" element={<Checkout />}>
               <Route index element={<Shipping />} />
-
               <Route path="shipping" element={<Shipping />} />
               <Route path="order-confirm" element={<ConfirmOrder />} />
-              {/* <Route path="success" element={<OrderComplete />} /> */}
+              <Route path="payment" element={<Payment />} />
             </Route>
+            <Route path="/user/orders" element={<Order />} />
           </Route>
 
           {/* <Route path="/search" element={<Search />} /> */}

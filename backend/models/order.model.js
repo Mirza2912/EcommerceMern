@@ -48,8 +48,8 @@ const orderSchema = new Schema(
           required: [true, "Product is required...!"],
         },
         image: {
-          type: String,
-          required: [true, "Product image is required...!"],
+          public_id: { type: String },
+          url: { type: String },
         },
       },
     ],
@@ -58,19 +58,12 @@ const orderSchema = new Schema(
       ref: "User",
       required: [true, "User is required...!"],
     },
-    paymentInfo: {
-      id: {
-        type: String,
-        required: [true, "Payment Id is required...!"],
-      },
-      status: {
-        type: String,
-        required: [true, "Payment status is required...!"],
-      },
+    paymentMethod: {
+      type: String,
+      required: [true, "Payment method is required"],
     },
     paidAt: {
       type: Date,
-      required: [true, "Date of payment is required...!"],
     },
     itemsPrice: {
       type: Number,

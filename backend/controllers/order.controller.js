@@ -8,28 +8,58 @@ const newOrder = AsyncHandler(async (req, res, next) => {
   const {
     shippingInfo,
     orderItems,
-    paymentInfo,
+    paymentMethod,
     itemsPrice,
-    taxPrice,
+    taxPrice = 0,
     shippingPrice,
     totalPrice,
   } = req.body;
 
-  const order = await Order.create({
-    shippingInfo,
-    orderItems,
-    paymentInfo,
-    itemsPrice,
-    taxPrice,
-    shippingPrice,
-    totalPrice,
-    paidAt: Date.now(),
-    user: req.user._id,
-  });
+  try {
+    // console.log(req.user._id);
 
-  res
-    .status(201)
-    .json(new ApiResponse(201, order, `Order placed successfully...!`));
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+
+    const duplicateOrder = await Order.findOne({
+      user: req.user._id,
+      totalPrice,
+      "orderItems.name": { $in: orderItems?.map((item) => item.name) },
+      createdAt: { $gte: oneMinuteAgo },
+    });
+
+    if (duplicateOrder) {
+      return next(
+        new ApiError(
+          `Order not created...!Duplicate order detected. Please wait before trying again.`,
+          400
+        )
+      );
+    }
+
+    const orderData = {
+      shippingInfo,
+      orderItems,
+      paymentMethod,
+      itemsPrice,
+      taxPrice,
+      shippingPrice,
+      totalPrice,
+      user: req.user._id,
+      paidAt: paymentMethod === "CARD" ? Date.now() : null,
+    };
+
+    const order = await Order.create(orderData);
+
+    if (!order) {
+      return next(new ApiError(`Order not created...!`, 500));
+    }
+
+    res
+      .status(201)
+      .json(new ApiResponse(201, order, `Order placed successfully...!`));
+  } catch (error) {
+    return next(new ApiError(`Something went wrong placing order...!`, 500));
+  }
 });
 
 //getting all orders

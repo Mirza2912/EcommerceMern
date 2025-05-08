@@ -5,6 +5,7 @@ import {
   saveOrderItemsToLocalStorage,
   saveShippingToLocalStorage,
 } from "./orderLocalStorageHandler";
+import { createOrder } from "./orderSliceReducers";
 
 // Product slice
 const orderSlice = createSlice({
@@ -14,6 +15,7 @@ const orderSlice = createSlice({
     shippingAddress: loadShippingFromLocalStorage(),
     orderItems: loadOrderItemsFromLocalStorage(),
     paymentMethod: "",
+    orderPlacedMessage: "",
     otherDetails: { taxPrice: null, shippingPrice: null, totalPrice: null },
     loading: false,
     error: null,
@@ -40,8 +42,27 @@ const orderSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+
+    clearOrderPlaceMessage: (state) => {
+      state.orderPlacedMessage = "";
+    },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(createOrder.pending, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.order = action.payload?.data;
+        state.orderPlacedMessage = action.payload?.message;
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
 });
 
 export const {
@@ -49,5 +70,6 @@ export const {
   setShippingAddress,
   setOrderItems,
   clearOrderItems,
+  clearOrderPlaceMessage,
 } = orderSlice.actions;
 export default orderSlice.reducer;

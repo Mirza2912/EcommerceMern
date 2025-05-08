@@ -104,3 +104,25 @@ export const deleteCartItemBackend = createAsyncThunk(
     }
   }
 );
+
+// clear whole cart
+export const clearWholeCartBackend = createAsyncThunk(
+  "cart/clearWholeCArtBackend",
+  async (_, { rejectWithValue }) => {
+    try {
+      // console.log(id);
+
+      const response = await axios.delete(`/api/v1/cart/clear-cart`, config);
+      // console.log(response?.data);
+      return response?.data?.data?.cart?.items; //returning fetched data
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to remove cart item"
+      );
+    }
+  }
+);

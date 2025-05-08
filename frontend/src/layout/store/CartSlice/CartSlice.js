@@ -6,6 +6,7 @@ import {
 import {
   addToCartBackend,
   addToCartUpdateBackend,
+  clearWholeCartBackend,
   deleteCartItemBackend,
   getCart,
 } from "./CartSliceReducers";
@@ -162,6 +163,18 @@ export const cartSlice = createSlice({
       .addCase(deleteCartItemBackend.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(clearWholeCartBackend.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(clearWholeCartBackend.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cartItems = [];
+      })
+      .addCase(clearWholeCartBackend.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -175,5 +188,6 @@ export const {
   clearAddToCartBackednMessage,
   clearAddToCartUpdateBackendMessage,
   clearDeleteCartItemFromBackendMessage,
+  clearCartLocal,
 } = cartSlice.actions;
 export default cartSlice.reducer;

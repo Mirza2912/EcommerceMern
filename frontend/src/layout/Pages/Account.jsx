@@ -119,10 +119,13 @@ const Account = () => {
   // }, [error]);
 
   useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
     if (isVerified) {
       navigate(from, { replace: true });
     }
-  });
+  }, [isVerified, error]);
 
   return (
     <>
