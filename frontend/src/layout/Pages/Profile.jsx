@@ -9,6 +9,8 @@ import {
   userDelete,
   userLogOut,
 } from "../store/UserSlice/userSliceReducers.js";
+import { toast } from "react-toastify";
+import { clearError } from "../store/UserSlice/userSlice.js";
 
 const Profile = () => {
   //For checking for title
@@ -18,12 +20,16 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   //fetching data from user state
-  const { user, error } = useSelector((state) => state.auth);
+  const { user, error, isVerified } = useSelector((state) => state.auth);
   // console.log(user);
 
   // destructuring all data of user
   const { name, email, role, avatar, createdAt, phone } = user.data;
 
+  const handleLogout = () => {
+    dispatch(userLogOut());
+    navigate("/");
+  };
   let list = [
     {
       name: "Name",
@@ -46,7 +52,16 @@ const Profile = () => {
       value: format(new Date(createdAt), "yyyy-MM-dd hh:mm:ss a"),
     },
   ];
-  // console.log(name, email, role, avatar, createdAt);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+    if (!isVerified) {
+      navigate("/");
+    }
+  }, [isVerified, error]);
 
   return (
     <>
@@ -93,9 +108,7 @@ const Profile = () => {
                   </button>
                   <button
                     className=" cursor-pointer w-full  sm:w-48 px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-md shadow hover:brightness-110 transition text-center"
-                    onClick={() => {
-                      dispatch(userLogOut());
-                    }}
+                    onClick={handleLogout}
                   >
                     Log Out
                   </button>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { clearError } from "../store/ProductSlice/productSlice";
 import { getAllProducts } from "../store/ProductSlice/productSliceReducers";
 import Card from "../Components/Home/Card";
@@ -14,6 +14,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import Slider from "@mui/material/Slider";
 import { toast } from "react-toastify";
 import CategorySwiper from "../Components/Products/CategorySwiper/CategorySwiper";
+import "./Product.css";
 
 const Products = () => {
   //useState for selecting category all notebook et
@@ -121,54 +122,35 @@ const Products = () => {
 
   return (
     <section>
-      {/* products selection  */}
-
-      {/* Category  */}
-      {/* <div className="w-full mt-[12vmax]  flex items-center justify-center gap-5">
-        {Category.map((child) => {
-          return (
-            <div
-              key={child.category}
-              className="w-32 flex flex-col items-center justify-center gap-2 "
-              onClick={() => setCategory(child.category)}
-            >
-              <figure className="w-[100%] h-32 cursor-pointer bg-white p-1 rounded-full hover:bg-transparent transition-all duration-300">
-                <img
-                  className="w-[100%] hover:scale-105 transition-all duration-300 h-[100%] bg-cover bg-center rounded-full"
-                  src={child.image}
-                  alt={child.category}
-                />
-              </figure>
-              <p
-                className={`font-semibold font-roboto text-lg  cursor-pointer`}
-              >
-                {category.name}
-              </p>
-            </div>
-          );
-        })}
-      </div> */}
-      {/* 
-      <CategorySwiper
-        Category={Category}
-        setCategory={setCategory}
-        activeCategory={activeCategory}
-      /> */}
-
       {/* //All Products  */}
-      <div className="w-[100%] mt-60 flex flex-col items-center justify-center xxsm:w-[90%] xsm:w-[80%] sm:w-[95%] md:w-[90%] sml:w-[100%] slg:w-[95%] xlg:w-[1150px] sml:px-3  bg-bg-color font-roboto">
-        <div className="filters text-white flex items-center justify-between w-[100%] px-10 pt-10">
-          <div className="flex items-center justify-center gap-10">
-            <button
-              className="flex items-center justify-center gap-1 py-2 px-6 rounded-full text-white border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53] hover:text-black"
-              onClick={filterHandler}
-            >
-              <span>
-                <TuneSharpIcon />
-              </span>
-              <span className=" font-semibold text-lg">FILTER</span>
-            </button>
 
+      <div className="mt-12 mb-10 sm:mt-32 sm:mb-10  lg:mt-32">
+        <h2 className="lg:text-6xl text-5xl font-bold text-white/90 text-center mb-3">
+          All Products
+        </h2>
+        <div className="flex items-center justify-center text-white/90 gap-1 text-md font-normal">
+          <Link to={"/"}>Home</Link>
+          <span>/</span>
+          <span>Products</span>
+        </div>
+      </div>
+      <div className="w-[90vw] xl:w-[75vw] flex flex-col items-center justify-center mx-auto bg-bg-color font-roboto px-4 py-10 mb-10">
+        <div className="filters text-white/90 flex items-center justify-between w-full ">
+          <button
+            className="flex items-center justify-center gap-1 py-2 px-3 md:px-6 rounded-full text-white border border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53] hover:text-white/90"
+            onClick={filterHandler}
+          >
+            <span>
+              <TuneSharpIcon />
+            </span>
+            <span className="hidden md:block font-semibold text-lg">
+              FILTER
+            </span>
+          </button>
+          <div className="text-xl sm:hidden font-semibold text-gold">
+            {filteredProductCount} of {productCount}
+          </div>
+          <div className="md:flex items-center justify-center gap-10 hidden">
             <div className="icons flex items-center justify-center gap-3">
               <div className="relative flex items-center justify-center">
                 <IoGrid
@@ -191,8 +173,9 @@ const Products = () => {
               />
             </div>
           </div>
-          <div className="text-xl font-semibold text-gold">
-            Available Products :
+
+          <div className="text-xl hidden text-center sm:block font-semibold text-gold">
+            Products :
             <span className="text-gold">
               {filteredProductCount} of {productCount}
             </span>
@@ -202,9 +185,9 @@ const Products = () => {
             {/* Dropdown Button */}
             <button
               onClick={toggleDropdown}
-              className="inline-flex justify-center w-full px-3 py-2 font-semibold text-white hover:text-gold bg-transparent rounded-md shadow-sm border border-gold uppercase"
+              className="inline-flex justify-center w-full px-3 py-2 font-semibold text-white hover:text-gold bg-transparent rounded-md shadow-sm border border-gold "
             >
-              Sort Products
+              sort <span className="hidden sm:block sm:ml-1"> products</span>
               <IoMdArrowDropdown
                 className={`mt-0.5 text-xl font-semibold transition-transform ${
                   isOpen ? "rotate-180" : "rotate-0"
@@ -214,50 +197,49 @@ const Products = () => {
 
             {/* Dropdown Menu */}
             {isOpen && (
-              <div className="absolute top-12 z-10 w-[10.8rem] rounded-md bg-bg-color border border-gold">
+              <div className="absolute top-12 z-10 sm:w-[8.7rem] rounded-md bg-bg-color border border-gold">
                 <div>
-                  {["A - Z", "Z - A", "Low to High", "High to Low"].map(
-                    (field) => {
-                      return (
-                        <button
-                          key={field}
-                          onClick={() => handleOptionClick(field)}
-                          className="block w-full px-4 py-2 text-lg font-semibold text-white border-b border-gold  hover:text-gold"
-                        >
-                          {field}
-                        </button>
-                      );
-                    }
-                  )}
+                  {["A - Z", "Z - A", "L to H", "H to L"].map((field) => {
+                    return (
+                      <button
+                        key={field}
+                        onClick={() => handleOptionClick(field)}
+                        className="block w-full px-4 py-2 text-lg font-semibold text-white border-b border-gold  hover:text-gold"
+                      >
+                        {field}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
           </div>
         </div>
-        <div className="grid grid-cols-1  relative md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-6 py-14 rounded-md bg-bg-color">
+
+        <div className="grid mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:px-4 pt-14 rounded-md ">
           {products && products.map((product) => <Card product={product} />)}
         </div>
-      </div>
 
-      {/* pagination  */}
-      {productsPerPage < productCount && (
-        <div className="paginationBox w-[100%] mb-[5vmax]  flex items-center justify-center">
-          <Pagination
-            activePage={currentPage}
-            itemsCountPerPage={productsPerPage}
-            totalItemsCount={productCount}
-            onChange={(e) => setCurrentPage(e)}
-            nextPageText="Next"
-            prevPageText="Prev"
-            firstPageText="1st"
-            lastPageText="Last"
-            itemClass="page-item"
-            linkClass="page-link"
-            activeClass="pageItemActive"
-            activeLinkClass="pageLinkActive"
-          />
-        </div>
-      )}
+        {/* pagination  */}
+        {productsPerPage < productCount && (
+          <div className="paginationBox  mt-10 ">
+            <Pagination
+              activePage={currentPage}
+              itemsCountPerPage={productsPerPage}
+              totalItemsCount={productCount}
+              onChange={(e) => setCurrentPage(e)}
+              nextPageText="Next"
+              prevPageText="Prev"
+              firstPageText="1st"
+              lastPageText="Last"
+              itemClass="page-item "
+              linkClass="page-link"
+              activeClass="pageItemActive"
+              activeLinkClass="pageLinkActive"
+            />
+          </div>
+        )}
+      </div>
 
       {/* Filter-Section  */}
       {/* <div

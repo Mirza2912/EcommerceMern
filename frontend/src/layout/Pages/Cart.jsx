@@ -145,7 +145,7 @@ const Cart = () => {
       {loading ? (
         <Loader />
       ) : (
-        <div className="w-full flex flex-col items-center justify-center mb-20">
+        <div className="w-full flex flex-col items-center justify-center mb-20 ">
           {/* heading div  */}
           {cart && cart.length > 0 ? (
             <div className="mt-12 mb-10 sm:mt-32 sm:mb-10  lg:mt-32">
@@ -167,25 +167,26 @@ const Cart = () => {
             <Loader />
           ) : cart && cart.length > 0 ? (
             <div className="bg-bg-color w-full lg:flex lg:gap-5 lg:justify-center sm:w-[90%] md:w-[70%] lg:w-[95%] xl:w-[80%] px-5  py-10">
-              <div className=" w-full lg:w-[55%] flex items-start justify-center">
-                {/* carts  */}
-                <div className="flex items-center flex-col justify-center w-full  border border-gray-400">
-                  {/* headings  */}
+              <div className="w-full lg:w-[55%] flex items-start justify-center">
+                {/* carts */}
+                <div className="flex flex-col w-full border border-gray-400">
+                  {/* headings */}
                   <div className="w-full flex items-center justify-between px-4 py-3 text-white/90 text-lg font-semibold border-b border-gray-300">
-                    <h3>Items</h3>
-                    <h3 className="ml-24">Qty</h3>
-                    <h3>Price</h3>
+                    <h3 className="w-2/4">Items</h3>
+                    <h3 className="w-1/4 text-center">Qty</h3>
+                    <h3 className="w-1/4 text-right pr-2">Price</h3>
                   </div>
 
-                  {/* carts  */}
+                  {/* cart items */}
                   {cart.map((item, index) => (
                     <div
                       key={item._id}
                       className={`w-full flex items-center justify-between py-3 px-2 ${
-                        index !== cart.lenght - 1 && "border-b border-grap-300"
+                        index !== cart.length - 1 && "border-b border-gray-300"
                       }`}
                     >
-                      <div className="items-image-name flex items-center justify-center gap-1">
+                      {/* Item image & name */}
+                      <div className="w-2/4 flex items-center gap-2">
                         <img
                           className="w-16 h-16 object-cover object-center"
                           src={
@@ -195,11 +196,11 @@ const Cart = () => {
                           }
                           alt={item.product?.name}
                         />
-                        <div className="flex flex-col items-start gap-4">
-                          <p className="text-sm text-white/90 font-normal">
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm text-white/90">
                             {item.product?.name}
                           </p>
-                          <p className="text-sm text-white/90 font-normal">
+                          <p className="text-sm text-white/90">
                             Rs.
                             {item.product?.discount > 0
                               ? item.product?.price + item.product?.discount
@@ -208,27 +209,28 @@ const Cart = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-start justify-between ">
+                      {/* Quantity */}
+                      <div className="w-1/4 flex flex-col items-center">
                         {editCartQuantity === item._id ? (
-                          <div className="flex items-center justify-center gap-2 border border-white/90 ">
+                          <div className="flex items-center gap-2 border border-white/90">
                             <button
-                              className="text-lg  border-r border-r-white/90 hover:bg-bg-color text-white/90 font-normal px-3 py-1"
+                              className="text-lg border-r border-white/90 hover:bg-bg-color text-white/90 font-normal px-3 py-1"
                               onClick={handleDecrease}
                             >
                               -
                             </button>
-                            <div className="text-lg font-normal  text-center text-white/90">
+                            <div className="text-lg font-normal text-white/90">
                               {quantity}
                             </div>
                             <button
-                              className="text-lg py-1 border-l border-r-white/90 hover:bg-bg-color text-white/90 font-normal px-3 "
+                              className="text-lg py-1 border-l border-white/90 hover:bg-bg-color text-white/90 font-normal px-3"
                               onClick={() => handleIncrease(item._id)}
                             >
                               +
                             </button>
                           </div>
                         ) : (
-                          <p className="text-lg font-semibold text-white/90 ">
+                          <p className="text-lg font-semibold text-white/90">
                             {item.quantity}
                           </p>
                         )}
@@ -241,31 +243,33 @@ const Cart = () => {
                                 item.product?.price * quantity
                               )
                             }
-                            className="text-md text-gold hover:underline hover:cursor-pointer"
+                            className="text-sm text-gold hover:underline cursor-pointer mt-1"
                           >
                             update
                           </p>
                         ) : (
                           <p
                             onClick={() => setEditCartQuantity(item._id)}
-                            className="text-md text-gold hover:underline hover:cursor-pointer"
+                            className="text-sm text-gold hover:underline cursor-pointer mt-1"
                           >
                             edit
                           </p>
                         )}
                       </div>
 
-                      <div className="total-price text-sm font-normal flex items-end  gap-6 flex-col text-white/90 text-center">
-                        <p>Rs.{item.product?.price * item.quantity}</p>
+                      {/* Price and delete */}
+                      <div className="w-1/4 text-right text-white/90 flex flex-col items-end pr-2">
+                        <p className="text-sm">
+                          Rs.{item.product?.price * item.quantity}
+                        </p>
                         <MdDelete
                           onClick={() => handleRemoveItem(item._id)}
-                          className="text-lg text-white/90 hover:text-gold hover:cursor-pointer"
+                          className="text-lg hover:text-gold cursor-pointer mt-1"
                         />
                       </div>
                     </div>
                   ))}
                 </div>
-                {/* total section  */}
               </div>
 
               {/* subtotal  */}

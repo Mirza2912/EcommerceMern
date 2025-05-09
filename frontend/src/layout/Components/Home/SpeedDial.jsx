@@ -10,20 +10,20 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { userLogout } from "../../store/UserSlice/userSliceReducers";
-import Toast from "./Toast";
+import { toast } from "react-toastify";
+import { userLogOut } from "../../store/UserSlice/userSliceReducers";
 
 const UserSpeedDial = ({ user }) => {
   // for showing backdrop/blackish screen when focus on speed dial
   const [open, setOpen] = useState(false);
 
-  const Navigate = useNavigate();
-  const Dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   //options for showing speed dial actions
   const options = [
     { icon: <ListAltIcon />, name: "Orders", func: Orders },
-    { icon: <PersonIcon />, name: "Profile", func: Account },
+    { icon: <PersonIcon />, name: "Profile", func: Profile },
     {
       icon: <ShoppingCartIcon />,
       name: `Cart`,
@@ -35,7 +35,7 @@ const UserSpeedDial = ({ user }) => {
   // console.log(user?.data?.role);
 
   //   If admin ios active then dashboard also displayed
-  if (user.data?.role === "admin") {
+  if (user?.data?.role === "admin") {
     options.unshift({
       icon: <DashboardIcon />,
       name: "Dashboard",
@@ -45,36 +45,39 @@ const UserSpeedDial = ({ user }) => {
 
   //   Functions for speed dial actions
   function Dashboard() {
-    Navigate("/");
+    navigate("/admin/dashboard");
   }
 
   function Orders() {
-    Navigate("/");
+    navigate("/user/orders");
   }
-  function Account() {
-    Navigate("/profile");
+  function Profile() {
+    navigate("/user/profile");
   }
   function Cart() {
-    Navigate("/");
+    navigate("/cart");
   }
   function LogoutUser() {
-    Dispatch(userLogout());
-    Toast("success", "Logged out successfully");
+    dispatch(userLogOut());
   }
   return (
     <>
-      {/* <Backdrop open={open} className="w-full h-[100%] relative" /> */}
+      <Backdrop open={open} style={{ zIndex: "10" }} />
       <SpeedDial
         ariaLabel="SpeedDial tooltip example"
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         open={open}
         direction="down"
-        className="z-50 fixed right-[3vmax] top-[3vmax]"
+        className="z-50 fixed right-3  top-[4.5rem] sm:top-[6rem] lg:top-[5.5rem]"
         icon={
           <img
             className="speedDialIcon w-[56px] h-[56px] bg-cover bg-center  rounded-full"
-            src={user.data?.avatar?.url ? user.data.avatar.url : "/Profile.png"}
+            src={
+              user?.data?.avatar?.url
+                ? user.data.avatar.url
+                : "/src/assets/profile.jpg"
+            }
             alt="Profile"
           />
         }

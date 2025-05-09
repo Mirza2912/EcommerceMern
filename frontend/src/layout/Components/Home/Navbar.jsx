@@ -11,6 +11,8 @@ import { IoCartOutline } from "react-icons/io5";
 const Navbar = () => {
   const { isVerified } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
+  // console.log(cartItems?.length);
+
   const [navItem, setnavItem] = useState(false);
   return (
     <nav className="w-[100%] sm:fixed sm:z-50 bg-bg-color font-roboto h-[4rem] sm:h-auto  sm:py-[1rem] lg:h-[5rem] lg:py-0 flex items-center justify-center">
@@ -145,7 +147,7 @@ const Navbar = () => {
             </li>
             <li className="relative group">
               <p className="absolute bottom-4  text-white/90 text-center  ml-4 w-[25px] h-[25px] rounded-full bg-gold">
-                {cartItems?.length > 0 ? cartItems?.lenght : 0}
+                {cartItems?.length > 0 ? cartItems?.length : 0}
               </p>
               <NavLink
                 className={({ isActive }) =>

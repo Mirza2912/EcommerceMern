@@ -64,25 +64,49 @@ const newOrder = AsyncHandler(async (req, res, next) => {
 
 //getting all orders
 const allOrders = AsyncHandler(async (req, res, next) => {
-  const orders = await Order.find({ user: req.user._id });
-  res
-    .status(200)
-    .json(new ApiResponse(200, orders, `${req.user.name}'s All Orders...!`));
+  try {
+    const orders = await Order.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
+
+    if (!orders) {
+      return next(new ApiError(`Orders not found...!`, 500));
+    }
+    res
+      .status(200)
+      .json(new ApiResponse(200, orders, `${req.user?.name}'s All Orders...!`));
+  } catch (error) {
+    return next(
+      new ApiError(`Something went wrong while getting orders...!`, 500)
+    );
+  }
 });
 
 // getting single order
 const singleOrder = AsyncHandler(async (req, res, next) => {
-  const singleOrder = await Order.findById(req.params.id).populate(
-    "user",
-    "name , email"
-  );
+  try {
+    const id = req.params.id;
+    // console.log(id);
 
-  if (!singleOrder) {
+    if (!id) {
+      return next(new ApiError(`Id is required...!`, 400));
+    }
+    const singleOrder = await Order.findById(id).populate(
+      "user",
+      "name , email"
+    );
+
+    if (!singleOrder) {
+      return next(
+        new ApiError(`Order with id : ${req.params.id} is not found...!`, 400)
+      );
+    }
+    res.status(200).json(new ApiResponse(200, singleOrder, `Single order...!`));
+  } catch (error) {
     return next(
-      new ApiError(`Order with id : ${req.params.id} is not found...!`, 400)
+      new ApiError(`Something went wrong while fetching order...!`, 500)
     );
   }
-  res.status(200).json(new ApiResponse(200, singleOrder, `Single order...!`));
 });
 
 // getting all orders --->Admin

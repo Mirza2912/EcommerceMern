@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BiSolidFace } from "react-icons/bi";
 import { FaAddressCard } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsCalendar2DateFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { createOrder } from "../../store/OrderSlice/orderSliceReducers";
 import { toast } from "react-toastify";
 import { clearError } from "../../store/OrderSlice/orderSlice";
+import LoaderForForms from "../../Components/Home/LoaderForForms";
 
 const PaymentPage = () => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -15,14 +16,15 @@ const PaymentPage = () => {
   const isLoading = false;
 
   const dispatch = useDispatch();
-  const { cartItems } = useSelector((state) => state.cart);
+  const navigate = useNavigate();
 
-  const { shippingAddress } = useSelector((state) => state.order);
-  // console.log(shippingAddress);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const { user } = useSelector((state) => state.auth);
 
-  const { loading, order, error } = useSelector((state) => state.order);
+  const { loading, order, error, shippingAddress } = useSelector(
+    (state) => state.order
+  );
   //   console.log(order);
 
   const orderInfo = JSON.parse(sessionStorage.getItem("orderInfo"));
@@ -60,7 +62,10 @@ const PaymentPage = () => {
       toast.error(error);
       dispatch(clearError());
     }
-  }, [error]);
+    if (order && order._id) {
+      navigate(`/user/order/${order?._id}`);
+    }
+  }, [error, order]);
 
   return (
     <>
@@ -155,7 +160,11 @@ const PaymentPage = () => {
               isLoading && "opacity-50 hover:cursor-wait"
             }`}
           >
-            {isLoading ? <LoaderForForms input={"Register"} /> : "Register"}
+            {isLoading ? (
+              <LoaderForForms input={"Place order"} />
+            ) : (
+              "Place order"
+            )}
           </button>
         </div>
       </div>

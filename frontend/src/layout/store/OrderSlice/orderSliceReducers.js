@@ -28,3 +28,45 @@ export const createOrder = createAsyncThunk(
     }
   }
 );
+
+export const getAllOrders = createAsyncThunk(
+  "order/getAllOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      //   console.log(data);
+
+      const response = await axios.get("/api/v1/orders/allOrders");
+      // console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to getting orders"
+      );
+    }
+  }
+);
+
+export const getSingleOrderDetails = createAsyncThunk(
+  "order/getSingleOrderDetails",
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id);
+
+      const response = await axios.get(`/api/v1/orders/singleOrder/${id}`);
+      // console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch order"
+      );
+    }
+  }
+);

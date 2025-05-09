@@ -23,7 +23,7 @@ router
 router.route("/allOrders").get(isAuthenticatedUser, allOrders);
 
 //get single order of loggedIn user
-router.route("singleOrder/:id").get(isAuthenticatedUser, singleOrder);
+router.route("/singleOrder/:id").get(isAuthenticatedUser, singleOrder);
 
 //getting all orders --->Admin
 router

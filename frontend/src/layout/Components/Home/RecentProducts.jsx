@@ -19,7 +19,7 @@ const RecentAddedProducts = () => {
       <h2 className="text-5xl sm:text-6xl font-bold text-white/90 mt-14 text-center">
         New Arrivals
       </h2>
-      <section className="w-full my-14 px-4 pt-14 pb-14 bg-bg-color">
+      <section className="w-full my-14 px-4 py-10 bg-bg-color ">
         <div className="flex justify-end items-center mb-4">
           <NavLink to="/products" className="text-gold hover:underline">
             More Products →
@@ -30,18 +30,17 @@ const RecentAddedProducts = () => {
           modules={[Navigation, Pagination, Autoplay]}
           navigation
           pagination={{ clickable: true }}
-          autoplay={{ delay: 2000 }}
+          autoplay={{ delay: 1000 }}
           spaceBetween={20}
           breakpoints={{
-            320: { slidesPerView: 1.1 },
-            480: { slidesPerView: 1.3 },
-            640: { slidesPerView: 1.8 },
-            768: { slidesPerView: 2.5 },
-            1024: { slidesPerView: 3 },
-            1280: { slidesPerView: 4 },
+            0: { slidesPerView: 1 },
+            480: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 4 },
+            1280: { slidesPerView: 5 },
           }}
           loop={true}
-          className="w-full pb-12 "
+          className="w-full  pb-12 "
         >
           {recentAddedProducts &&
             recentAddedProducts.length > 0 &&
@@ -115,6 +114,7 @@ const RecentAddedProducts = () => {
     .swiper-button-next,
              .swiper-button-prev {
               color: #faaf00; 
+              
              }
 `}
       </style>

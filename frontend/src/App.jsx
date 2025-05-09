@@ -58,8 +58,17 @@ import Checkout from "./layout/Pages/Order/Checkout.jsx";
 import Shipping from "./layout/Pages/Order/Shipping.jsx";
 import ConfirmOrder from "./layout/Pages/Order/ConfirmOrder.jsx";
 import Payment from "./layout/Pages/Order/Payment.jsx";
-import { clearOrderPlaceMessage } from "./layout/store/OrderSlice/orderSlice.js";
+import {
+  clearGetAllOrdersMessage,
+  clearOrderItems,
+  clearOrderPlaceMessage,
+  clearShippingAddress,
+} from "./layout/store/OrderSlice/orderSlice.js";
 import Order from "./layout/Pages/Order/Order.jsx";
+import { getAllOrders } from "./layout/store/OrderSlice/orderSliceReducers.js";
+import SingleOrderDetails from "./layout/Pages/Order/SingleOrderDetails.jsx";
+import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
+import NotFoundPage from "./layout/Components/NotFound/NotFoundPage.jsx";
 
 const App = () => {
   const {
@@ -74,6 +83,7 @@ const App = () => {
     forgotPasswordMessage,
     resetPasswordMessage,
     isVerified,
+    user,
   } = useSelector((state) => state.auth);
 
   const {} = useSelector((state) => state.product);
@@ -86,7 +96,9 @@ const App = () => {
   } = useSelector((state) => state.cart);
   // const { categories } = useSelector((state) => state.category);
 
-  const { orderPlacedMessage } = useSelector((state) => state.order);
+  const { orderPlacedMessage, order, getAllOrdersMessage } = useSelector(
+    (state) => state.order
+  );
   // console.log(orderPlacedMessage);
 
   const dispatch = useDispatch();
@@ -97,13 +109,6 @@ const App = () => {
     let timeout;
 
     /* FOR USER AUTHENTICATION */
-
-    // if (error) {
-    //   toast.error(error);
-    //   timeout = setTimeout(() => {
-    //     dispatch(clearError());
-    //   }, 1500);
-    // }
 
     //user reagisteration success message show
     if (resgisterMessage) {
@@ -130,20 +135,16 @@ const App = () => {
     if (loginMessage) {
       toast.success(loginMessage);
       dispatch(clearLoginMessage());
+      navigate("/");
     }
 
     //user logout success message show
     if (logOutMessage) {
       toast.success(logOutMessage);
-      navigate(`/`);
       dispatch(clearLogoutMessage());
+      dispatch(clearCartLocal());
+      navigate("/", { replace: true });
     }
-    //   dispatch(clearCartLocal());
-    //   timeout = setTimeout(() => {
-    //     dispatch(clearLogoutMessage());
-    //     navigate("/login");
-    //   }, 1500);
-    // }
 
     //user update profile success message show
     if (updateProfileMessage) {
@@ -180,8 +181,6 @@ const App = () => {
       navigate("/account", { replace: true });
     }
 
-    /* FOR Products*/
-
     // /* FOR USER CART */
 
     //Add to cart item to backend message -->when user logged in
@@ -214,7 +213,13 @@ const App = () => {
       dispatch(clearOrderPlaceMessage());
       dispatch(clearCartLocal());
       dispatch(clearWholeCartBackend());
-      navigate("/user/orders");
+      dispatch(clearShippingAddress());
+      dispatch(clearOrderItems());
+    }
+
+    if (getAllOrdersMessage) {
+      toast.success(getAllOrdersMessage);
+      dispatch(clearGetAllOrdersMessage());
     }
 
     return () => clearTimeout(timeout);
@@ -233,10 +238,7 @@ const App = () => {
     addToCartUpdateBackendMessage,
     deleteCartItemFromBackendMessage,
     orderPlacedMessage,
-
-    // addToCartBackendMessage,
-    // addToCartUpdateBackendMessage,
-    // updateCartOfLocalMessage,
+    getAllOrdersMessage,
   ]);
 
   useEffect(() => {
@@ -266,7 +268,7 @@ const App = () => {
   return (
     <>
       <Navbar />
-      {/* {isVerify && isVerify === true && <UserSpeedDial user={user} />} */}
+      {isVerified && isVerified === true && <UserSpeedDial user={user} />}
       <div className="w-[100%] min-h-screen relative flex items-center justify-center flex-col bg-[url('/src/assets//body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover ">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -298,7 +300,10 @@ const App = () => {
               <Route path="payment" element={<Payment />} />
             </Route>
             <Route path="/user/orders" element={<Order />} />
+            <Route path="/user/order/:id" element={<SingleOrderDetails />} />
           </Route>
+
+          <Route path="*" element={<NotFoundPage />} />
 
           {/* <Route path="/search" element={<Search />} /> */}
         </Routes>

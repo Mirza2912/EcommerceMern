@@ -5,15 +5,21 @@ import {
   saveOrderItemsToLocalStorage,
   saveShippingToLocalStorage,
 } from "./orderLocalStorageHandler";
-import { createOrder } from "./orderSliceReducers";
+import {
+  createOrder,
+  getAllOrders,
+  getSingleOrderDetails,
+} from "./orderSliceReducers";
 
 // Product slice
 const orderSlice = createSlice({
   name: "order",
   initialState: {
     order: [],
+    singleOrderDetails: {},
     shippingAddress: loadShippingFromLocalStorage(),
     orderItems: loadOrderItemsFromLocalStorage(),
+    getAllOrdersMessage: "",
     paymentMethod: "",
     orderPlacedMessage: "",
     otherDetails: { taxPrice: null, shippingPrice: null, totalPrice: null },
@@ -39,6 +45,10 @@ const orderSlice = createSlice({
       state.orderItems = [];
     },
 
+    clearGetAllOrdersMessage: (state) => {
+      state.getAllOrdersMessage = "";
+    },
+
     clearError: (state) => {
       state.error = null;
     },
@@ -61,6 +71,31 @@ const orderSlice = createSlice({
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getAllOrders.pending, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(getAllOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.order = action.payload?.data;
+        state.getAllOrdersMessage = action.payload?.message;
+      })
+      .addCase(getAllOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getSingleOrderDetails.pending, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(getSingleOrderDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleOrderDetails = action.payload?.data;
+      })
+      .addCase(getSingleOrderDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -71,5 +106,7 @@ export const {
   setOrderItems,
   clearOrderItems,
   clearOrderPlaceMessage,
+  clearShippingAddress,
+  clearGetAllOrdersMessage,
 } = orderSlice.actions;
 export default orderSlice.reducer;

@@ -58,10 +58,16 @@ const ConfirmOrder = () => {
               </Link>
             </div>
             <div className="w-full pl-2 border border-gray-300 p-5">
-              <div className="text-white/90 flex items-center gap-4 mb-2">
+              <div className="text-white/90 flex  gap-4 mb-2">
                 <p className="text-xl ">Address: </p>
                 <p className="text-lg font-normal">
-                  {shippingAddress?.address}
+                  {shippingAddress?.address +
+                    "," +
+                    shippingAddress?.city +
+                    "," +
+                    shippingAddress?.state +
+                    "," +
+                    shippingAddress?.country || ""}
                 </p>
               </div>
               <div className="text-white/90 flex items-center gap-4 mb-2">
