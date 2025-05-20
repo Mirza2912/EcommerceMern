@@ -2,7 +2,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   changeUserPassword,
+  deleteUser,
   forgotPassword,
+  getAllUsers,
   loadUser,
   registerUser,
   resetPassword,
@@ -19,6 +21,7 @@ const userSlice = createSlice({
     user: null, //for storing user data
     tempUser: null, //when user give credentials and got otp
     isVerified: false, //when user verify the otp now user is authenticated
+    allUsers: [],
     isLoading: false,
     error: null,
     resgisterMessage: "",
@@ -30,6 +33,7 @@ const userSlice = createSlice({
     deleteUserMessage: "",
     verificationMessage: "",
     loginMessage: "",
+    adminDeleteUserMessage: "",
   },
   reducers: {
     clearError: (state) => {
@@ -61,6 +65,9 @@ const userSlice = createSlice({
     },
     cleareUserDeleteMessage: (state) => {
       state.deleteUserMessage = "";
+    },
+    clearAdminDeleteUserMessage: (state) => {
+      state.adminDeleteUserMessage = "";
     },
   },
   extraReducers: (builder) => {
@@ -193,6 +200,30 @@ const userSlice = createSlice({
       .addCase(userDelete.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(getAllUsers.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.allUsers = action.payload;
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.adminDeleteUserMessage = action.payload;
+        const deletedUserId = action.meta.arg;
+        state.allUsers = state.allUsers?.filter(
+          (user) => user._id !== deletedUserId
+        );
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -209,4 +240,5 @@ export const {
   clearRegisterMessage,
   clearVerificationMessage,
   clearLoginMessage,
+  clearAdminDeleteUserMessage,
 } = userSlice.actions;

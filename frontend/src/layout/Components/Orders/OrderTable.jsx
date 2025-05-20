@@ -11,7 +11,7 @@ const OrdersTable = () => {
   const data = useMemo(() => {
     return (
       order &&
-      order.map((ord, index) => ({
+      order?.map((ord, index) => ({
         number: index + 1,
         image: ord.orderItems[0]?.image?.url,
         orderId: ord._id,

@@ -109,10 +109,20 @@ const singleOrder = AsyncHandler(async (req, res, next) => {
   }
 });
 
+/* ADMIN METHODS  */
 // getting all orders --->Admin
 const getAllOrders = AsyncHandler(async (req, res, next) => {
-  const orders = await Order.find();
-  res.status(200).json(new ApiResponse(200, orders, `All Orders...!`));
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    if (!orders) {
+      return next(new ApiError(`Orders not found...!`, 400));
+    }
+    res.status(200).json(new ApiResponse(200, orders, `All Orders...!`));
+  } catch (error) {
+    return next(
+      new ApiError(`Something went wrong while fetching orderss...!`, 500)
+    );
+  }
 });
 
 //update single order --->Admin

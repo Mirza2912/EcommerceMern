@@ -263,3 +263,52 @@ export const userDelete = createAsyncThunk(
     }
   }
 );
+
+//ADMIN METHODS
+
+// get all users
+export const getAllUsers = createAsyncThunk(
+  "user/getAllUsers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/api/v1/users/admin/users");
+
+      // console.log(response?.data);
+
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch users"
+      );
+    }
+  }
+);
+
+//dele user by admin
+export const deleteUser = createAsyncThunk(
+  "user/deleteUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `/api/v1/users/admin/user/${id}`,
+        config
+      );
+
+      console.log(response?.data);
+
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to delete user"
+      );
+    }
+  }
+);

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getAllProducts,
+  getALLProductsAdmin,
   getBannerProducts,
   getFeaturedProducts,
   getRecentAddedProducts,
@@ -14,6 +15,7 @@ export const productSlice = createSlice({
   name: "products",
   initialState: {
     products: [], //for storing all products in state
+    adminProducts: [],
     productCount: 0,
     filteredProductCount: 0,
     featuredProducts: [],
@@ -110,6 +112,18 @@ export const productSlice = createSlice({
         state.recentAddedProducts = action.payload?.products;
       })
       .addCase(getRecentAddedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getALLProductsAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getALLProductsAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.adminProducts = action.payload;
+      })
+      .addCase(getALLProductsAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

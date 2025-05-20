@@ -255,6 +255,7 @@ const getRecentAdded = AsyncHandler(async (req, res, next) => {
   }
 });
 
+/* ADMIN METHODS */
 //Create products in product model
 const createProduct = AsyncHandler(async (req, res, next) => {
   //later
@@ -490,6 +491,23 @@ const deleteProduct = AsyncHandler(async (req, res, next) => {
     );
 });
 
+//get all products
+const getAdminProducts = AsyncHandler(async (req, res, next) => {
+  try {
+    const product = await Product.find().sort({ createAt: -1 });
+
+    if (!product) {
+      return next(new ApiError(`Products not found...!`, 404));
+    }
+
+    res.status(200).json(new ApiResponse(200, product, `All products...!`));
+  } catch (error) {
+    return next(
+      new ApiError("Something went wrong while fetching products...!", 500)
+    );
+  }
+});
+
 export {
   getAllProducts,
   createProduct,
@@ -499,4 +517,5 @@ export {
   getFeaturedProducts,
   getBannerProducts,
   getRecentAdded,
+  getAdminProducts,
 };

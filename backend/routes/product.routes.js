@@ -8,6 +8,7 @@ import {
   getFeaturedProducts,
   getBannerProducts,
   getRecentAdded,
+  getAdminProducts,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
@@ -32,6 +33,11 @@ router
 router.route("/featured-products").get(getFeaturedProducts);
 router.route("/recent-products").get(getRecentAdded);
 router.route("/banner-products").get(getBannerProducts);
+
+/* ADMIN ROUTES */
+router
+  .route("/admin/products")
+  .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAdminProducts);
 router
   .route("/create")
   .post(

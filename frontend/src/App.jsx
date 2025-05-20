@@ -18,7 +18,9 @@ import OtpVerification from "./layout/Pages/OtpVerification.jsx";
 import ProtectedRoute from "./layout/Routes/protectedRoute.jsx";
 import { toast } from "react-toastify";
 import {
+  clearAdminDeleteUserMessage,
   cleareResetPasswordMessage,
+  clearError,
   cleareUpdateProfileMessage,
   cleareUserDeleteMessage,
   clearForgotPasswordMessage,
@@ -69,6 +71,21 @@ import { getAllOrders } from "./layout/store/OrderSlice/orderSliceReducers.js";
 import SingleOrderDetails from "./layout/Pages/Order/SingleOrderDetails.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import NotFoundPage from "./layout/Components/NotFound/NotFoundPage.jsx";
+import AdminRoute from "./layout/Routes/adminRoute.jsx";
+import DashBoardLayout from "./layout/Pages/Admin/dashBoardLayout.jsx";
+import AllUsers from "./layout/Pages/Admin/Users/AllUsers.jsx";
+import AllProducts from "./layout/Pages/Admin/Products/AllProducts.jsx";
+import SingleUserDetails from "./layout/Pages/Admin/Users/SingleUserDetails.jsx";
+import SingleProduct from "./layout/Pages/Admin/Products/SingleProductDetails.jsx";
+import CreateNewProduct from "./layout/Pages/Admin/Products/CreateNewProduct.jsx";
+import UpdateSingleProduct from "./layout/Pages/Admin/Products/UpdateSingleProduct.jsx";
+import AllEmployee from "./layout/Pages/Admin/Employee/AllEmployee.jsx";
+import SingleEmployee from "./layout/Pages/Admin/Employee/SingleEmployee.jsx";
+import SingleEmployeeUpdate from "./layout/Pages/Admin/Employee/SingleEmployeeUpdate.jsx";
+import CreateNewEmployee from "./layout/Pages/Admin/Employee/CreateNewEmployee.jsx";
+import AllOrders from "./layout/Pages/Admin/Orders/AllOrders.jsx";
+import SingleOrderDetailsAdmin from "./layout/Pages/Admin/Orders/SingleOrderDetailsAdmin.jsx";
+import DashboardHome from "./layout/Pages/Admin/DashboardHome.jsx";
 
 const App = () => {
   const {
@@ -84,6 +101,8 @@ const App = () => {
     resetPasswordMessage,
     isVerified,
     user,
+    error,
+    adminDeleteUserMessage,
   } = useSelector((state) => state.auth);
 
   const {} = useSelector((state) => state.product);
@@ -109,6 +128,15 @@ const App = () => {
     let timeout;
 
     /* FOR USER AUTHENTICATION */
+
+    if (error) {
+      if (error === "No token, authorization denied..!") {
+        dispatch(clearError());
+      } else {
+        toast.error(error);
+        dispatch(clearError());
+      }
+    }
 
     //user reagisteration success message show
     if (resgisterMessage) {
@@ -140,6 +168,7 @@ const App = () => {
 
     //user logout success message show
     if (logOutMessage) {
+      dispatch(clearError());
       toast.success(logOutMessage);
       dispatch(clearLogoutMessage());
       dispatch(clearCartLocal());
@@ -222,8 +251,15 @@ const App = () => {
       dispatch(clearGetAllOrdersMessage());
     }
 
+    //admin
+    if (adminDeleteUserMessage) {
+      toast.success(adminDeleteUserMessage);
+      clearAdminDeleteUserMessage();
+    }
+
     return () => clearTimeout(timeout);
   }, [
+    error,
     resgisterMessage,
     verificationMessage,
     loginMessage,
@@ -239,6 +275,7 @@ const App = () => {
     deleteCartItemFromBackendMessage,
     orderPlacedMessage,
     getAllOrdersMessage,
+    adminDeleteUserMessage,
   ]);
 
   useEffect(() => {
@@ -301,6 +338,56 @@ const App = () => {
             </Route>
             <Route path="/user/orders" element={<Order />} />
             <Route path="/user/order/:id" element={<SingleOrderDetails />} />
+          </Route>
+
+          {/* /* Admin routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin/dashboard" element={<DashBoardLayout />}>
+              <Route index element={<DashboardHome />} />
+
+              {/* Users  */}
+              <Route path="users" element={<AllUsers />} />
+              <Route
+                path="users/single-user/details/:id"
+                element={<SingleUserDetails />}
+              />
+              {/* products  */}
+              <Route path="products" element={<AllProducts />} />
+              <Route
+                path="products/single-product/details/:id"
+                element={<SingleProduct />}
+              />
+              <Route
+                path="products/create-new-product"
+                element={<CreateNewProduct />}
+              />
+              <Route
+                path="products/product/update-product/:id"
+                element={<UpdateSingleProduct />}
+              />
+            </Route>
+
+            {/* Employees  */}
+            <Route path="employee" element={<AllEmployee />} />
+            <Route
+              path="employee/single-employee/details/:id"
+              element={<SingleEmployee />}
+            />
+            <Route
+              path="employee/single-employee/update/:id"
+              element={<SingleEmployeeUpdate />}
+            />
+            <Route
+              path="employee/create-new-employee"
+              element={<CreateNewEmployee />}
+            />
+
+            {/* Orders  */}
+            <Route path="orders" element={<AllOrders />} />
+            <Route
+              path="orders/order/details/:id"
+              element={<SingleOrderDetailsAdmin />}
+            />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

@@ -400,13 +400,6 @@ const userDetails = AsyncHandler(async (req, res, next) => {
   // console.log(req.user);
 
   try {
-    // fetching _id of user who want to access details from req.user which we set in middleware
-    // const { _id } = req.user;
-    // console.log(_id);
-
-    // const user = await User.findById(_id);
-    // console.log(user);
-
     if (!req.user) {
       return next(new ApiError("User not found with this id...!", 404));
     }
@@ -647,8 +640,19 @@ const resetPassword = AsyncHandler(async (req, res, next) => {
 });
 //get all users --->Admin
 const getAllUsers = AsyncHandler(async (req, res, next) => {
-  const users = await User.find();
-  res.status(200).json(new ApiResponse(200, users, `All Users...!`));
+  try {
+    const users = await User.find({}, "-password").sort({ createdAt: -1 });
+    if (!users) {
+      return next(new ApiError(`Users not found...!`, 404));
+    }
+
+    return res.status(200).json(new ApiResponse(200, users, `All Users...!`));
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    return next(
+      new ApiError("Something went wrong while fetching users...!", 500)
+    );
+  }
 });
 
 //getting single user --->Admin
@@ -684,10 +688,21 @@ const updateUser = AsyncHandler(async (req, res, next) => {
 
 //Delete User --->Admin
 const deleteUser = AsyncHandler(async (req, res, next) => {
-  await User.findByIdAndDelete(req.params.id);
-  res
-    .status(200)
-    .json(new ApiResponse(200, deleteUser, `User Deleted Successfully...!`));
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return next(new ApiError(`User not found...!`, 404));
+    }
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, `${deletedUser?.name} deleted Successfully...!`)
+      );
+  } catch (error) {
+    return next(
+      new ApiError(`something went wrong while deleting user...!`, 500)
+    );
+  }
 });
 export {
   userRegistration,

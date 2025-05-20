@@ -70,3 +70,21 @@ export const getSingleOrderDetails = createAsyncThunk(
     }
   }
 );
+
+export const getAllOrdersAdmin = createAsyncThunk(
+  "order/getAllOrdersAdmin",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/api/v1/orders/admin/orders/");
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to getting orders"
+      );
+    }
+  }
+);

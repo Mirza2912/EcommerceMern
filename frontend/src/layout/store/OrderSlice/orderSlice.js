@@ -8,6 +8,7 @@ import {
 import {
   createOrder,
   getAllOrders,
+  getAllOrdersAdmin,
   getSingleOrderDetails,
 } from "./orderSliceReducers";
 
@@ -16,6 +17,7 @@ const orderSlice = createSlice({
   name: "order",
   initialState: {
     order: [],
+    allOrders: [],
     singleOrderDetails: {},
     shippingAddress: loadShippingFromLocalStorage(),
     orderItems: loadOrderItemsFromLocalStorage(),
@@ -94,6 +96,18 @@ const orderSlice = createSlice({
         state.singleOrderDetails = action.payload?.data;
       })
       .addCase(getSingleOrderDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllOrdersAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllOrdersAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allOrders = action.payload;
+      })
+      .addCase(getAllOrdersAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

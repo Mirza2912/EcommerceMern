@@ -14,9 +14,7 @@ const isAuthenticatedUser = AsyncHandler(async (req, res, next) => {
 
   //if token not found its mean user is not logged in
   if (!accessToken) {
-    return next(
-      new ApiError(`You need to login to access this resource...!`, 401)
-    );
+    return next(new ApiError(`No token, authorization denied..!`, 401));
   }
 
   try {
