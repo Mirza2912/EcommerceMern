@@ -44,6 +44,14 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
+    isSuspended: {
+      type: Boolean,
+      default: false,
+    },
     registrationAttempts: { type: Number, default: 0 },
     verificationCode: Number,
     verificationCodeExpiry: Date,

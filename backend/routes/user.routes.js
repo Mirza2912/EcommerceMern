@@ -14,6 +14,8 @@ import {
   userLogout,
   userRegistration,
   verifyOTP,
+  suspendUser,
+  unSuspendUSer,
 } from "../controllers/user.controller.js";
 import {
   isAuthenticatedUser,
@@ -72,15 +74,27 @@ router
   .post(resetUserPassword, validate, resetPassword);
 // for delete account
 router.route("/me/delete/account").delete(isAuthenticatedUser, deleteAccount);
+
 // for getting all users --->Admin
 router
   .route("/admin/users")
   .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAllUsers);
+
 // for getting single users --->Admin
 router
   .route("/admin/user/:id")
   .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getSingleUser)
   .put(isAuthenticatedUser, isAuthorizedRoles("admin"), updateUser)
   .delete(isAuthenticatedUser, isAuthorizedRoles("admin"), deleteUser);
+
+// for suspend user --->Admin
+router
+  .route("/admin/user/suspend/:id")
+  .put(isAuthenticatedUser, isAuthorizedRoles("admin"), suspendUser);
+
+// for un-suspend user --->Admin
+router
+  .route("/admin/user/un-suspend/:id")
+  .put(isAuthenticatedUser, isAuthorizedRoles("admin"), unSuspendUSer);
 
 export default router;

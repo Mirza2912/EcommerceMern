@@ -657,33 +657,42 @@ const getAllUsers = AsyncHandler(async (req, res, next) => {
 
 //getting single user --->Admin
 const getSingleUser = AsyncHandler(async (req, res, next) => {
-  // getting single user by req.params.id
-  const singleUser = await User.findById(req.params.id);
-  if (!singleUser) {
-    return next(new ApiError("User not found with this id...!", 401));
+  try {
+    // getting single user by req.params.id
+    const singleUser = await User.findById(req.params.id);
+    if (!singleUser) {
+      return next(new ApiError("User not found with this id...!", 404));
+    }
+    res.status(200).json(new ApiResponse(200, singleUser, `Single User...!`));
+  } catch (error) {
+    return next(new ApiError("Server error while fetching user...!", 500));
   }
-  res.status(200).json(new ApiResponse(200, singleUser, `Single User...!`));
 });
 
 //update user's role --->Admin
 const updateUser = AsyncHandler(async (req, res, next) => {
-  //getting data from admin but in frontend admin will only able to change role not name and email
-  const newData = {
-    name: req.body.name,
-    email: req.body.email,
-    role: req.body.role,
-  };
+  try {
+    const { id } = req.params;
 
-  //update user's role --->Admin
-  const updatedUser = await User.findByIdAndUpdate(req.params.id, newData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
+    const user = await User.findByIdAndUpdate(
+      id,
+      { role: req.body?.role },
+      { new: true }
+    );
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updatedUser, `Updated Role Successfully...!`));
+    if (!user) {
+      return next(new ApiError("User not found with this id...!", 404));
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, user, `${user?.name}'s role updated successfully`)
+      );
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return next(new ApiError("Server error while updating user...!", 500));
+  }
 });
 
 //Delete User --->Admin
@@ -704,6 +713,58 @@ const deleteUser = AsyncHandler(async (req, res, next) => {
     );
   }
 });
+
+//to suspend user ---> admin
+const suspendUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the user by ID and suspend it
+    const user = await User.findById(id);
+
+    if (!user) {
+      return next(new ApiError(`User not found...!`, 404));
+    }
+
+    user.isSuspended = true;
+    await user.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, `${user?.name} sespended successfully...!`));
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    return next(
+      new ApiError(`something went wrong while suspend user...!`, 500)
+    );
+  }
+};
+
+//to suspend user ---> admin
+const unSuspendUSer = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the user by ID and suspend it
+    const user = await User.findById(id);
+
+    if (!user) {
+      return next(new ApiError(`User not found...!`, 404));
+    }
+
+    user.isSuspended = false;
+    await user.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, `${user?.name} unspended successfully...!`));
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    return next(
+      new ApiError(`something went wrong while unsuspend user...!`, 500)
+    );
+  }
+};
 export {
   userRegistration,
   userLogin,
@@ -718,4 +779,6 @@ export {
   deleteUser,
   forgotPassword,
   resetPassword,
+  suspendUser,
+  unSuspendUSer,
 };
