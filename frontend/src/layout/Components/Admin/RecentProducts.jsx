@@ -40,7 +40,10 @@ export default function RecentProducts() {
           <tbody>
             {firstFiveOrders &&
               firstFiveOrders?.map((product) => (
-                <tr key={product._id} className="border-b last:border-0">
+                <tr
+                  key={product._id}
+                  className="border-b border-gray-700 last:border-0"
+                >
                   <td className="py-3">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full flex items-center justify-center ">
@@ -85,7 +88,7 @@ export default function RecentProducts() {
                         <BiDotsHorizontalRounded className="w-5 h-4" />
                       </button>
                       {dropdownOpen === product._id && (
-                        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                        <div className="absolute right-5 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
                           <div
                             className="py-1"
                             role="menu"

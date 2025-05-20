@@ -15,7 +15,7 @@ export default function DashboardStats() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div className="bg-black/60 backdrop-blur-lg text-[#F7FAFC] shadow-yellow-500/10 hover:shadow-yellow-500/20 p-6 rounded-lg border border-gray-700 shadow-md">
         <div className="flex justify-between items-start">
           <div>
