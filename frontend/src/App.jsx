@@ -86,6 +86,11 @@ import CreateNewEmployee from "./layout/Pages/Admin/Employee/CreateNewEmployee.j
 import AllOrders from "./layout/Pages/Admin/Orders/AllOrders.jsx";
 import SingleOrderDetailsAdmin from "./layout/Pages/Admin/Orders/SingleOrderDetailsAdmin.jsx";
 import DashboardHome from "./layout/Pages/Admin/DashboardHome.jsx";
+import {
+  clearAddToFeaturedProduct,
+  clearDeleteProductMessage,
+  clearMakeProductUnFeaturedMessage,
+} from "./layout/store/ProductSlice/productSlice.js";
 
 const App = () => {
   const {
@@ -105,7 +110,11 @@ const App = () => {
     adminDeleteUserMessage,
   } = useSelector((state) => state.auth);
 
-  const {} = useSelector((state) => state.product);
+  const {
+    deleteProductMessage,
+    makeProductUnFeaturedMessage,
+    addToFeaturedProduct,
+  } = useSelector((state) => state.product);
 
   const {
     updateCartOfLocalMessage,
@@ -254,7 +263,22 @@ const App = () => {
     //admin
     if (adminDeleteUserMessage) {
       toast.success(adminDeleteUserMessage);
-      clearAdminDeleteUserMessage();
+      dispatch(clearAdminDeleteUserMessage());
+    }
+
+    if (deleteProductMessage) {
+      toast.success(deleteProductMessage);
+      dispatch(clearDeleteProductMessage());
+    }
+
+    if (addToFeaturedProduct) {
+      toast.success(addToFeaturedProduct);
+      dispatch(clearAddToFeaturedProduct());
+    }
+
+    if (makeProductUnFeaturedMessage) {
+      toast.success(makeProductUnFeaturedMessage);
+      dispatch(clearMakeProductUnFeaturedMessage());
     }
 
     return () => clearTimeout(timeout);
@@ -276,6 +300,9 @@ const App = () => {
     orderPlacedMessage,
     getAllOrdersMessage,
     adminDeleteUserMessage,
+    deleteProductMessage,
+    addToFeaturedProduct,
+    makeProductUnFeaturedMessage,
   ]);
 
   useEffect(() => {

@@ -9,10 +9,11 @@ import {
   getBannerProducts,
   getRecentAdded,
   getAdminProducts,
+  addToFeatured,
+  makeUnFeatured,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
-  deleteProductValidation,
   getAllProductsValidation,
   singleProductValidation,
   updateProductValidation,
@@ -56,14 +57,20 @@ router
     validate,
     updateProduct
   );
+router.route("/deleteProduct/:id").delete(
+  isAuthenticatedUser,
+  isAuthorizedRoles("admin"),
+
+  validate,
+  deleteProduct
+);
+
 router
-  .route("/deleteProduct/:id")
-  .delete(
-    isAuthenticatedUser,
-    isAuthorizedRoles("admin"),
-    deleteProductValidation,
-    validate,
-    deleteProduct
-  );
+  .route("/make-feature-product/:id")
+  .put(isAuthenticatedUser, isAuthorizedRoles("admin"), addToFeatured);
+
+router
+  .route("/make-product-unfeatured/:id")
+  .put(isAuthenticatedUser, isAuthorizedRoles("admin"), makeUnFeatured);
 
 export default router;

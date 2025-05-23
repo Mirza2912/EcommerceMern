@@ -117,6 +117,7 @@ export default function AdminSidebar() {
             },
           ].map(({ path, label, icon }) => (
             <NavLink
+              end
               key={path}
               to={path}
               onClick={() => setIsOpen(false)}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
@@ -16,11 +16,12 @@ export default function UsersTable({ users }) {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const { allUsers, isLoading } = useSelector((state) => state.auth);
 
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const disptach = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 8;
+  const usersPerPage = 10;
 
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
@@ -39,23 +40,31 @@ export default function UsersTable({ users }) {
   useEffect(() => {
     disptach(getAllUsers());
   }, [disptach]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <>
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4" ref={dropdownRef}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="text-sm text-[#F7FAFC] border-b border-gray-700">
-                  <th className="font-medium text-left pb-3 pl-4">
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-700 text-gold focus:ring-[#d99f18]"
-                    />
-                  </th>
-                  <th className="font-medium text-left pb-3">User</th>
+                  <th className="font-medium text-left pb-3 pl-4">User</th>
                   <th className="font-medium text-left pb-3">Role</th>
                   <th className="font-medium text-left pb-3">Phone</th>
                   <th className="font-medium text-left pb-3">Status</th>
@@ -67,14 +76,8 @@ export default function UsersTable({ users }) {
                   paginatedUsers?.map((user) => (
                     <tr
                       key={user._id}
-                      className="border-b last:border-0 border-gray-700"
+                      className="border-b last:border-0 border-gray-700 hover:bg-bg-color pl-4"
                     >
-                      <td className="py-3 pl-4">
-                        <input
-                          type="checkbox"
-                          className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                        />
-                      </td>
                       <td className="py-3">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full flex items-center justify-center ">

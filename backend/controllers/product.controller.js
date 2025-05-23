@@ -465,28 +465,30 @@ const updateProduct = AsyncHandler(async (req, res, next) => {
 
 //deleting specific product
 const deleteProduct = AsyncHandler(async (req, res, next) => {
-  const productId = req.params.id;
+  const id = req.params.id;
   // console.log(productId);
 
-  const product = await Product.findById(productId);
+  const product = await Product.findById(id);
   // console.log(product);
 
   if (!product) {
-    return next(
-      new ApiError(`Product with id:${productId} is not found...!`, 404)
-    );
+    return next(new ApiError(`Product with id:${id} is not found...!`, 404));
   }
 
   const deletedProduct = await Product.findByIdAndDelete(product._id);
   // console.log(deleteProduct);
+
+  if (!deletedProduct) {
+    return next(new ApiError(`There is some error...!`, 500));
+  }
 
   res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        { products: deletedProduct },
-        `Product deleted with ${product.name} name successfully...!`
+        { products: {} },
+        `Product with ${product.name} name deleted successfully...!`
       )
     );
 });
@@ -494,7 +496,9 @@ const deleteProduct = AsyncHandler(async (req, res, next) => {
 //get all products
 const getAdminProducts = AsyncHandler(async (req, res, next) => {
   try {
-    const product = await Product.find().sort({ createAt: -1 });
+    const product = await Product.find()
+      .populate("category", "category")
+      .sort({ createAt: -1 });
 
     if (!product) {
       return next(new ApiError(`Products not found...!`, 404));
@@ -508,6 +512,85 @@ const getAdminProducts = AsyncHandler(async (req, res, next) => {
   }
 });
 
+const addToFeatured = async (req, res, next) => {
+  try {
+    // console.log(req.params.id);
+
+    const product = await Product.findById(req.params?.id);
+
+    if (!product) {
+      return next(new ApiError(`Products not found...!`, 404));
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params?.id,
+      {
+        isFeatured: true,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("category", "category");
+
+    if (!updatedProduct) {
+      return next(new ApiError(`Products not found...!`, 404));
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          updatedProduct,
+          `Now ${updatedProduct?.name} is featured product...!`
+        )
+      );
+  } catch (err) {
+    console.error("Error updating product:", err);
+    return next(new ApiError(`Something went wrong...!`, 500));
+  }
+};
+
+const makeUnFeatured = async (req, res, next) => {
+  try {
+    // console.log(req.params.id);
+    const product = await Product.findById(req.params?.id);
+
+    if (!product) {
+      return next(new ApiError(`Product not found...!`, 404));
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params?.id,
+      {
+        isFeatured: false,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).populate("category", "category");
+
+    if (!updatedProduct) {
+      return next(new ApiError(`Products not found...!`, 404));
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          updatedProduct,
+          `Now ${updatedProduct?.name} is un featured product...!`
+        )
+      );
+  } catch (err) {
+    console.error("Error updating product:", err);
+    return next(new ApiError(`Something went wrong...!`, 500));
+  }
+};
+
 export {
   getAllProducts,
   createProduct,
@@ -518,4 +601,6 @@ export {
   getBannerProducts,
   getRecentAdded,
   getAdminProducts,
+  makeUnFeatured,
+  addToFeatured,
 };

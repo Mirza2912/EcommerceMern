@@ -156,3 +156,74 @@ export const getALLProductsAdmin = createAsyncThunk(
     }
   }
 );
+
+//single product details
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id);
+
+      /*making api call with axios for getting single  product from backend */
+      const response = await axios.delete(
+        `/api/v1/products/deleteProduct/${id}`
+      );
+      // console.log(response?.data);
+      return response?.data?.message; //returning fetched data
+    } catch (error) {
+      console.log(error.response);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to delete product"
+      );
+    }
+  }
+);
+
+//addToFeatured
+export const addToFeatured = createAsyncThunk(
+  "products/addToFeatured",
+  async (id, { rejectWithValue }) => {
+    try {
+      /*making api call with axios for getting single  product from backend */
+      const response = await axios.put(
+        `/api/v1/products/make-feature-product/${id}`
+      );
+      // console.log(response?.data);
+      return response?.data; //returning fetched data
+    } catch (error) {
+      console.log(error.response.data?.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to make product featured"
+      );
+    }
+  }
+);
+
+//addToFeatured
+export const makeUnfeatured = createAsyncThunk(
+  "products/makeUnfeatured",
+  async (id, { rejectWithValue }) => {
+    try {
+      /*making api call with axios for getting single  product from backend */
+      const response = await axios.put(
+        `/api/v1/products/make-product-unfeatured/${id}`
+      );
+      // console.log(response?.data);
+      return response?.data; //returning fetched data
+    } catch (error) {
+      console.log(error.response);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to make product unfeatured"
+      );
+    }
+  }
+);

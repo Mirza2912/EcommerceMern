@@ -5,10 +5,12 @@ import { Provider } from "react-redux";
 import { store } from "./layout/store/Store.js";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import ScrollTOTop from "./layout/Components/Utils/ScrollToTop.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <BrowserRouter>
+      <ScrollTOTop />
       <App />
       <ToastContainer
         position="bottom-center"

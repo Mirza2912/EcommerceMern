@@ -118,18 +118,9 @@ const singleProductValidation = [
     .withMessage("Invalid Product ID format"),
 ];
 
-const deleteProductValidation = [
-  query("id")
-    .notEmpty()
-    .withMessage("Product ID is required")
-    .isMongoId()
-    .withMessage("Invalid Product ID format"),
-];
-
 export {
   getAllProductsValidation,
   createProductValidation,
   updateProductValidation,
   singleProductValidation,
-  deleteProductValidation,
 };

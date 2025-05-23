@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  addToFeatured,
+  deleteProduct,
   getAllProducts,
   getALLProductsAdmin,
   getBannerProducts,
   getFeaturedProducts,
   getRecentAddedProducts,
+  makeUnfeatured,
   singleProductDetails,
 } from "./productSliceReducers.js";
 
@@ -27,6 +30,9 @@ export const productSlice = createSlice({
     categories: [],
     loading: false,
     error: null,
+    deleteProductMessage: "",
+    addToFeaturedProduct: "",
+    makeProductUnFeaturedMessage: "",
   },
 
   //Simple reducers(Functions)
@@ -34,6 +40,15 @@ export const productSlice = createSlice({
     //reducer for clearing all errors
     clearError: (state) => {
       state.error = null;
+    },
+    clearDeleteProductMessage: (state) => {
+      state.deleteProductMessage = "";
+    },
+    clearAddToFeaturedProduct: (state) => {
+      state.addToFeaturedProduct = "";
+    },
+    clearMakeProductUnFeaturedMessage: (state) => {
+      state.makeProductUnFeaturedMessage = "";
     },
   },
 
@@ -126,9 +141,62 @@ export const productSlice = createSlice({
       .addCase(getALLProductsAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        const deleteProductId = action.meta.arg;
+        state.adminProducts = state.adminProducts?.filter(
+          (prod) => prod._id !== deleteProductId
+        );
+        state.deleteProductMessage = action.payload;
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(addToFeatured.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addToFeatured.fulfilled, (state, action) => {
+        state.loading = false;
+        state.addToFeaturedProduct = action.payload?.message;
+        const updatedProduct = action.payload?.data;
+        state.adminProducts = state.adminProducts.map((prod) =>
+          prod._id === updatedProduct._id ? updatedProduct : prod
+        );
+      })
+      .addCase(addToFeatured.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(makeUnfeatured.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(makeUnfeatured.fulfilled, (state, action) => {
+        state.loading = false;
+        state.makeProductUnFeaturedMessage = action.payload?.message;
+        const updatedProduct = action.payload?.data;
+        state.adminProducts = state.adminProducts.map((prod) =>
+          prod._id === updatedProduct._id ? updatedProduct : prod
+        );
+      })
+      .addCase(makeUnfeatured.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError } = productSlice.actions;
+export const {
+  clearError,
+  clearDeleteProductMessage,
+  clearAddToFeaturedProduct,
+  clearMakeProductUnFeaturedMessage,
+} = productSlice.actions;
 export default productSlice.reducer;

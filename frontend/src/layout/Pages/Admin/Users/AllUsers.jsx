@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getAllUsers } from "../../../store/UserSlice/userSliceReducers";
 import UsersTable from "../../../Components/Admin/UsersTable";
 import { CiSearch } from "react-icons/ci";
+import { IoMdSearch } from "react-icons/io";
 
 export default function AllUsers() {
   const dispatch = useDispatch();
@@ -32,13 +33,13 @@ export default function AllUsers() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Users Management</h1>
+        <h1 className="text-4xl font-bold">Users Management</h1>
       </div>
 
       <div className="bg-black/60 backdrop-blur-lg p-6 rounded-lg border border-gray-700 shadow-md">
         <div className="flex items-center space-x-2 mb-6">
           <div className="relative flex-1">
-            <CiSearch className=" absolute top-3 text-xl left-2 text-gray-200" />
+            <IoMdSearch className="absolute left-2 top-3 text-xl text-gray-400" />
             <input
               type="text"
               placeholder="Search users..."

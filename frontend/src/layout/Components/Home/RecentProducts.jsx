@@ -1,13 +1,13 @@
 // components/RecentProductsSwiper.jsx
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { NavLink } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 const RecentAddedProducts = () => {
   const { loading, recentAddedProducts } = useSelector(
@@ -19,9 +19,14 @@ const RecentAddedProducts = () => {
       <h2 className="text-5xl sm:text-6xl font-bold text-white/90 mt-14 text-center">
         New Arrivals
       </h2>
-      <section className="w-full my-14 px-4 py-10 bg-bg-color ">
-        <div className="flex justify-end items-center mb-4">
-          <NavLink to="/products" className="text-gold hover:underline">
+
+      <section className="max-w-7xl w-[100%] mx-auto my-14 px-4 lg:px-10 py-10 bg-bg-color rounded-lg shadow-inner">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-semibold text-white/90">New Arivals</h3>
+          <NavLink
+            to="/products"
+            className="text-gold hover:underline text-sm sm:text-base"
+          >
             More Products →
           </NavLink>
         </div>
@@ -30,8 +35,10 @@ const RecentAddedProducts = () => {
           modules={[Navigation, Pagination, Autoplay]}
           navigation
           pagination={{ clickable: true }}
-          autoplay={{ delay: 1000 }}
-          spaceBetween={20}
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          loop={true}
+          speed={700}
+          spaceBetween={24}
           breakpoints={{
             0: { slidesPerView: 1 },
             480: { slidesPerView: 2 },
@@ -39,84 +46,77 @@ const RecentAddedProducts = () => {
             1024: { slidesPerView: 4 },
             1280: { slidesPerView: 5 },
           }}
-          loop={true}
-          className="w-full  pb-12 "
+          className="pb-12"
         >
-          {recentAddedProducts &&
-            recentAddedProducts.length > 0 &&
-            recentAddedProducts.map((product) => (
-              <SwiperSlide
-                key={product._id}
-                className="border  bg-transparent border-gray-600 rounded-lg shadow-lg hover:shadow-xl transition-all p-2"
+          {recentAddedProducts?.map((product) => (
+            <SwiperSlide key={product._id}>
+              <NavLink
+                to={`/product/${product._id}`}
+                className="group  border border-gray-700 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full"
               >
-                <NavLink
-                  to={`/product/${product._id}`}
-                  className="relative group bg-white shadow-md rounded-lg overflow-hidden transition-all hover:shadow-xl"
-                >
-                  {/* Category top-left */}
-                  <div className="absolute top-2 left-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
-                    {product?.category?.category || "Category"}
-                  </div>
-
-                  {/* Discount top-right */}
-                  {product.discount > 0 && (
-                    <div className="absolute top-2 right-2 text-white/90 bg-gold text-xs px-2 py-1 rounded-full z-10">
-                      {product.discount}% OFF
-                    </div>
-                  )}
-
+                <div className="relative">
                   <img
                     src={product.images[0]?.url}
                     alt={product.name}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
+                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  <div className="absolute top-2 left-2 bg-gold text-white text-xs px-3 py-1 rounded-full shadow-sm">
+                    {product?.category?.category || "Category"}
+                  </div>
+                  {product.discount > 0 && (
+                    <div className="absolute top-2 right-2 bg-gold text-white text-xs px-3 py-1 rounded-full shadow-sm">
+                      {product.discount}% OFF
+                    </div>
+                  )}
+                </div>
 
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-white/90 text-center mb-2">
+                <div className="p-4 flex flex-col flex-grow justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white/90 text-center mb-2 line-clamp-1">
                       {product.name}
                     </h3>
-                    <p className="text-sm text-white/80 text-center mb-8 h-[30px]">
+                    <p className="text-sm text-white/70 text-center mb-4 line-clamp-2">
                       {product.description?.length > 100
                         ? `${product.description.slice(0, 70)}...`
                         : product.description}
                     </p>
-                    <p className="text-lg font-semibold text-white/90 text-center">
-                      Rs.{product.price}
-                    </p>
-
-                    <div className="flex items-center justify-center ">
-                      <button className="w-[200px] mt-4 py-2 border text-white/90 text-lg border-[#f0b343] hover:bg-[#f0b343] hover:border-[#f0b343] rounded-full transition duration-200">
-                        Add to Cart
-                      </button>
-                    </div>
                   </div>
-                </NavLink>
-              </SwiperSlide>
-            ))}
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-white/90 mb-3">
+                      Rs. {product.price}
+                    </p>
+                    <button className="w-full py-2 border text-white/90 border-gold hover:bg-gold hover:text-black font-medium rounded-full transition-all duration-200">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </NavLink>
+            </SwiperSlide>
+          ))}
         </Swiper>
       </section>
+
       <style>
         {`
-    .swiper-pagination {
-    bottom: 0px !important;
-     }
-    .swiper-pagination-bullet {
+          .swiper-pagination {
+            bottom: 0px !important;
+          }
+          .swiper-pagination-bullet {
             width: 30px;
             height: 4px;
             background: #f3f4f6;
             margin: 0 6px;
             border-radius: 2px;
             transition: all 0.3s ease;
-        }
-    .swiper-pagination-bullet-active {
-             background: #faaf00 !important;
-         }
-    .swiper-button-next,
-             .swiper-button-prev {
-              color: #faaf00; 
-              
-             }
-`}
+          }
+          .swiper-pagination-bullet-active {
+            background: #faaf00 !important;
+          }
+          .swiper-button-next,
+          .swiper-button-prev {
+            color: #faaf00;
+          }
+        `}
       </style>
     </>
   );
