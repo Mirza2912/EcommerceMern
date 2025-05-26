@@ -57,7 +57,6 @@ export default function ProductsTable({ products }) {
               <th className="font-medium text-left pb-3 pl-4">Product</th>
               <th className="font-medium text-left pb-3">Price</th>
               <th className="font-medium text-left pb-3">Stock</th>
-              {/* <th className="font-medium text-left pb-3">Status</th> */}
               <th className="font-medium text-right pb-3 pr-4">Actions</th>
             </tr>
           </thead>

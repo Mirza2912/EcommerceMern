@@ -46,6 +46,7 @@ const newOrder = AsyncHandler(async (req, res, next) => {
       totalPrice,
       user: req.user._id,
       paidAt: paymentMethod === "CARD" ? Date.now() : null,
+      isPaid: paymentMethod === "CARD" ? true : false,
     };
 
     const order = await Order.create(orderData);
@@ -113,7 +114,11 @@ const singleOrder = AsyncHandler(async (req, res, next) => {
 // getting all orders --->Admin
 const getAllOrders = AsyncHandler(async (req, res, next) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find()
+      .populate("user", "name , email , avatar")
+      .populate("orderItems.item")
+      .sort({ createdAt: -1 });
+
     if (!orders) {
       return next(new ApiError(`Orders not found...!`, 400));
     }
@@ -125,6 +130,77 @@ const getAllOrders = AsyncHandler(async (req, res, next) => {
   }
 });
 
-//update single order --->Admin
-const updateOrder = AsyncHandler(async (req, res, next) => {});
-export { newOrder, allOrders, singleOrder, getAllOrders, updateOrder };
+//delete order --->Admin
+const deleteOrderAdmin = AsyncHandler(async (req, res, next) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+
+    if (!order) {
+      return next(new ApiError(`Orders not found...!`, 400));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, order, `Order deleted successfully...!`));
+  } catch (error) {
+    return next(
+      new ApiError(`Something went wrong while deleting orderss...!`, 500)
+    );
+  }
+});
+
+//get single order order --->Admin
+const getOrderByIdAdmin = AsyncHandler(async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate("user", "name email role")
+      .populate("orderItems.item", "name price images");
+
+    if (!order) {
+      return next(new ApiError(`Orders not found...!`, 400));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, order, `Single order details...!`));
+  } catch (error) {
+    return next(
+      new ApiError(`Something went wrong while fetching order...!`, 500)
+    );
+  }
+});
+
+//update order status--->Admin
+const updateOrderStatus = AsyncHandler(async (req, res, next) => {
+  try {
+    const { status } = req.body;
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { orderStatus: status },
+      { new: true }
+    );
+
+    if (!order) {
+      return next(new ApiError(`Order not found...!`, 400));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, order, `Order updated successfully...!`));
+  } catch (error) {
+    return next(
+      new ApiError(`Something went wrong while fetching order...!`, 500)
+    );
+  }
+});
+
+export {
+  newOrder,
+  allOrders,
+  singleOrder,
+  getAllOrders,
+  deleteOrderAdmin,
+  getOrderByIdAdmin,
+  updateOrderStatus,
+};

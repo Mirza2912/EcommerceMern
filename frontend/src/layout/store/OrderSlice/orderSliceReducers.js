@@ -88,3 +88,68 @@ export const getAllOrdersAdmin = createAsyncThunk(
     }
   }
 );
+
+export const deleteOrderAdmin = createAsyncThunk(
+  "order/deleteOrderAdmin",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `/api/v1/orders/admin/single-order/delete/${id}`
+      );
+      // console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to delete order"
+      );
+    }
+  }
+);
+
+export const getSingleOrderDetailsAdmin = createAsyncThunk(
+  "order/getSingleOrderDetailsAdmin",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `/api/v1/orders/admin/single-order/${id}`
+      );
+      // console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch order"
+      );
+    }
+  }
+);
+
+export const updateOrderStatus = createAsyncThunk(
+  "order/updateOrderStatus",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `/api/v1/orders/admin/single-order/update/${data?.id}`,
+        data,
+        config
+      );
+      // console.log(response?.data);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update order"
+      );
+    }
+  }
+);

@@ -1,10 +1,12 @@
 import { Router } from "express";
 import {
   allOrders,
+  deleteOrderAdmin,
   getAllOrders,
+  getOrderByIdAdmin,
   newOrder,
   singleOrder,
-  updateOrder,
+  updateOrderStatus,
 } from "../controllers/order.controller.js";
 import {
   isAuthenticatedUser,
@@ -30,9 +32,19 @@ router
   .route("/admin/orders")
   .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAllOrders);
 
-//update single order --->Admin
+//get single order --->Admin
 router
-  .route("/admin/order/:id")
-  .put(isAuthenticatedUser, isAuthorizedRoles("admin", updateOrder));
+  .route("/admin/single-order/:id")
+  .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getOrderByIdAdmin);
+
+//delete single order --->Admin
+router
+  .route("/admin/single-order/delete/:id")
+  .delete(isAuthenticatedUser, isAuthorizedRoles("admin"), deleteOrderAdmin);
+
+//update single order status --->Admin
+router
+  .route("/admin/single-order/update/:id")
+  .put(isAuthenticatedUser, isAuthorizedRoles("admin"), updateOrderStatus);
 
 export default router;
