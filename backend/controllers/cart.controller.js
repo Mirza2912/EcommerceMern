@@ -79,7 +79,7 @@ const getCart = async (req, res, next) => {
     // console.log(cart?.items[0]);
 
     if (!cart) {
-      return next(new ApiError(`Cart not found...!`, 404));
+      return next(new ApiError(`Cart not found or empty...!`, 404));
     }
 
     res.status(200).json(new ApiResponse(201, { cart }, "All items of cart"));

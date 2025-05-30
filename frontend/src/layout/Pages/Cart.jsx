@@ -8,6 +8,7 @@ import { singleProductDetails } from "../store/ProductSlice/productSliceReducers
 import Loader from "../Components/Loader/Loader";
 import { MdDelete } from "react-icons/md";
 import {
+  clearError,
   removeCartItemLocal,
   updateCartItemLocal,
 } from "../store/CartSlice/CartSlice";

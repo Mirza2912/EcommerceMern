@@ -16,6 +16,7 @@ import {
   verifyOTP,
   suspendUser,
   unSuspendUSer,
+  getAllEmployees,
 } from "../controllers/user.controller.js";
 import {
   isAuthenticatedUser,
@@ -38,14 +39,19 @@ const router = Router();
 router
   .route("/register")
   .post(registerUserValidation, validate, userRegistration);
+
 //verify otp
 router.route("/opt-verification").post(verifyOtp, validate, verifyOTP);
+
 // for login
 router.route("/login").post(loginUserValidation, validate, userLogin);
+
 // for logout
 router.route("/logout").get(userLogout);
+
 // for user details
 router.route("/me").get(isAuthenticatedUser, userDetails);
+
 // for update user profile
 router
   .route("/me/profile/update")
@@ -55,6 +61,7 @@ router
     validate,
     updateProfile
   );
+
 // for update user password
 router
   .route("/me/password/update")
@@ -64,14 +71,17 @@ router
     validate,
     updatePassword
   );
+
 // for forgot password
 router
   .route("/password/forgot")
   .post(forgotPasswordValidation, validate, forgotPassword);
+
 // for reset password
 router
   .route("/user/password/reset/:token")
   .post(resetUserPassword, validate, resetPassword);
+
 // for delete account
 router.route("/me/delete/account").delete(isAuthenticatedUser, deleteAccount);
 
@@ -79,6 +89,11 @@ router.route("/me/delete/account").delete(isAuthenticatedUser, deleteAccount);
 router
   .route("/admin/users")
   .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAllUsers);
+
+// for getting all users --->Admin
+router
+  .route("/admin/employees")
+  .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAllEmployees);
 
 // for getting single users --->Admin
 router

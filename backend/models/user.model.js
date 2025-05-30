@@ -35,6 +35,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       default: "user",
+      enum: ["user", "admin", "employee"],
     },
     phone: {
       type: String,
@@ -52,6 +53,13 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+
+    employeeId: {
+      type: String,
+      default: null, // will only be used if role === "employee"
+      unique: true, // prevent duplicates
+      sparse: true, // allows null values but ensures unique when set
+    },
     registrationAttempts: { type: Number, default: 0 },
     verificationCode: Number,
     verificationCodeExpiry: Date,
@@ -65,6 +73,10 @@ const userSchema = new Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
+  }
+  // Avoid hashing if password is already hashed (60 characters long bcrypt hash)
+  if (this.password && this.password.startsWith("$2b$")) {
+    return next(); // already hashed, skip
   }
   try {
     //if password modified(update) then this code will execute

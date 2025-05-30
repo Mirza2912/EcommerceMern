@@ -162,22 +162,23 @@ const App = () => {
                 path="orders/order/details/:id"
                 element={<SingleOrderDetailsAdmin />}
               />
+
+              <Route path="employee" element={<AllEmployee />} />
+              <Route
+                path="employee/single-employee/details/:id"
+                element={<SingleEmployee />}
+              />
+              <Route
+                path="employee/single-employee/update/:id"
+                element={<SingleEmployeeUpdate />}
+              />
+              <Route
+                path="employee/create-new-employee"
+                element={<CreateNewEmployee />}
+              />
             </Route>
 
             {/* Employees  */}
-            <Route path="employee" element={<AllEmployee />} />
-            <Route
-              path="employee/single-employee/details/:id"
-              element={<SingleEmployee />}
-            />
-            <Route
-              path="employee/single-employee/update/:id"
-              element={<SingleEmployeeUpdate />}
-            />
-            <Route
-              path="employee/create-new-employee"
-              element={<CreateNewEmployee />}
-            />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

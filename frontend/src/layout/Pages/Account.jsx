@@ -12,10 +12,12 @@ import {
 import { toast } from "react-toastify";
 import LoaderForForms from "../Components/Home/LoaderForForms.jsx";
 import { clearError } from "../store/UserSlice/userSlice.js";
+import FloatingInput from "../Components/Input/FloatingInput.jsx";
+import SubmitButton from "../Components/SubmitButton/SubmitButton.jsx";
 
 const Account = () => {
   //For checking user is loggedIn or not
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState("login");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -97,30 +99,9 @@ const Account = () => {
     }
   };
 
-  // const toastShown = useRef(false);
-
-  // useEffect(() => {
-  //   // if (isVerified) {
-  //   //   navigate("/user/profile", { replace: true });
-  //   // }
-  //   if (error) {
-  //     if (
-  //       error === "You need to login to access this resource...!" &&
-  // !toastShown.current
-  //     ) {
-  //       toastShown.current = true;
-  //       toast.error(error);
-  //       dispatch(clearError());
-  //     } else if (error !== "You need to login to access this resource...!") {
-  //       toast.error(error);
-  //       dispatch(clearError());
-  //     }
-  //   }
-  // }, [error]);
-
   useEffect(() => {
     if (isVerified) {
-      navigate(from, { replace: true });
+      navigate(from === "/checkout/shipping" ? from : "/", { replace: true });
     }
   }, [isVerified, error]);
 
@@ -146,13 +127,13 @@ const Account = () => {
           </div>
 
           {/* Right Section - Form */}
-          <div className="w-full lg:w-[60%]  rounded-2xl p-6 md:p-8 border border-gray-600">
+          <div className="w-full lg:w-[60%] rounded-2xl p-6 md:p-8 border border-gray-600">
             {/* Toggle */}
             <div className="flex mb-6">
               <button
-                onClick={() => setIsLogin(true)}
+                onClick={() => setIsLogin("login")}
                 className={`flex-1 py-2 rounded-l-lg font-medium ${
-                  isLogin
+                  isLogin === "login"
                     ? "bg-[#ffce53] text-white"
                     : "bg-gray-300 text-gray-800"
                 }`}
@@ -160,66 +141,68 @@ const Account = () => {
                 Login
               </button>
               <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-2 rounded-r-lg font-medium ${
-                  !isLogin
+                onClick={() => setIsLogin("register")}
+                className={`flex-1 py-2 font-medium ${
+                  isLogin === "register"
                     ? "bg-[#ffce53] text-white"
-                    : "bg-gray-300 text-gray-800"
+                    : isLogin === "login"
+                    ? "bg-gray-300 text-gray-800 border-r border-gray-400"
+                    : "bg-gray-300 text-gray-800 border-l border-gray-400"
                 }`}
               >
                 Register
               </button>
+              <button
+                onClick={() => setIsLogin("emp")}
+                className={`flex-1 py-2 rounded-r-lg font-medium ${
+                  isLogin === "emp"
+                    ? "bg-[#ffce53] text-white"
+                    : "bg-gray-300 text-gray-800"
+                }`}
+              >
+                Employee
+              </button>
             </div>
 
-            {isLogin ? (
-              <>
-                <form className="space-y-4" onSubmit={loginFormHandler}>
-                  <div className="relative">
-                    <MdOutlineMailOutline className="absolute top-4 left-3 text-xl text-gray-500" />
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={loginData.email}
-                      onChange={handleLoginChange}
-                      required
-                      placeholder="email address *Required"
-                      className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                    />
-                  </div>
+            {isLogin === "login" && (
+              <form className="space-y-4" onSubmit={loginFormHandler}>
+                {/* email  */}
+                <FloatingInput
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={loginData.email}
+                  onChange={handleLoginChange}
+                  icon={MdOutlineMailOutline}
+                />
 
-                  <div className=" relative">
-                    <RiLockPasswordLine className="absolute top-4 left-3 text-xl text-gray-500" />
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      value={loginData.password}
-                      onChange={handleLoginChange}
-                      required
-                      placeholder="password *Required"
-                      className="w-full pl-10 pr-4 py-3  rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                    />
-                  </div>
+                {/* Password  */}
+                <FloatingInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={loginData.password}
+                  onChange={handleLoginChange}
+                  icon={RiLockPasswordLine}
+                />
 
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className={`w-full border rounded-full border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]  text-white font-bold py-3 transition duration-200 ${
-                      isLoading && "opacity-50 hover:cursor-wait"
-                    }`}
-                  >
-                    {isLoading ? <LoaderForForms input={"Login"} /> : "Login"}
-                  </button>
+                {/* Submit  */}
+                <SubmitButton
+                  type="submit"
+                  isLoading={isLoading}
+                  input="Login"
+                  instead="Login"
+                />
 
-                  <div className="flex justify-between mt-4 px-2">
+                <div className="mt-4 ">
+                  <div className="flex justify-between px-2">
                     <p className="text-sm text-white/35">
                       Not registered?
                       <Link
                         onClick={() => setIsLogin(false)}
                         className="text-gold hover:underline ml-1"
                       >
-                        Register here
+                        Register Here
                       </Link>
                     </p>
                     <p className="text-sm text-gray-600">
@@ -231,120 +214,103 @@ const Account = () => {
                       </Link>
                     </p>
                   </div>
-                </form>
-              </>
-            ) : (
-              <>
-                <form className="space-y-4" onSubmit={registerFormHandler}>
-                  <>
-                    <div className="relative">
-                      <BiSolidFace className="absolute top-4 left-3 text-xl text-gray-500" />
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={signUpData.name}
-                        onChange={handleSignUpChange}
-                        required
-                        placeholder="username *Required"
-                        className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                      />
-                    </div>
+                </div>
+              </form>
+            )}
 
-                    <div className="relative">
-                      <MdOutlineMailOutline className="absolute top-4 left-3 text-xl text-gray-500" />
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={signUpData.email}
-                        onChange={handleSignUpChange}
-                        required
-                        placeholder="email address *Required"
-                        className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                      />
-                    </div>
+            {isLogin === "register" && (
+              <form className="space-y-4" onSubmit={registerFormHandler}>
+                {/* name  */}
+                <FloatingInput
+                  label="Name"
+                  name="name"
+                  type="text"
+                  value={signUpData.name}
+                  onChange={handleSignUpChange}
+                  icon={BiSolidFace}
+                />
 
-                    <div className="relative">
-                      <RiLockPasswordLine className="absolute top-4 left-3 text-xl text-gray-500" />
-                      <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={signUpData.password}
-                        autoComplete="new-password"
-                        onChange={handleSignUpChange}
-                        required
-                        placeholder="password *Required"
-                        className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                      />
-                    </div>
+                {/* email  */}
+                <FloatingInput
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={signUpData.email}
+                  onChange={handleSignUpChange}
+                  icon={MdOutlineMailOutline}
+                />
 
-                    <div className="relative">
-                      <IoCallOutline className="absolute top-4 left-3 text-xl text-gray-500" />
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={signUpData.phone}
-                        autoComplete="phone"
-                        onChange={handleSignUpChange}
-                        required
-                        placeholder="phone *Required"
-                        className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-                      />
-                    </div>
-                    <div className="flex items-center justify-center  gap-2">
-                      {preview && (
-                        <img
-                          src={preview}
-                          alt="Avatar Preview"
-                          className="w-16 h-16 object-cover rounded-full shadow-md"
-                        />
-                      )}
-                      <input
-                        type="file"
-                        id="avatar"
-                        name="avatar"
-                        accept="image/*"
-                        onChange={handleSignUpChange}
-                        className="w-full text-gray-700 focus:outline-none bg-white py-3.5 px-2 rounded-md"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className={`w-full border rounded-full border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]  text-white font-bold py-3 transition duration-200 ${
-                        isLoading && "opacity-50 hover:cursor-wait"
-                      }`}
+                {/* Password  */}
+                <FloatingInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={signUpData.password}
+                  onChange={handleSignUpChange}
+                  icon={RiLockPasswordLine}
+                />
+
+                {/* Phone  */}
+                <FloatingInput
+                  label="Contact Number"
+                  name="phone"
+                  type="tel"
+                  value={signUpData.phone}
+                  onChange={handleSignUpChange}
+                  icon={IoCallOutline}
+                />
+
+                <div className="flex items-center justify-center  gap-2">
+                  {preview && (
+                    <img
+                      src={preview}
+                      alt="Avatar Preview"
+                      className="w-16 h-16 object-cover rounded-full shadow-md"
+                    />
+                  )}
+                  <input
+                    type="file"
+                    id="avatar"
+                    name="avatar"
+                    accept="image/*"
+                    onChange={handleSignUpChange}
+                    className="w-full text-gray-700 focus:outline-none bg-white py-3.5 px-2 rounded-md"
+                  />
+                </div>
+
+                {/* Submit  */}
+                <SubmitButton
+                  type="submit"
+                  isLoading={isLoading}
+                  input="Register"
+                  instead="Register"
+                />
+
+                <div className="flex justify-between mt-4 px-2">
+                  <p className="text-sm text-white/35">
+                    Already registered?
+                    <Link
+                      onClick={() => setIsLogin(true)}
+                      className="text-gold hover:underline ml-1"
                     >
-                      {isLoading ? (
-                        <LoaderForForms input={"Register"} />
-                      ) : (
-                        "Register"
-                      )}
-                    </button>
-                  </>
-                  <div className="flex justify-between mt-4 px-2">
-                    <p className="text-sm text-white/35">
-                      Already registered?
-                      <Link
-                        onClick={() => setIsLogin(true)}
-                        className="text-gold hover:underline ml-1"
-                      >
-                        Login here
-                      </Link>
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      <Link
-                        to="/user/forgot-password"
-                        className="text-gold hover:underline"
-                      >
-                        Forgot Password?
-                      </Link>
-                    </p>
-                  </div>
-                </form>
+                      Login here
+                    </Link>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <Link
+                      to="/user/forgot-password"
+                      className="text-gold hover:underline"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </p>
+                </div>
+              </form>
+            )}
+
+            {isLogin === "emp" && (
+              <>
+                <h2>emp</h2>
               </>
             )}
           </div>

@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import cloudinary from "cloudinary";
 import { sendEmail } from "../utils/SendEmail.js";
+import bcrypt from "bcrypt";
 
 // Function to check if email is valid using EmailValidation.io
 async function isEmailValid(email) {
@@ -48,6 +49,32 @@ function generateMessageTemplate(verificationCode, name) {
 `;
 }
 
+function generateEmployeeWelcomeTemplate(employeeId, name, email, password) {
+  return `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
+    <h2 style="color: #4C51BF; text-align: center;">Welcome to Our Book & Stationery Shop!</h2>
+    <p style="font-size: 16px; color: #333;">Dear <strong>${name}</strong>,</p>
+    <p style="font-size: 16px; color: #333;">We are thrilled to welcome you to our team! Below are your login credentials:</p>
+    
+    <div style="margin: 20px 0; padding: 15px; background-color: #edf2f7; border-radius: 6px;">
+      <p style="font-size: 16px;"><strong>Employee ID:</strong> ${employeeId}</p>
+      <p style="font-size: 16px;"><strong>Email:</strong> ${email}</p>
+      <p style="font-size: 16px;"><strong>Password:</strong> ${password}</p>
+    </div>
+
+    <p style="font-size: 16px; color: #333;">
+      Please keep this information safe and secure. You can now log in to the system and begin managing orders and customer interactions.
+    </p>
+    <p style="font-size: 16px; color: #333;">We look forward to achieving great things together!</p>
+
+    <footer style="margin-top: 20px; text-align: center; font-size: 14px; color: #999;">
+      <p>Warm regards,<br>Your Book & Stationery Shop Team</p>
+      <p style="font-size: 12px; color: #aaa;">This is an automated message. Please do not reply to this email.</p>
+    </footer>
+  </div>
+  `;
+}
+
 //function to send verification code
 async function sendVerificationCode(
   verificationCode,
@@ -80,16 +107,70 @@ async function sendVerificationCode(
   }
 }
 
-//user registration
+/* Code for generating token */
+const createAccessToken = async (userId, next) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = await user.generateAccessToken();
+    return { accessToken };
+  } catch (error) {
+    return next(
+      new ApiError(
+        "Something went wrong while generating Access token...!",
+        500
+      )
+    );
+  }
+};
+
+async function sendWelcomeToEmployee(
+  employeeId,
+  email,
+  password,
+  res,
+  name,
+  next
+) {
+  const data = { employeeId, email };
+
+  try {
+    const message = generateEmployeeWelcomeTemplate(
+      employeeId,
+      name,
+      email,
+      password
+    );
+
+    await sendEmail({
+      email,
+      subject: "Welcome to Our Shop - Your Employee Credentials",
+      message,
+    });
+
+    const employee = await User.findOne({ email });
+
+    if (!employee) {
+      return next(new ApiError("Server error. Please try again later."));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          employee,
+          `Employee with id ${employeeId} created successfully...!`
+        )
+      );
+  } catch (error) {
+    return next(new ApiError("Server error. Please try again later."));
+  }
+}
+
+// registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
   // console.log(name, password, email, avatar, phone);
-
-  //checking data comes or not
-  if (!name || !email || !password || !avatar || !phone) {
-    // console.log("❌ Missing required fields!");
-    return next(new ApiError(`All fields are required...!`, 400));
-  }
 
   // 3=Now verify phone format by regex
   function verifyPhone(phone) {
@@ -109,105 +190,186 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
     //check email is valid or not
     const isEmailValidResponse = await isEmailValid(email);
-    // console.log("Email valid result...!", isEmailValidResponse);
 
     //if email is not valid
     if (isEmailValidResponse !== "deliverable") {
       return next(new ApiError("Email is not valid...!", 404));
     }
+    // console.log("Email valid result...!", isEmailValidResponse);
 
+    if (!avatar) {
+      // console.log("❌ Missing required fields!");
+      return next(new ApiError(`All fields are required...!`, 400));
+    }
     //upload image to coludinary
     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
       folder: "avatars",
       width: 150,
       crop: "scale",
     });
-    //Checking user already exist or not
-    const isUserExist = await User.findOne({ email });
-    // console.log(isUserExist);
 
-    //check is verified user exist or not
-    if (isUserExist && isUserExist.accountVerified) {
-      // console.log("❌ User already exists and is verified.");
-      return next(new ApiError("User already exists", 400));
-    }
+    if (req.body.role === "employee") {
+      //checking data comes or not
+      if (!name || !email || !phone) {
+        // console.log("❌ Missing required fields!");
+        return next(new ApiError(`All fields are required...!`, 400));
+      }
+      // Check if employeeId is provided and role is employee
+      const existingEmployee = await User.findOne({ email, role: "employee" });
+      // console.log(existingEmployee);
 
-    // If the user exists but isn't verified, increment their registration attempts
-    if (isUserExist && !isUserExist.accountVerified) {
-      // console.log("❌ User exists but is NOT verified.");
-
-      if (isUserExist.registrationAttempts >= 2) {
-        // console.log("❌ Too many registration attempts.");
+      if (existingEmployee) {
         return next(
           new ApiError(
-            "You have exceeded the maximum number of registration attempts. Please try again after one hour.",
+            "Employee with this ID or email already exists. Please use a different ID or email.",
             400
           )
         );
       }
 
-      // Increment registration attempts
-      isUserExist.registrationAttempts++;
+      // Generate random 8-character password
+      const generateSecurePassword = () => {
+        return Math.random().toString(36).slice(-8);
+      };
 
-      //delete already existing image if user reregister(when user not verified)
-      await cloudinary.v2.uploader.destroy(isUserExist.avatar?.public_id);
+      // Generate 10-digit employee ID
+      const generateEmployeeId = () => {
+        return Math.floor(1000000000 + Math.random() * 9000000000).toString();
+      };
 
-      // console.log("✅ Generating verification code...");
-      const verificationCode = await isUserExist.generateVerificationCode();
-      // console.log(verificationCode);
+      const plainPassword = generateSecurePassword();
+      const genSaltRound = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(plainPassword, genSaltRound);
 
-      await isUserExist.save({ validateBeforeSave: false });
-      // console.log(isUserExist.verificationCode);
+      let employeeId = generateEmployeeId();
+      //employee data
+      const employeeData = {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        avatar: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
+        employeeId,
+        accountVerified: true,
+        role: req.body?.role || "employee",
+      };
 
-      // console.log("✅ Sending verification code...");
-      sendVerificationCode(verificationCode, email, phone, res, name, next);
+      //Creating new employee
+      const employee = await User.create(employeeData);
 
-      return res
-        .status(200)
-        .json(
-          new ApiResponse(
-            200,
-            isUserExist,
-            "You have attempted to register before. Please check your email for the verification code."
-          )
+      //check user created or not
+      if (!employee) {
+        await cloudinary.v2.uploader.destroy(myCloud?.public_id);
+        // console.log("❌ Failed to create user.");
+        return next(
+          new ApiError(`Internal Server Error while creating new user...!`, 500)
         );
-    }
+      }
 
-    //user data
-    const userData = {
-      name,
-      email,
-      password,
-      phone,
-      avatar: {
-        public_id: myCloud.public_id,
-        url: myCloud.secure_url,
-      },
-    };
-
-    // console.log("✅ Creating new user...");
-    //Creating new user
-    const user = await User.create(userData);
-    // console.log(user);
-
-    //check user created or not
-    if (!user) {
-      // console.log("❌ Failed to create user.");
-      return next(
-        new ApiError(`Internal Server Error while creating new user...!`, 500)
+      await sendWelcomeToEmployee(
+        employeeId, // employeeId
+        email, // email
+        plainPassword, // password
+        res,
+        name, // name
+        next
       );
+    } else {
+      //checking data comes or not
+      if (!name || !email || !password || !phone) {
+        // console.log("❌ Missing required fields!");
+        return next(new ApiError(`All fields are required...!`, 400));
+      }
+      //Checking user already exist or not
+      const isUserExist = await User.findOne({ email });
+      // console.log(isUserExist);
+
+      //check is verified user exist or not
+      if (isUserExist && isUserExist.accountVerified) {
+        // console.log("❌ User already exists and is verified.");
+        return next(new ApiError("User already exists", 400));
+      }
+
+      // If the user exists but isn't verified, increment their registration attempts
+      if (isUserExist && !isUserExist.accountVerified) {
+        // console.log("❌ User exists but is NOT verified.");
+
+        if (isUserExist.registrationAttempts >= 2) {
+          // console.log("❌ Too many registration attempts.");
+          return next(
+            new ApiError(
+              "You have exceeded the maximum number of registration attempts. Please try again after one hour.",
+              400
+            )
+          );
+        }
+
+        // Increment registration attempts
+        isUserExist.registrationAttempts++;
+
+        //delete already existing image if user reregister(when user not verified)
+        await cloudinary.v2.uploader.destroy(isUserExist.avatar?.public_id);
+
+        // console.log("✅ Generating verification code...");
+        const verificationCode = await isUserExist.generateVerificationCode();
+        // console.log(verificationCode);
+
+        await isUserExist.save({ validateBeforeSave: false });
+        // console.log(isUserExist.verificationCode);
+
+        // console.log("✅ Sending verification code...");
+        sendVerificationCode(verificationCode, email, phone, res, name, next);
+
+        return res
+          .status(200)
+          .json(
+            new ApiResponse(
+              200,
+              isUserExist,
+              "You have attempted to register before. Please check your email for the verification code."
+            )
+          );
+      }
+
+      //user data
+      const userData = {
+        name,
+        email,
+        password,
+        phone,
+        avatar: {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        },
+      };
+
+      // console.log("✅ Creating new user...");
+      //Creating new user
+      const user = await User.create(userData);
+      // console.log(user);
+
+      //check user created or not
+      if (!user) {
+        // console.log("❌ Failed to create user.");
+        return next(
+          new ApiError(`Internal Server Error while creating new user...!`, 500)
+        );
+      }
+
+      // console.log("✅ Generating verification code for new user...");
+      // 7=generate verification code of 5 digits comes from userModel
+      const verificationCode = await user.generateVerificationCode();
+
+      await user.save();
+      // console.log(user.verificationCode);
+
+      // 8=send verification code via node mailer with html template
+      // console.log("✅ Sending verification email...");
+      sendVerificationCode(verificationCode, email, phone, res, name);
     }
-
-    // console.log("✅ Generating verification code for new user...");
-    // 7=generate verification code of 5 digits comes from userModel
-    const verificationCode = await user.generateVerificationCode();
-
-    await user.save();
-    // console.log(user.verificationCode);
-
-    // 8=send verification code via node mailer with html template
-    // console.log("✅ Sending verification email...");
-    sendVerificationCode(verificationCode, email, phone, res, name);
   } catch (error) {
     // console.log(error.message);
 
@@ -284,7 +446,7 @@ export const verifyOTP = AsyncHandler(async (req, res, next) => {
     // console.log(user);
 
     //creating cookie to send
-    const { accessToken } = await createAccessToken(user._id);
+    const { accessToken } = await createAccessToken(user._id, next);
     // console.log(accessToken);
 
     //options for cookie of accessToken
@@ -293,7 +455,8 @@ export const verifyOTP = AsyncHandler(async (req, res, next) => {
         Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
       ),
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
     };
     //send cookie
     return res
@@ -311,59 +474,51 @@ export const verifyOTP = AsyncHandler(async (req, res, next) => {
   }
 });
 
-/* Code for generating token */
-const createAccessToken = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = await user.generateAccessToken();
-    return { accessToken };
-  } catch (error) {
-    return next(
-      new ApiError(
-        "Something went wrong while generating Access token...!",
-        500
-      )
-    );
-  }
-};
-
-//User login
+// login
 const userLogin = AsyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, employeeId } = req.body;
 
-  //if email or password is empty or not given
-  if (!email || !password) {
-    return next(new ApiError(`Please fill all fields for login...!`, 400));
+  // Check if it's an employee login
+  let user;
+  if (employeeId) {
+    if (!password) {
+      return next(new ApiError(`Please fill all fields for login...!`, 400));
+    }
+    user = await User.findOne({ employeeId, role: "employee" }).select(
+      "+password"
+    );
+    if (!user) {
+      return next(new ApiError("Invalid employee ID or password", 401));
+    }
+  } else {
+    //if email or password is empty or not given
+    if (!email || !password) {
+      return next(new ApiError(`Please fill all fields for login...!`, 400));
+    }
+    // Login for user or admin with email
+    user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return next(new ApiError("Invalid email or password", 401));
+    }
   }
 
-  //if given email and password then this code will execute
-  const user = await User.findOne({
-    email,
-  }).select("+password");
-  // console.log(user);
-
-  if (user && !user.accountVerified) {
+  // Check if account is verified
+  if (!user.accountVerified) {
     return next(
-      new ApiError(
-        `You are already registered but not verified.please again fill registeration form...!`,
-        401
-      )
+      new ApiError("Please verify your account before logging in", 403)
     );
   }
 
-  //if user not find
-  if (!user) {
-    return next(new ApiError(`Please register before login...!`, 401));
+  // Check password
+  const isPasswordMatched = await user.comparePassword(password);
+  // console.log(isPasswordMatched);
+
+  if (!isPasswordMatched) {
+    return next(new ApiError("Invalid credentials", 401));
   }
 
-  //Comparing password which user give
-  const isPasswordCorrect = await user.comparePassword(password);
-  //   console.log(isPasswordCorrect);
-
-  //if password not correct
-  if (!isPasswordCorrect) {
-    return next(new ApiError(`Invalid Credentials...!`, 401));
-  }
+  //creating cookie to send
+  const { accessToken } = await createAccessToken(user._id, next);
 
   //options for cookie of accessToken
   const options = {
@@ -371,16 +526,14 @@ const userLogin = AsyncHandler(async (req, res, next) => {
       Date.now() + process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1 * 24 * 60 * 60 * 1000,
   };
-
-  //creating cookie to send
-  const { accessToken } = await createAccessToken(user._id);
 
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-    .json(new ApiResponse(200, user, "User logged In successfully...!"));
+    .json(new ApiResponse(200, user, "Logged In successfully...!"));
 });
 
 //user logout
@@ -450,7 +603,7 @@ const updateProfile = AsyncHandler(async (req, res, next) => {
     );
 
     //creating cookie to send
-    const { accessToken } = await createAccessToken(updatedUser._id);
+    const { accessToken } = await createAccessToken(updatedUser._id, next);
 
     //options for cookie of accessToken
     const options = {
@@ -638,10 +791,13 @@ const resetPassword = AsyncHandler(async (req, res, next) => {
     );
   }
 });
+
 //get all users --->Admin
 const getAllUsers = AsyncHandler(async (req, res, next) => {
   try {
-    const users = await User.find({}, "-password").sort({ createdAt: -1 });
+    const users = await User.find({ role: "user" }, "-password").sort({
+      createdAt: -1,
+    });
     if (!users) {
       return next(new ApiError(`Users not found...!`, 404));
     }
@@ -651,6 +807,27 @@ const getAllUsers = AsyncHandler(async (req, res, next) => {
     console.error("Error fetching users:", err);
     return next(
       new ApiError("Something went wrong while fetching users...!", 500)
+    );
+  }
+});
+
+//get all employees --->Admin
+const getAllEmployees = AsyncHandler(async (req, res, next) => {
+  try {
+    const employees = await User.find({ role: "employee" }, "-password").sort({
+      createdAt: -1,
+    });
+    if (!employees) {
+      return next(new ApiError(`Employees not found...!`, 404));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, employees, `All Employees...!`));
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    return next(
+      new ApiError("Something went wrong while fetching employees...!", 500)
     );
   }
 });
@@ -674,21 +851,24 @@ const updateUser = AsyncHandler(async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      { role: req.body?.role },
-      { new: true }
-    );
-
+    const user = await User.findById(id);
     if (!user) {
       return next(new ApiError("User not found with this id...!", 404));
     }
 
+    const newRole = req.body?.role || user?.role;
+
+    // If changing from employee to any other role, remove employeeId
+    if (user.role === "employee" && newRole !== "employee") {
+      user.employeeId = undefined;
+    }
+
+    user.role = newRole;
+    await user.save();
+
     res
       .status(200)
-      .json(
-        new ApiResponse(200, user, `${user?.name}'s role updated successfully`)
-      );
+      .json(new ApiResponse(200, user, `${user?.name} updated successfully`));
   } catch (err) {
     console.error("Error fetching user:", err);
     return next(new ApiError("Server error while updating user...!", 500));
@@ -781,4 +961,5 @@ export {
   resetPassword,
   suspendUser,
   unSuspendUSer,
+  getAllEmployees,
 };
