@@ -4,6 +4,7 @@ import {
   changeUserPassword,
   deleteUser,
   forgotPassword,
+  getAllEmployees,
   getAllUsers,
   loadUser,
   registerUser,
@@ -22,6 +23,7 @@ const userSlice = createSlice({
     tempUser: null, //when user give credentials and got otp
     isVerified: false, //when user verify the otp now user is authenticated
     allUsers: [],
+    allEmployees: [],
     isLoading: false,
     error: null,
     resgisterMessage: "",
@@ -210,6 +212,18 @@ const userSlice = createSlice({
         state.allUsers = action.payload;
       })
       .addCase(getAllUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllEmployees.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getAllEmployees.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.allEmployees = action.payload;
+      })
+      .addCase(getAllEmployees.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

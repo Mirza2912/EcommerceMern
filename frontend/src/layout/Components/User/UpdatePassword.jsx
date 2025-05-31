@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { changeUserPassword } from "../../store/UserSlice/userSliceReducers";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { clearError } from "../../store/UserSlice/userSlice";
 import { toast } from "react-toastify";
-import { BiSolidFace } from "react-icons/bi";
-import { MdOutlineMailOutline } from "react-icons/md";
-import { IoCallOutline } from "react-icons/io5";
-import LoaderForForms from "../Home/LoaderForForms";
+import FloatingInput from "../Input/FloatingInput";
+import SubmitButton from "../SubmitButton/SubmitButton";
 
 const UpdatePassword = () => {
   const dispatch = useDispatch(); //useDispatch fro dispatch action
@@ -71,54 +68,39 @@ const UpdatePassword = () => {
       </div>
       <div className="w-full lg:w-[60%]  rounded-2xl p-6 md:p-8 border border-gray-600">
         <form className="space-y-4" onSubmit={updatePasswordHandler}>
-          <div className="flex items-center justify-center relative">
-            <BiSolidFace className=" absolute top-4 left-3 text-xl text-gray-500" />
-            <input
-              type="password"
-              id="oldPassword"
-              name="oldPassword"
-              value={formData.oldPassword}
-              onChange={handleUpdatePasswrdChange}
-              required
-              placeholder="current password *Required"
-              className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-            />
-          </div>
-          <div className="flex items-center justify-center relative">
-            <MdOutlineMailOutline className=" absolute top-4 left-3 text-xl text-gray-500" />
-            <input
-              type="password"
-              id="newPssword"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleUpdatePasswrdChange}
-              required
-              placeholder="new password *Required"
-              className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-            />
-          </div>
-          <div className="flex items-center justify-center relative">
-            <IoCallOutline className=" absolute top-4 left-3 text-xl text-gray-500" />
-            <input
-              type="password"
-              id="confirmPssword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleUpdatePasswrdChange}
-              required
-              placeholder="confirm password *Required"
-              className="w-full pl-10 pr-4 py-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-gold outline-none"
-            />
-          </div>
-          <button
+          <FloatingInput
+            label="Old Password"
+            name="oldPassword"
+            type="password"
+            value={formData.oldPassword}
+            onChange={handleUpdatePasswrdChange}
+            icon={RiLockPasswordLine}
+          />
+
+          <FloatingInput
+            label="New Password"
+            name="newPassword"
+            type="password"
+            value={formData.newPassword}
+            onChange={handleUpdatePasswrdChange}
+            icon={RiLockPasswordLine}
+          />
+
+          <FloatingInput
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
+            onChange={handleUpdatePasswrdChange}
+            icon={RiLockPasswordLine}
+          />
+
+          <SubmitButton
             type="submit"
-            className={`w-full border rounded-full border-[#ffc253] hover:bg-[#ffce53] hover:border-[#ffce53]  text-white font-bold py-3 transition duration-200 ${
-              isLoading && "opacity-50 hover:cursor-wait"
-            }`}
-            disabled={isLoading}
-          >
-            {isLoading ? <LoaderForForms input={"Update..."} /> : "Update"}
-          </button>
+            isLoading={isLoading}
+            input="Update"
+            instead="Update"
+          />
         </form>
       </div>
     </div>

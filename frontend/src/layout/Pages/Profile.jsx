@@ -30,7 +30,19 @@ const Profile = () => {
     dispatch(userLogOut());
     navigate("/");
   };
-  let list = [
+
+  let list = [];
+
+  // 👉 First, check if user is an employee
+  if (user?.data?.role === "employee") {
+    list.push({
+      name: "Employee ID",
+      value: user?.data?.employeeId, // get the employeeId from user data
+    });
+  }
+
+  // 👉 Now add the other fields
+  list.push(
     {
       name: "Name",
       value: name,
@@ -50,8 +62,8 @@ const Profile = () => {
     {
       name: "Created At",
       value: format(new Date(createdAt), "yyyy-MM-dd hh:mm:ss a"),
-    },
-  ];
+    }
+  );
 
   useEffect(() => {
     if (error) {
@@ -89,36 +101,40 @@ const Profile = () => {
                   </li>
                 ))}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-16 justify-items-center">
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-16 justify-items-start">
                   <button
-                    className="cursor-pointer  w-full  sm:w-48 px-4 py-2 bg-gradient-to-r from-gold to-[#635505] text-white rounded-md shadow hover:brightness-110 transition text-center"
-                    onClick={() => {
-                      navigate("/me/update-password");
-                    }}
-                  >
-                    Change Password
-                  </button>
-                  <button
-                    className="cursor-pointer  w-full  sm:w-48 px-4 py-2 bg-gradient-to-r from-gold to-[#635505] text-white rounded-md shadow hover:brightness-110 transition text-center"
                     onClick={() => {
                       navigate("/me/profile/update");
                     }}
+                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
                     Edit Profile
                   </button>
+
                   <button
-                    className=" cursor-pointer w-full  sm:w-48 px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-md shadow hover:brightness-110 transition text-center"
-                    onClick={handleLogout}
+                    onClick={() => {
+                      navigate("/me/update-password");
+                    }}
+                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
-                    Log Out
+                    Change Password
                   </button>
+
                   <button
-                    className="cursor-pointer w-full  sm:w-48 px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-md shadow hover:brightness-110 transition text-center"
                     onClick={() => {
                       dispatch(userDelete());
                     }}
+                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
                     Delete Account
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
+                  >
+                    Logout
                   </button>
                 </div>
               </ul>

@@ -288,6 +288,50 @@ export const getAllUsers = createAsyncThunk(
   }
 );
 
+// get all employees
+export const getAllEmployees = createAsyncThunk(
+  "user/getAllEmployees",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("/api/v1/users/admin/employees");
+
+      // console.log(response?.data);
+
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error.response.data);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch employees"
+      );
+    }
+  }
+);
+
+//single user details
+export const getSingleUserDetails = createAsyncThunk(
+  "auth/getSingleUserDetails",
+  async (id, { rejectWithValue }) => {
+    // console.log(id);
+
+    try {
+      const response = await axios.get(`/api/v1/users/admin/user/${id}`);
+      // console.log(response.data);
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to load user's details"
+      );
+    }
+  }
+);
+
 //dele user by admin
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",

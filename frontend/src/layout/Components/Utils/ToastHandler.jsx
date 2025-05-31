@@ -54,8 +54,6 @@ const ToastHandler = () => {
     deleteUserMessage,
     forgotPasswordMessage,
     resetPasswordMessage,
-    isVerified,
-    user,
     error,
     adminDeleteUserMessage,
   } = useSelector((state) => state.auth);

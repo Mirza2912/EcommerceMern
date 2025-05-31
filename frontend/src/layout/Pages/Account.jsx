@@ -40,6 +40,13 @@ const Account = () => {
     email: "",
     password: "",
   });
+
+  //useState for storing login data of employee
+  const [empLoginData, setEmpLoginData] = useState({
+    employeeId: "",
+    password: "",
+  });
+
   const location = useLocation();
   const from = location.state?.from?.pathname || "/user/profile";
 
@@ -74,12 +81,27 @@ const Account = () => {
     setLoginData({ ...loginData, [name]: value });
   };
 
+  // Handle input changes (when employee insert data data will automatically store in login state)
+  const handleEmpLoginChange = (e) => {
+    const { name, value } = e.target;
+    setEmpLoginData({ ...empLoginData, [name]: value });
+  };
+
   //Login Form handler
   const loginFormHandler = (e) => {
     e.preventDefault();
     dispatch(userLogin(loginData));
     if (isVerified) {
       setLoginData({ email: "", password: "" });
+    }
+  };
+
+  //empl Login Form handler
+  const empLoginFormHandler = (e) => {
+    e.preventDefault();
+    dispatch(userLogin(empLoginData));
+    if (isVerified) {
+      setEmpLoginData({ employeeId: "", password: "" });
     }
   };
 
@@ -103,7 +125,7 @@ const Account = () => {
     if (isVerified) {
       navigate(from === "/checkout/shipping" ? from : "/", { replace: true });
     }
-  }, [isVerified, error]);
+  }, [isVerified]);
 
   return (
     <>
@@ -309,9 +331,48 @@ const Account = () => {
             )}
 
             {isLogin === "emp" && (
-              <>
-                <h2>emp</h2>
-              </>
+              <form className="space-y-4" onSubmit={empLoginFormHandler}>
+                {/* id  */}
+                <FloatingInput
+                  label="ID"
+                  name="employeeId"
+                  type="Number"
+                  value={empLoginData.employeeId}
+                  onChange={handleEmpLoginChange}
+                  icon={MdOutlineMailOutline}
+                />
+
+                {/* Password  */}
+                <FloatingInput
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={empLoginData.password}
+                  onChange={handleEmpLoginChange}
+                  icon={RiLockPasswordLine}
+                />
+
+                {/* Submit  */}
+                <SubmitButton
+                  type="submit"
+                  isLoading={isLoading}
+                  input="Login"
+                  instead="Login"
+                />
+
+                <div className="mt-4 ">
+                  <div className="flex justify-end px-2">
+                    <p className="text-sm text-gray-600">
+                      <Link
+                        to="/user/forgot-password"
+                        className="text-gold hover:underline"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+              </form>
             )}
           </div>
         </div>
