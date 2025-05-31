@@ -911,7 +911,9 @@ const suspendUser = async (req, res) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, `${user?.name} sespended successfully...!`));
+      .json(
+        new ApiResponse(200, user, `${user?.name} sespended successfully...!`)
+      );
   } catch (err) {
     console.error("Error deleting user:", err);
     return next(
@@ -937,7 +939,9 @@ const unSuspendUSer = async (req, res) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, `${user?.name} unspended successfully...!`));
+      .json(
+        new ApiResponse(200, user, `${user?.name} unspended successfully...!`)
+      );
   } catch (err) {
     console.error("Error deleting user:", err);
     return next(
@@ -945,6 +949,7 @@ const unSuspendUSer = async (req, res) => {
     );
   }
 };
+
 export {
   userRegistration,
   userLogin,

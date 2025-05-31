@@ -118,7 +118,7 @@ export default function ProductsTable({ products }) {
                       >
                         <MdDelete className="text-xl text-red-600 hover:text-red-800" />
                       </button>
-                      <div className="relative">
+                      <div className="">
                         <button
                           onClick={() => toggleDropdown(product._id)}
                           className="p-1 rounded-md hover:bg-gray-800"

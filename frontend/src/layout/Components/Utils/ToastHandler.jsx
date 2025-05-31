@@ -27,6 +27,7 @@ import {
 } from "../../store/CartSlice/CartSlice.js";
 
 import {
+  clearAdminDeleteEmployeeMessage,
   clearAdminDeleteUserMessage,
   cleareResetPasswordMessage,
   clearError,
@@ -36,6 +37,9 @@ import {
   clearLoginMessage,
   clearLogoutMessage,
   clearRegisterMessage,
+  clearSingleUserDetailsMessage,
+  clearSuspendUserMessage,
+  clearUnSuspendUserMessage,
   clearUserPasswordMessage,
   clearVerificationMessage,
 } from "../../store/UserSlice/userSlice.js";
@@ -56,6 +60,9 @@ const ToastHandler = () => {
     resetPasswordMessage,
     error,
     adminDeleteUserMessage,
+    adminDeleteEmployeeMessage,
+    suspendUserMessage,
+    unSuspendUserMessage,
   } = useSelector((state) => state.auth);
 
   const {
@@ -213,6 +220,11 @@ const ToastHandler = () => {
       dispatch(clearAdminDeleteUserMessage());
     }
 
+    if (adminDeleteEmployeeMessage) {
+      toast.success(adminDeleteEmployeeMessage);
+      dispatch(clearAdminDeleteEmployeeMessage());
+    }
+
     if (deleteProductMessage) {
       toast.success(deleteProductMessage);
       dispatch(clearDeleteProductMessage());
@@ -236,6 +248,15 @@ const ToastHandler = () => {
     if (updateOrderStatusMessage) {
       toast.success(updateOrderStatusMessage);
       dispatch(clearUpdateOrderStatusMessage());
+    }
+
+    if (suspendUserMessage) {
+      toast.success(suspendUserMessage);
+      dispatch(clearSuspendUserMessage());
+    }
+    if (unSuspendUserMessage) {
+      toast.success(unSuspendUserMessage);
+      dispatch(clearUnSuspendUserMessage());
     }
 
     return () => clearTimeout(timeout);
@@ -262,6 +283,9 @@ const ToastHandler = () => {
     makeProductUnFeaturedMessage,
     deleteOrderAdminMessage,
     updateOrderStatusMessage,
+    adminDeleteEmployeeMessage,
+    suspendUserMessage,
+    unSuspendUserMessage,
   ]);
   return null;
 };

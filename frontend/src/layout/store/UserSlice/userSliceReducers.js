@@ -335,14 +335,14 @@ export const getSingleUserDetails = createAsyncThunk(
 //dele user by admin
 export const deleteUser = createAsyncThunk(
   "user/deleteUser",
-  async (id, { rejectWithValue }) => {
+  async ({ id, type }, { rejectWithValue }) => {
     try {
       const response = await axios.delete(
         `/api/v1/users/admin/user/${id}`,
         config
       );
 
-      console.log(response?.data);
+      // console.log(response?.data);
 
       return response?.data?.data;
     } catch (error) {
@@ -352,6 +352,60 @@ export const deleteUser = createAsyncThunk(
           error.response.data?.message ||
           error.message ||
           "Failed to delete user"
+      );
+    }
+  }
+);
+
+//suspend user or employee by admin
+export const suspendUser = createAsyncThunk(
+  "user/suspendUser",
+  async ({ id, type }, { rejectWithValue }) => {
+    // console.log(id);
+
+    try {
+      const response = await axios.put(
+        `/api/v1/users/admin/user/suspend/${id}`,
+        config
+      );
+
+      console.log(response?.data);
+
+      return response?.data;
+    } catch (error) {
+      // console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to suspend user"
+      );
+    }
+  }
+);
+
+//unsuspend user or employee by admin
+export const unSuspendUser = createAsyncThunk(
+  "user/unSuspendUser",
+  async ({ id, type }, { rejectWithValue }) => {
+    // console.log(id);
+
+    try {
+      const response = await axios.put(
+        `/api/v1/users/admin/user/un-suspend/${id}`,
+        config
+      );
+
+      console.log(response?.data);
+
+      return response?.data;
+    } catch (error) {
+      // console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to un suspend user"
       );
     }
   }

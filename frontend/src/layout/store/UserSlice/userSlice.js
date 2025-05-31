@@ -6,15 +6,19 @@ import {
   forgotPassword,
   getAllEmployees,
   getAllUsers,
+  getSingleUserDetails,
   loadUser,
   registerUser,
   resetPassword,
+  suspendUser,
+  unSuspendUser,
   updateUserProfile,
   userDelete,
   userLogin,
   userLogOut,
   verifyUser,
 } from "./userSliceReducers";
+import { getSingleOrderDetails } from "../OrderSlice/orderSliceReducers";
 
 const userSlice = createSlice({
   name: "auth",
@@ -24,6 +28,7 @@ const userSlice = createSlice({
     isVerified: false, //when user verify the otp now user is authenticated
     allUsers: [],
     allEmployees: [],
+    singleUserDetails: {},
     isLoading: false,
     error: null,
     resgisterMessage: "",
@@ -36,6 +41,10 @@ const userSlice = createSlice({
     verificationMessage: "",
     loginMessage: "",
     adminDeleteUserMessage: "",
+    singleUserDetailsMessage: "",
+    adminDeleteEmployeeMessage: "",
+    suspendUserMessage: "",
+    unSuspendUserMessage: "",
   },
   reducers: {
     clearError: (state) => {
@@ -70,6 +79,18 @@ const userSlice = createSlice({
     },
     clearAdminDeleteUserMessage: (state) => {
       state.adminDeleteUserMessage = "";
+    },
+    clearAdminDeleteEmployeeMessage: (state) => {
+      state.adminDeleteEmployeeMessage = "";
+    },
+    clearSingleUserDetailsMessage: (state) => {
+      state.singleUserDetailsMessage = "";
+    },
+    clearSuspendUserMessage: (state) => {
+      state.suspendUserMessage = "";
+    },
+    clearUnSuspendUserMessage: (state) => {
+      state.unSuspendUserMessage = "";
     },
   },
   extraReducers: (builder) => {
@@ -229,13 +250,74 @@ const userSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.adminDeleteUserMessage = action.payload;
-        const deletedUserId = action.meta.arg;
-        state.allUsers = state.allUsers?.filter(
-          (user) => user._id !== deletedUserId
-        );
+        const deletedUserId = action.meta.arg.id;
+        const user = action.meta.arg.type;
+
+        // Set message for correct category
+        if (user === "user") {
+          state.adminDeleteUserMessage = action.payload;
+          state.allUsers = state.allUsers?.filter(
+            (user) => user._id !== deletedUserId
+          );
+        } else if (user === "emp") {
+          state.adminDeleteEmployeeMessage = action.payload;
+          state.allEmployees = state.allEmployees?.filter(
+            (employee) => employee._id !== deletedUserId
+          );
+        }
       })
       .addCase(deleteUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getSingleUserDetails.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getSingleUserDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.singleUserDetails = action.payload;
+        state.singleUserDetailsMessage = action.payload?.message;
+      })
+      .addCase(getSingleUserDetails.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(suspendUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.suspendUserMessage = action.payload?.message;
+        const updatedUser = action.payload?.data;
+        const type = action.meta.arg.type;
+        if (type === "user") {
+          state.allUsers = state.allUsers.map((user) =>
+            user._id === updatedUser._id ? updatedUser : user
+          );
+        } else if (type === "emp") {
+          state.allEmployees = state.allEmployees.map((user) =>
+            user._id === updatedUser._id ? updatedUser : user
+          );
+        }
+      })
+      .addCase(suspendUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(unSuspendUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.unSuspendUserMessage = action.payload?.message;
+        const updatedUser = action.payload?.data;
+        const type = action.meta.arg.type;
+        if (type === "user") {
+          state.allUsers = state.allUsers.map((user) =>
+            user._id === updatedUser._id ? updatedUser : user
+          );
+        } else if (type === "emp") {
+          state.allEmployees = state.allEmployees.map((user) =>
+            user._id === updatedUser._id ? updatedUser : user
+          );
+        }
+      })
+      .addCase(unSuspendUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
@@ -255,4 +337,8 @@ export const {
   clearVerificationMessage,
   clearLoginMessage,
   clearAdminDeleteUserMessage,
+  clearSingleUserDetailsMessage,
+  clearAdminDeleteEmployeeMessage,
+  clearSuspendUserMessage,
+  clearUnSuspendUserMessage,
 } = userSlice.actions;

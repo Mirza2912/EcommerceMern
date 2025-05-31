@@ -59,9 +59,9 @@ export default function UsersTable({ users }) {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="space-y-4" ref={dropdownRef}>
+        <div className="space-y-4 w-full overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-[600px] w-full text-left">
               <thead>
                 <tr className="text-sm text-[#F7FAFC] border-b border-gray-700">
                   <th className="font-medium text-left pb-3 pl-4">User</th>
@@ -73,18 +73,18 @@ export default function UsersTable({ users }) {
               </thead>
               <tbody>
                 {paginatedUsers &&
-                  paginatedUsers?.map((user) => (
+                  paginatedUsers.map((user) => (
                     <tr
                       key={user._id}
-                      className="border-b last:border-0 border-gray-700 hover:bg-bg-color pl-4"
+                      className="border-b last:border-0 border-gray-700 hover:bg-bg-color"
                     >
-                      <td className="py-3">
+                      <td className="py-3 pl-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full flex items-center justify-center ">
+                          <div className="h-9 w-9 rounded-full overflow-hidden">
                             <img
                               src={user.avatar?.url}
                               alt={user.name}
-                              className="w-full h-full bg-center bg-cover rounded-full"
+                              className="w-full h-full object-cover"
                             />
                           </div>
                           <div>
@@ -99,7 +99,7 @@ export default function UsersTable({ users }) {
                         <span className="text-sm">{user.role}</span>
                       </td>
                       <td className="py-3">
-                        <span className="text-sm t">{user.phone}</span>
+                        <span className="text-sm">{user.phone}</span>
                       </td>
                       <td className="py-3">
                         <span
@@ -112,7 +112,7 @@ export default function UsersTable({ users }) {
                           {user.isOnline ? "Active" : "Inactive"}
                         </span>
                       </td>
-                      <td className="py-3 text-right pr-4">
+                      <td className="py-3 pr-4 text-right relative">
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() =>
@@ -124,11 +124,15 @@ export default function UsersTable({ users }) {
                             <LiaEditSolid className="text-xl text-gold hover:text-[#d99f18]" />
                           </button>
                           <button
-                            onClick={() => disptach(deleteUser(user?._id))}
+                            onClick={() =>
+                              disptach(
+                                deleteUser({ id: user._id, type: "user" })
+                              )
+                            }
                           >
                             <MdDelete className="text-xl text-red-600 hover:text-red-800" />
                           </button>
-                          <div>
+                          <div className="relative">
                             <button
                               onClick={() => toggleDropdown(user._id)}
                               className="p-1 rounded-md hover:bg-gray-800"
@@ -136,31 +140,32 @@ export default function UsersTable({ users }) {
                               <BiDotsHorizontalRounded className="w-5 h-4" />
                             </button>
                             {dropdownOpen === user._id && (
-                              <div className="absolute right-5 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                              <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
                                 <div
                                   className="py-1"
                                   role="menu"
                                   aria-orientation="vertical"
                                 >
                                   <Link
+                                    onClick={() => toggleDropdown(null)}
                                     to={`/admin/dashboard/users/single-user/details/${user._id}`}
-                                    className=" flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                    className="flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                     role="menuitem"
                                   >
                                     View profile
                                   </Link>
                                   <button
                                     onClick={() =>
-                                      user?.isSuspended === false
-                                        ? disptach(suspendUser(user._id))
-                                        : disptach(unSuspendUser(user._id))
+                                      user.isSuspended
+                                        ? disptach(unSuspendUser(user._id))
+                                        : disptach(suspendUser(user._id))
                                     }
-                                    className=" flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                    className="flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                     role="menuitem"
                                   >
-                                    {user?.isSuspended === true
+                                    {user.isSuspended
                                       ? "Unsuspend account"
-                                      : " Suspend account"}
+                                      : "Suspend account"}
                                   </button>
                                 </div>
                               </div>
@@ -174,17 +179,18 @@ export default function UsersTable({ users }) {
             </table>
           </div>
 
-          <div className="flex items-center justify-between">
-            <p className="text-sm ">
+          {/* Pagination */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-sm text-gray-400">
               Showing {paginatedUsers.length} of {allUsers.length} users
             </p>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className={`bg-gold hover:bg-[#d99f18] text-[#F7FAFC] px-3 py-1 rounded-md flex items-center text-md ${
+                className={`bg-gold text-white px-3 py-1 rounded-md text-sm ${
                   currentPage === 1
-                    ? " cursor-not-allowed"
+                    ? "cursor-not-allowed opacity-50"
                     : "hover:bg-[#d99f18]"
                 }`}
               >
@@ -210,9 +216,9 @@ export default function UsersTable({ users }) {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className={`bg-gold hover:bg-[#d99f18] text-[#F7FAFC] px-3 py-1 rounded-md flex items-center text-md ${
+                className={`bg-gold text-white px-3 py-1 rounded-md text-sm ${
                   currentPage === totalPages
-                    ? " cursor-not-allowed"
+                    ? "cursor-not-allowed opacity-50"
                     : "hover:bg-[#d99f18]"
                 }`}
               >
