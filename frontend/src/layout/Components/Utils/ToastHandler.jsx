@@ -40,6 +40,7 @@ import {
   clearSingleUserDetailsMessage,
   clearSuspendUserMessage,
   clearUnSuspendUserMessage,
+  clearUpdateUserRoleMessage,
   clearUserPasswordMessage,
   clearVerificationMessage,
 } from "../../store/UserSlice/userSlice.js";
@@ -63,6 +64,7 @@ const ToastHandler = () => {
     adminDeleteEmployeeMessage,
     suspendUserMessage,
     unSuspendUserMessage,
+    updateUserRoleMessage,
   } = useSelector((state) => state.auth);
 
   const {
@@ -259,6 +261,11 @@ const ToastHandler = () => {
       dispatch(clearUnSuspendUserMessage());
     }
 
+    if (updateUserRoleMessage) {
+      toast.success(updateUserRoleMessage);
+      dispatch(clearUpdateUserRoleMessage());
+    }
+
     return () => clearTimeout(timeout);
   }, [
     error,
@@ -286,6 +293,7 @@ const ToastHandler = () => {
     adminDeleteEmployeeMessage,
     suspendUserMessage,
     unSuspendUserMessage,
+    updateUserRoleMessage,
   ]);
   return null;
 };

@@ -16,7 +16,7 @@ const DashBoardLayout = () => {
   }, [dispatch]);
   return (
     <>
-      <div className="flex w-[100%] min-h-screen relative sm:mt-24 lg:mt-20">
+      <div className="flex w-[100%] min-h-screen sm:mt-24 lg:mt-20 relative">
         <AdminSidebar />
         <main className="flex-1 overflow-auto bg-[rgba(0, 0, 0, 0.6)] text-[#F7FAFC]">
           <Outlet />

@@ -63,7 +63,7 @@ export default function AdminSidebar() {
             },
             {
               path: "/admin/dashboard/employee",
-              label: "Employee",
+              label: "Employees",
               icon: <FiUsers className="text-xl mr-3" />,
             },
             {

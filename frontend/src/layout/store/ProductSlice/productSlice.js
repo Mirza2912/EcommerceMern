@@ -7,6 +7,7 @@ import {
   getBannerProducts,
   getFeaturedProducts,
   getRecentAddedProducts,
+  getRelatedProducts,
   makeUnfeatured,
   singleProductDetails,
 } from "./productSliceReducers.js";
@@ -24,6 +25,7 @@ export const productSlice = createSlice({
     featuredProducts: [],
     bannerProducts: [],
     recentAddedProducts: [],
+    relatedProducts: [],
     featuredProductsCount: 0,
     bannerProductsCount: 0,
     singleProduct: {},
@@ -56,6 +58,8 @@ export const productSlice = createSlice({
   extraReducers: (builder) => {
     //builder for getting all products
     builder
+
+      //get All products
       .addCase(getAllProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,6 +122,7 @@ export const productSlice = createSlice({
         state.error = action.payload;
       })
 
+      //builder for getting recent added product
       .addCase(getRecentAddedProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -130,6 +135,8 @@ export const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      //builder for getting all products for admin
       .addCase(getALLProductsAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -142,6 +149,8 @@ export const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      //builder for delete product
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -158,6 +167,8 @@ export const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      //builder for add to featured
       .addCase(addToFeatured.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -174,6 +185,8 @@ export const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      //builder for make product un-featured
       .addCase(makeUnfeatured.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -187,6 +200,20 @@ export const productSlice = createSlice({
         );
       })
       .addCase(makeUnfeatured.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //builder for getting related products
+      .addCase(getRelatedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getRelatedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.relatedProducts = action.payload;
+      })
+      .addCase(getRelatedProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

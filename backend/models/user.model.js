@@ -56,10 +56,10 @@ const userSchema = new Schema(
 
     employeeId: {
       type: String,
-      default: null, // will only be used if role === "employee"
-      unique: true, // prevent duplicates
-      sparse: true, // allows null values but ensures unique when set
+      unique: true,
+      sparse: true, // allows multiple nulls
     },
+
     registrationAttempts: { type: Number, default: 0 },
     verificationCode: Number,
     verificationCodeExpiry: Date,

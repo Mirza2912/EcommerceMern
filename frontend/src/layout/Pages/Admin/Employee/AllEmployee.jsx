@@ -36,7 +36,7 @@ const AllEmployee = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="p-4 md:p-6 space-y-6 w-full overflow-hidden">
+        <div className="p-4 md:p-6 space-y-6 w-full overflow-hidden ">
           {/* Header Section */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <h1 className="text-2xl md:text-4xl font-bold text-white">
@@ -52,7 +52,7 @@ const AllEmployee = () => {
           </div>
 
           {/* Main Card with Search and Table */}
-          <div className="bg-black/60 backdrop-blur-lg p-4 md:p-6 rounded-lg border border-gray-700 shadow-md w-full overflow-hidden">
+          <div className="bg-black/60  backdrop-blur-lg p-4 md:p-6 rounded-lg border border-gray-700 shadow-md w-full ">
             {/* Search Bar */}
             <div className="flex items-center mb-4">
               <div className="relative w-full">
@@ -68,7 +68,7 @@ const AllEmployee = () => {
             </div>
 
             {/* Table Component */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto ">
               <EmployeeTable employees={employees} />
             </div>
           </div>

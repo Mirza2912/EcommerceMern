@@ -410,3 +410,31 @@ export const unSuspendUser = createAsyncThunk(
     }
   }
 );
+
+//update user role
+export const updateUserRole = createAsyncThunk(
+  "user/updateUserRole",
+  async (data, { rejectWithValue }) => {
+    // console.log(data);
+
+    try {
+      const response = await axios.put(
+        `/api/v1/users/admin/user/${data?.id}`,
+        data,
+        config
+      );
+
+      // console.log(response?.data);
+
+      return response?.data;
+    } catch (error) {
+      // console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update user's role"
+      );
+    }
+  }
+);

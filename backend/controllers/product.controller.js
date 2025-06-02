@@ -255,6 +255,43 @@ const getRecentAdded = AsyncHandler(async (req, res, next) => {
   }
 });
 
+const getRelatedProducts = AsyncHandler(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    // Fetch filtered products with pagination
+    const relatedProducts = await Product.find({
+      category: id,
+    })
+      .populate("category")
+      .sort({ createdAt: -1 })
+      .limit(15);
+
+    if (!relatedProducts) {
+      return next(new ApiError(`related Products  not found...!`, 500));
+    }
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { products: relatedProducts },
+          "All related Products...!"
+        )
+      );
+  } catch (error) {
+    // console.log(error);
+    return next(
+      new ApiError(
+        `Something went wrong while fetching related Products...!`,
+        500
+      )
+    );
+  }
+});
+
 /* ADMIN METHODS */
 //Create products in product model
 const createProduct = AsyncHandler(async (req, res, next) => {
@@ -603,4 +640,5 @@ export {
   getAdminProducts,
   makeUnFeatured,
   addToFeatured,
+  getRelatedProducts,
 };

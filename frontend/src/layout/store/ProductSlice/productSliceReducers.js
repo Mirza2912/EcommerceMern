@@ -114,6 +114,31 @@ export const getBannerProducts = createAsyncThunk(
   }
 );
 
+//get related products
+export const getRelatedProducts = createAsyncThunk(
+  "products/getRelatedProducts",
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id);
+
+      const { data } = await axios.get(
+        `/api/v1/products/related-products/${id}`
+      );
+      console.log(data?.data?.products);
+
+      return data?.data?.products;
+    } catch (error) {
+      // console.log(error.response?.data || error.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch banner products"
+      );
+    }
+  }
+);
+
 export const getRecentAddedProducts = createAsyncThunk(
   "products/getRecentAddedProducts",
   async (_, { rejectWithValue }) => {

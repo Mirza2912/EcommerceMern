@@ -11,6 +11,7 @@ import {
   getAdminProducts,
   addToFeatured,
   makeUnFeatured,
+  getRelatedProducts,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
@@ -72,5 +73,7 @@ router
 router
   .route("/make-product-unfeatured/:id")
   .put(isAuthenticatedUser, isAuthorizedRoles("admin"), makeUnFeatured);
+
+router.route("/related-products/:id").get(getRelatedProducts);
 
 export default router;

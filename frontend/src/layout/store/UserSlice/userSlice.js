@@ -13,6 +13,7 @@ import {
   suspendUser,
   unSuspendUser,
   updateUserProfile,
+  updateUserRole,
   userDelete,
   userLogin,
   userLogOut,
@@ -45,6 +46,7 @@ const userSlice = createSlice({
     adminDeleteEmployeeMessage: "",
     suspendUserMessage: "",
     unSuspendUserMessage: "",
+    updateUserRoleMessage: "",
   },
   reducers: {
     clearError: (state) => {
@@ -91,6 +93,9 @@ const userSlice = createSlice({
     },
     clearUnSuspendUserMessage: (state) => {
       state.unSuspendUserMessage = "";
+    },
+    clearUpdateUserRoleMessage: (state) => {
+      state.updateUserRoleMessage = "";
     },
   },
   extraReducers: (builder) => {
@@ -320,6 +325,19 @@ const userSlice = createSlice({
       .addCase(unSuspendUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(updateUserRole.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUserRole.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.singleUserDetails = action.payload;
+        state.updateUserRoleMessage = action.payload?.message;
+      })
+      .addCase(updateUserRole.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -341,4 +359,5 @@ export const {
   clearAdminDeleteEmployeeMessage,
   clearSuspendUserMessage,
   clearUnSuspendUserMessage,
+  clearUpdateUserRoleMessage,
 } = userSlice.actions;

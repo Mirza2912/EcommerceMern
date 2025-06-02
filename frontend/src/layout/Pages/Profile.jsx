@@ -11,6 +11,10 @@ import {
 } from "../store/UserSlice/userSliceReducers.js";
 import { toast } from "react-toastify";
 import { clearError } from "../store/UserSlice/userSlice.js";
+import { FiEdit } from "react-icons/fi";
+import { RiLockPasswordLine } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
+import { IoIosLogOut } from "react-icons/io";
 
 const Profile = () => {
   //For checking for title
@@ -107,8 +111,9 @@ const Profile = () => {
                     onClick={() => {
                       navigate("/me/profile/update");
                     }}
-                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
+                    className="relative flex items-center justify-center gap-1 text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
+                    <FiEdit className="text-lg" />
                     Edit Profile
                   </button>
 
@@ -116,8 +121,9 @@ const Profile = () => {
                     onClick={() => {
                       navigate("/me/update-password");
                     }}
-                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
+                    className="relative text-xl font-medium flex items-center justify-center gap-1 transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
+                    <RiLockPasswordLine className="text-lg" />
                     Change Password
                   </button>
 
@@ -125,15 +131,17 @@ const Profile = () => {
                     onClick={() => {
                       dispatch(userDelete());
                     }}
-                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
+                    className="relative flex items-center justify-center gap-1 text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
+                    <MdDelete className="text-lg" />
                     Delete Account
                   </button>
 
                   <button
                     onClick={handleLogout}
-                    className="relative text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
+                    className="relative flex items-center justify-center gap-1  text-xl font-medium  transition-all duration-300 hover:text-gold after:content-[''] after:absolute after:left-0 after:-bottom-1 after:w-0 after:h-[2px] after:bg-gold hover:after:w-full after:transition-all after:duration-300"
                   >
+                    <IoIosLogOut className="text-lg" />
                     Logout
                   </button>
                 </div>

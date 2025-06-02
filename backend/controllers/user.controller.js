@@ -190,6 +190,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
     //check email is valid or not
     const isEmailValidResponse = await isEmailValid(email);
+    console.log("email y");
 
     //if email is not valid
     if (isEmailValidResponse !== "deliverable") {
@@ -208,7 +209,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       crop: "scale",
     });
 
-    if (req.body.role === "employee") {
+    if (req.body?.role && req.body?.role === "employee") {
       //checking data comes or not
       if (!name || !email || !phone) {
         // console.log("❌ Missing required fields!");
@@ -278,14 +279,19 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
         next
       );
     } else {
+      // console.log("yes");
+
       //checking data comes or not
       if (!name || !email || !password || !phone) {
         // console.log("❌ Missing required fields!");
         return next(new ApiError(`All fields are required...!`, 400));
       }
+      // console.log("yes2");
+
       //Checking user already exist or not
       const isUserExist = await User.findOne({ email });
       // console.log(isUserExist);
+      // console.log("yes3");
 
       //check is verified user exist or not
       if (isUserExist && isUserExist.accountVerified) {
@@ -345,6 +351,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
           url: myCloud.secure_url,
         },
       };
+      // console.log("userData", userData);
 
       // console.log("✅ Creating new user...");
       //Creating new user
@@ -353,7 +360,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
 
       //check user created or not
       if (!user) {
-        // console.log("❌ Failed to create user.");
+        console.log("❌ Failed to create user.");
         return next(
           new ApiError(`Internal Server Error while creating new user...!`, 500)
         );
@@ -371,7 +378,7 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
       sendVerificationCode(verificationCode, email, phone, res, name);
     }
   } catch (error) {
-    // console.log(error.message);
+    console.log(error.message);
 
     return next(new ApiError(`${error.message}`, 500));
   }
@@ -515,6 +522,10 @@ const userLogin = AsyncHandler(async (req, res, next) => {
 
   if (!isPasswordMatched) {
     return next(new ApiError("Invalid credentials", 401));
+  }
+
+  if (user?.isSuspended === true) {
+    return next(new ApiError("Your are suspended by admin...!", 401));
   }
 
   //creating cookie to send
@@ -868,7 +879,9 @@ const updateUser = AsyncHandler(async (req, res, next) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, user, `${user?.name} updated successfully`));
+      .json(
+        new ApiResponse(200, user, `${user?.name}'s role updated successfully`)
+      );
   } catch (err) {
     console.error("Error fetching user:", err);
     return next(new ApiError("Server error while updating user...!", 500));
@@ -895,9 +908,10 @@ const deleteUser = AsyncHandler(async (req, res, next) => {
 });
 
 //to suspend user ---> admin
-const suspendUser = async (req, res) => {
+const suspendUser = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
 
     // Find the user by ID and suspend it
     const user = await User.findById(id);
@@ -923,7 +937,7 @@ const suspendUser = async (req, res) => {
 };
 
 //to suspend user ---> admin
-const unSuspendUSer = async (req, res) => {
+const unSuspendUSer = async (req, res, next) => {
   try {
     const { id } = req.params;
 

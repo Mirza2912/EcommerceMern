@@ -4,12 +4,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearError } from "../store/ProductSlice/productSlice.js";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Rating from "@mui/material/Rating";
-import { singleProductDetails } from "../store/ProductSlice/productSliceReducers.js";
+import {
+  getRelatedProducts,
+  singleProductDetails,
+} from "../store/ProductSlice/productSliceReducers.js";
 import Loader from "../Components/Loader/Loader.jsx";
 import { toast } from "react-toastify";
 import { addToCartLocal } from "../store/CartSlice/CartSlice.js";
 import { v4 as uuidv4 } from "uuid";
 import { addToCartBackend } from "../store/CartSlice/CartSliceReducers.js";
+import RelatedProducts from "../Components/Home/RelatedProducts.jsx";
 
 const SingleProductDetails = () => {
   //fetching id of product by using useParams()
@@ -35,10 +39,7 @@ const SingleProductDetails = () => {
 
   const [quantity, setQuantity] = useState(1);
 
-  let product = null;
-  if (id in singleProduct) {
-    product = singleProduct[id];
-  }
+  let product = singleProduct[id];
   // console.log(product);
 
   const handleIncrease = () => {
@@ -86,6 +87,14 @@ const SingleProductDetails = () => {
     }
     dispatch(singleProductDetails(id));
   }, []);
+
+  useEffect(() => {
+    if (product) {
+      if (product?.category?._id) {
+        dispatch(getRelatedProducts(product.category._id));
+      }
+    }
+  }, [singleProduct]);
   return (
     <>
       <Title title="Single Product" />
@@ -213,6 +222,7 @@ const SingleProductDetails = () => {
           <p className="text-center text-gray-500">Product not found</p>
         )}
       </div>
+      <RelatedProducts />
     </>
   );
 };

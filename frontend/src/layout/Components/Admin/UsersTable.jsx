@@ -5,10 +5,14 @@ import Loader from "../Loader/Loader";
 import {
   deleteUser,
   getAllUsers,
+  suspendUser,
+  unSuspendUser,
 } from "../../store/UserSlice/userSliceReducers";
 import { LiaEditSolid } from "react-icons/lia";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineAccountCircle } from "react-icons/md";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { FaRegEdit } from "react-icons/fa";
+import { LuEye } from "react-icons/lu";
 
 // import { userDelete } from "../Store/Auth/AuthSliceReducers"
 
@@ -41,19 +45,6 @@ export default function UsersTable({ users }) {
     disptach(getAllUsers());
   }, [disptach]);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
   return (
     <>
       {isLoading ? (
@@ -64,11 +55,11 @@ export default function UsersTable({ users }) {
             <table className="min-w-[600px] w-full text-left">
               <thead>
                 <tr className="text-sm text-[#F7FAFC] border-b border-gray-700">
-                  <th className="font-medium text-left pb-3 pl-4">User</th>
-                  <th className="font-medium text-left pb-3">Role</th>
-                  <th className="font-medium text-left pb-3">Phone</th>
-                  <th className="font-medium text-left pb-3">Status</th>
-                  <th className="font-medium text-right pb-3 pr-4">Actions</th>
+                  <th className=" font-medium text-left pb-3 pl-4">User</th>
+                  <th className=" font-medium text-left pb-3">Role</th>
+                  <th className=" font-medium text-left pb-3">Phone</th>
+                  <th className=" font-medium text-left pb-3">Status</th>
+                  <th className=" font-medium text-right pb-3 pr-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,7 +67,7 @@ export default function UsersTable({ users }) {
                   paginatedUsers.map((user) => (
                     <tr
                       key={user._id}
-                      className="border-b last:border-0 border-gray-700 hover:bg-bg-color"
+                      className="border-b  last:border-0 border-gray-700 hover:bg-bg-color"
                     >
                       <td className="py-3 pl-4">
                         <div className="flex items-center gap-3">
@@ -112,7 +103,7 @@ export default function UsersTable({ users }) {
                           {user.isOnline ? "Active" : "Inactive"}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 text-right relative">
+                      <td className="py-3 pr-4 text-right ">
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() =>
@@ -121,7 +112,7 @@ export default function UsersTable({ users }) {
                               )
                             }
                           >
-                            <LiaEditSolid className="text-xl text-gold hover:text-[#d99f18]" />
+                            <LuEye className="text-xl text-gold hover:text-[#d99f18]" />
                           </button>
                           <button
                             onClick={() =>
@@ -132,7 +123,7 @@ export default function UsersTable({ users }) {
                           >
                             <MdDelete className="text-xl text-red-600 hover:text-red-800" />
                           </button>
-                          <div className="relative">
+                          <div className="">
                             <button
                               onClick={() => toggleDropdown(user._id)}
                               className="p-1 rounded-md hover:bg-gray-800"
@@ -142,27 +133,42 @@ export default function UsersTable({ users }) {
                             {dropdownOpen === user._id && (
                               <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
                                 <div
-                                  className="py-1"
+                                  className="py-1 "
                                   role="menu"
                                   aria-orientation="vertical"
                                 >
                                   <Link
                                     onClick={() => toggleDropdown(null)}
                                     to={`/admin/dashboard/users/single-user/details/${user._id}`}
-                                    className="flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                    className="flex items-center gap-1 pl-2 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left "
                                     role="menuitem"
                                   >
-                                    View profile
+                                    <FaRegEdit className="text-lg" />
+                                    Edit User
                                   </Link>
                                   <button
-                                    onClick={() =>
+                                    onClick={() => {
                                       user.isSuspended
-                                        ? disptach(unSuspendUser(user._id))
-                                        : disptach(suspendUser(user._id))
-                                    }
-                                    className="flex items-center gap-2 pl-3 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                        ? disptach(
+                                            unSuspendUser({
+                                              id: user._id,
+                                              type: "user",
+                                            })
+                                          )
+                                        : disptach(
+                                            suspendUser({
+                                              id: user._id,
+                                              type: "user",
+                                            })
+                                          );
+
+                                      toggleDropdown(null);
+                                    }}
+                                    className="flex items-center gap-1 pl-1.5 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                     role="menuitem"
                                   >
+                                    <MdOutlineAccountCircle className="text-lg" />
+
                                     {user.isSuspended
                                       ? "Unsuspend account"
                                       : "Suspend account"}

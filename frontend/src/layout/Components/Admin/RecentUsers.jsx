@@ -41,7 +41,10 @@ export default function RecentUsers() {
           <tbody>
             {firstFiveUsers &&
               firstFiveUsers?.map((user) => (
-                <tr key={user._id} className="border-b last:border-0">
+                <tr
+                  key={user._id}
+                  className="border-b last:border-0 border-gray-700"
+                >
                   <td className="py-3">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full flex items-center justify-center ">
