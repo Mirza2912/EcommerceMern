@@ -12,6 +12,7 @@ import {
   addToFeatured,
   makeUnFeatured,
   getRelatedProducts,
+  getEmployeeAllProducts,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
@@ -75,5 +76,10 @@ router
   .put(isAuthenticatedUser, isAuthorizedRoles("admin"), makeUnFeatured);
 
 router.route("/related-products/:id").get(getRelatedProducts);
+
+//Employee Routes
+router
+  .route("/employee/products")
+  .get(isAuthenticatedUser, getEmployeeAllProducts);
 
 export default router;

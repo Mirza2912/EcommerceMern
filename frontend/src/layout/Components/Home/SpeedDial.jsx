@@ -43,9 +43,21 @@ const UserSpeedDial = ({ user }) => {
     });
   }
 
+  if (user?.data?.role === "employee") {
+    options.unshift({
+      icon: <DashboardIcon />,
+      name: "Dashboard",
+      func: DashboardEmployee,
+    });
+  }
+
   //   Functions for speed dial actions
   function Dashboard() {
     navigate("/admin/dashboard");
+  }
+
+  function DashboardEmployee() {
+    navigate("/employee/dashboard");
   }
 
   function Orders() {

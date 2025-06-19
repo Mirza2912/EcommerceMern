@@ -44,7 +44,6 @@ import SingleOrderDetails from "./layout/Pages/Order/SingleOrderDetails.jsx";
 import UserSpeedDial from "./layout/Components/Home/SpeedDial.jsx";
 import NotFoundPage from "./layout/Components/NotFound/NotFoundPage.jsx";
 import AdminRoute from "./layout/Routes/adminRoute.jsx";
-import DashBoardLayout from "./layout/Pages/Admin/dashBoardLayout.jsx";
 import AllUsers from "./layout/Pages/Admin/Users/AllUsers.jsx";
 import AllProducts from "./layout/Pages/Admin/Products/AllProducts.jsx";
 import SingleUserDetails from "./layout/Pages/Admin/Users/SingleUserDetails.jsx";
@@ -59,6 +58,16 @@ import AllOrders from "./layout/Pages/Admin/Orders/AllOrders.jsx";
 import SingleOrderDetailsAdmin from "./layout/Pages/Admin/Orders/SingleOrderDetailsAdmin.jsx";
 import DashboardHome from "./layout/Pages/Admin/DashboardHome.jsx";
 import ToastHandler from "./layout/Components/Utils/ToastHandler.jsx";
+import AllSalesAdmin from "./layout/Pages/Admin/Sales/AllSalesAdmin.jsx";
+import DashBoardLayout from "./layout/Pages/Admin/DashBoardLayout.jsx";
+import SingleSaleAdmin from "./layout/Pages/Admin/Sales/SingleSaleAdmin.jsx";
+import SingleEmployeeSales from "./layout/Pages/Admin/Employee/SingleEmployeeSales.jsx";
+import EmployeeRoute from "./layout/Routes/employeeRoute.jsx";
+import EmployeeDashboardHome from "./layout/Pages/Employee/EmployeeDashboardHome.jsx";
+import EmployeeDashBoardLayout from "./layout/Pages/Employee/EmployeeDashboardLayout.jsx";
+import CreateSaleByEmployee from "./layout/Pages/Employee/CreateSale/CreateSaleByEmployee.jsx";
+import MySales from "./layout/Pages/Employee/MySale/MySales.jsx";
+import SingleSaleByEmployee from "./layout/Pages/Employee/MySale/SingleSaleByEmployee.jsx";
 
 const App = () => {
   const { isVerified, user } = useSelector((state) => state.auth);
@@ -176,9 +185,42 @@ const App = () => {
                 path="employee/create-new-employee"
                 element={<CreateNewEmployee />}
               />
+              <Route
+                path="employee/single-employee-sales/:id"
+                element={<SingleEmployeeSales />}
+              />
+
+              {/* sales  */}
+              <Route path="sales" element={<AllSalesAdmin />} />
+              <Route
+                path="sales/single-sale/:id"
+                element={<SingleSaleAdmin />}
+              />
             </Route>
 
             {/* Employees  */}
+          </Route>
+
+          {/* Employee Routes  */}
+          <Route element={<EmployeeRoute />}>
+            <Route
+              path="/employee/dashboard"
+              element={<EmployeeDashBoardLayout />}
+            >
+              <Route index element={<EmployeeDashboardHome />} />
+
+              {/* Create Sale  */}
+              <Route path="create-sale" element={<CreateSaleByEmployee />} />
+
+              {/* My sales  */}
+              <Route path="my-sales" element={<MySales />} />
+
+              {/* single sale  */}
+              <Route
+                path="my-sales/single-sale/:id"
+                element={<SingleSaleByEmployee />}
+              />
+            </Route>
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

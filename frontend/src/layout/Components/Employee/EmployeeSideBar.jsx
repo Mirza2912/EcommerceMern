@@ -1,12 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { userLogOut } from "../../store/UserSlice/userSliceReducers";
 import { FaList, FaBars } from "react-icons/fa";
 import { useState } from "react";
 import { FiUsers } from "react-icons/fi";
 import { RxDashboard } from "react-icons/rx";
+import { IoMdAdd } from "react-icons/io";
+import { VscDebugStepBack } from "react-icons/vsc";
+import { IoBarChartOutline } from "react-icons/io5";
+import { userLogOut } from "../../store/UserSlice/userSliceReducers";
 
-export default function AdminSidebar() {
+export default function EmployeeSideBar() {
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -45,56 +48,41 @@ export default function AdminSidebar() {
       >
         <div className="p-6 border-b border-gray-700">
           <h1 className="text-xl font-bold text-gold">Logo</h1>
-          <p className="text-sm">Admin Panel</p>
+          <p className="text-sm">Employee Panel</p>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
           {[
             {
-              path: "/admin/dashboard",
+              path: "/employee/dashboard",
               label: "Dashboard",
               icon: <RxDashboard className="text-xl mr-3" />,
             },
 
             {
-              path: "/admin/dashboard/users",
-              label: "Users",
-              icon: <FiUsers className="text-xl mr-3" />,
+              path: "/employee/dashboard/create-sale",
+              label: "Create Sale",
+              icon: <IoMdAdd className="text-xl mr-3" />,
             },
             {
-              path: "/admin/dashboard/employee",
-              label: "Employees",
-              icon: <FiUsers className="text-xl mr-3" />,
-            },
-            {
-              path: "/admin/dashboard/products",
-              label: "Products",
-              icon: (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="mr-3 h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <path d="M16 10a4 4 0 0 1-8 0" />
-                </svg>
-              ),
-            },
-            {
-              path: "/admin/dashboard/orders",
-              label: "Orders",
-              icon: <FaList className="mr-3 h-5 w-5" />,
+              path: "/employee/dashboard/my-sales",
+              label: "My Sales",
+              icon: <FaList className="text-xl mr-3" />,
             },
             {
               path: "/admin/dashboard/sales",
-              label: "Sales",
-              icon: <FaList className="mr-3 h-5 w-5" />,
+              label: "Return Sale",
+              icon: <VscDebugStepBack className="mr-3 h-5 w-5" />,
+            },
+            {
+              path: "/admin/dashboard/sales",
+              label: "Sales Summary",
+              icon: <IoBarChartOutline className="mr-3 h-5 w-5" />,
+            },
+            {
+              path: "/admin/dashboard/sales",
+              label: "My Profile",
+              icon: <FiUsers className="mr-3 h-5 w-5" />,
             },
           ].map(({ path, label, icon }) => (
             <NavLink

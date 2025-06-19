@@ -535,7 +535,26 @@ const getAdminProducts = AsyncHandler(async (req, res, next) => {
   try {
     const product = await Product.find()
       .populate("category", "category")
-      .sort({ createAt: -1 });
+      .sort({ createdAt: -1 });
+
+    if (!product) {
+      return next(new ApiError(`Products not found...!`, 404));
+    }
+
+    res.status(200).json(new ApiResponse(200, product, `All products...!`));
+  } catch (error) {
+    return next(
+      new ApiError("Something went wrong while fetching products...!", 500)
+    );
+  }
+});
+
+//get all products
+const getEmployeeAllProducts = AsyncHandler(async (req, res, next) => {
+  try {
+    const product = await Product.find()
+      .populate("category", "category")
+      .sort({ createdAt: -1 });
 
     if (!product) {
       return next(new ApiError(`Products not found...!`, 404));
@@ -641,4 +660,5 @@ export {
   makeUnFeatured,
   addToFeatured,
   getRelatedProducts,
+  getEmployeeAllProducts,
 };

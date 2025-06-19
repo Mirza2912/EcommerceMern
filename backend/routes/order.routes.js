@@ -1,10 +1,14 @@
 import { Router } from "express";
 import {
   allOrders,
+  approveReturn,
+  cancelOrder,
   deleteOrderAdmin,
   getAllOrders,
   getOrderByIdAdmin,
   newOrder,
+  rejectReturn,
+  requestReturn,
   singleOrder,
   updateOrderStatus,
 } from "../controllers/order.controller.js";
@@ -46,5 +50,20 @@ router
 router
   .route("/admin/single-order/update/:id")
   .put(isAuthenticatedUser, isAuthorizedRoles("admin"), updateOrderStatus);
+
+router.post("/cancel", isAuthenticatedUser, cancelOrder);
+router.post("/request-return", isAuthenticatedUser, requestReturn);
+router.post(
+  "/admin/approve-return",
+  isAuthenticatedUser,
+  isAuthorizedRoles("admin"),
+  approveReturn
+);
+router.post(
+  "/admin/reject-return",
+  isAuthenticatedUser,
+  isAuthorizedRoles("admin"),
+  rejectReturn
+);
 
 export default router;

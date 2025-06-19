@@ -62,6 +62,11 @@ const orderSchema = new Schema(
       type: String,
       required: [true, "Payment method is required"],
     },
+    isPaid: {
+      type: Boolean,
+      default: false,
+      required: [true, "Payment status is required...!"],
+    },
     paidAt: {
       type: Date,
     },
@@ -88,7 +93,38 @@ const orderSchema = new Schema(
     orderStatus: {
       type: String,
       required: [true, "Order status is required...!"],
-      default: "Processing",
+      enum: [
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Cancelled",
+        "Return Requested",
+        "Returned",
+        "Return Rejected",
+      ],
+      default: "Pending",
+    },
+    cancelReason: {
+      type: String,
+    },
+    returnReason: {
+      type: String,
+    },
+    isCancelled: {
+      type: Boolean,
+      default: false,
+    },
+    isReturned: {
+      type: Boolean,
+      default: false,
+    },
+    returnApprovedAt: {
+      type: Date,
+    },
+    cancelledAt: {
+      type: Date,
     },
     deliveredAt: Date,
   },

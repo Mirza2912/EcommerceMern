@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getAllProducts,
   getALLProductsAdmin,
+  getAllProductsEmployee,
   getBannerProducts,
   getFeaturedProducts,
   getRecentAddedProducts,
@@ -20,6 +21,7 @@ export const productSlice = createSlice({
   initialState: {
     products: [], //for storing all products in state
     adminProducts: [],
+    employeeProducts: [],
     productCount: 0,
     filteredProductCount: 0,
     featuredProducts: [],
@@ -146,6 +148,19 @@ export const productSlice = createSlice({
         state.adminProducts = action.payload;
       })
       .addCase(getALLProductsAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(getAllProductsEmployee.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllProductsEmployee.fulfilled, (state, action) => {
+        state.loading = false;
+        state.employeeProducts = action.payload;
+      })
+      .addCase(getAllProductsEmployee.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

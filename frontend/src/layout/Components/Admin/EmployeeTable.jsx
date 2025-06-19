@@ -56,6 +56,7 @@ const EmployeeTable = ({ employees }) => {
                 <tr className="text-sm text-[#F7FAFC] border-b border-gray-700">
                   <th className="font-medium text-left pb-3 pl-4">Employee</th>
                   <th className="font-medium text-left pb-3">ID</th>
+                  <th className="font-medium text-left pb-3">Sales</th>
                   <th className="font-medium text-left pb-3">Status</th>
                   <th className="font-medium text-right pb-3 pr-4">Actions</th>
                 </tr>
@@ -90,6 +91,14 @@ const EmployeeTable = ({ employees }) => {
                         <span className="text-sm font-medium">
                           {employee.employeeId}
                         </span>
+                      </td>
+                      <td className="py-3">
+                        <Link
+                          to={`/admin/dashboard/employee/single-employee-sales/${employee._id}`}
+                          className="text-gold hover:underline"
+                        >
+                          View Sales
+                        </Link>
                       </td>
                       <td className="py-3">
                         <span

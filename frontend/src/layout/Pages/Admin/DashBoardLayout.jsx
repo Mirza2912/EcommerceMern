@@ -5,6 +5,7 @@ import { getAllUsers } from "../../store/UserSlice/userSliceReducers";
 import { getALLProductsAdmin } from "../../store/ProductSlice/productSliceReducers";
 import { getAllOrdersAdmin } from "../../store/OrderSlice/orderSliceReducers";
 import AdminSidebar from "../../Components/Admin/AdminSidebar";
+import { getAllSales } from "../../store/SalesSlice/saleSliceReducers";
 
 const DashBoardLayout = () => {
   const dispatch = useDispatch();
@@ -13,10 +14,11 @@ const DashBoardLayout = () => {
     dispatch(getAllUsers());
     dispatch(getALLProductsAdmin());
     dispatch(getAllOrdersAdmin());
+    dispatch(getAllSales());
   }, [dispatch]);
   return (
     <>
-      <div className="flex w-[100%] min-h-screen sm:mt-24 lg:mt-20 relative">
+      <div className="flex h-[calc(100vh-80px)] mt-[80px] overflow-hidden w-full">
         <AdminSidebar />
         <main className="flex-1 overflow-auto bg-[rgba(0, 0, 0, 0.6)] text-[#F7FAFC]">
           <Outlet />

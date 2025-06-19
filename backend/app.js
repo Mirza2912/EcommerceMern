@@ -26,6 +26,7 @@ import userRouter from "./routes/user.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import cartRouter from "./routes/cart.routes.js";
+import saleRouter from "./routes/sale.route.js";
 
 //For Products
 app.use("/api/v1/products", productRouter);
@@ -41,6 +42,9 @@ app.use("/api/v1/categories", categoryRouter);
 
 //For cart
 app.use("/api/v1/cart", cartRouter);
+
+//For sales
+app.use("/api/v1/sale", saleRouter);
 
 //Using error() middleware for throwing ApiError
 app.use(error);

@@ -44,6 +44,11 @@ import {
   clearUserPasswordMessage,
   clearVerificationMessage,
 } from "../../store/UserSlice/userSlice.js";
+import {
+  clearCreateSaleMessage,
+  clearDeleteSaleMessage,
+} from "../../store/SalesSlice/saleSlice.js";
+import { clearWholeCartBackend } from "../../store/CartSlice/CartSliceReducers.js";
 
 const ToastHandler = () => {
   const dispatch = useDispatch();
@@ -79,6 +84,10 @@ const ToastHandler = () => {
     addToCartUpdateBackendMessage,
     deleteCartItemFromBackendMessage,
   } = useSelector((state) => state.cart);
+
+  const { deleteSaleMessage, createSaleMessage } = useSelector(
+    (state) => state.sale
+  );
 
   const {
     orderPlacedMessage,
@@ -266,6 +275,16 @@ const ToastHandler = () => {
       dispatch(clearUpdateUserRoleMessage());
     }
 
+    if (deleteSaleMessage) {
+      toast.success(deleteSaleMessage);
+      dispatch(clearDeleteSaleMessage());
+    }
+
+    if (createSaleMessage) {
+      toast.success(createSaleMessage);
+      dispatch(clearCreateSaleMessage());
+    }
+
     return () => clearTimeout(timeout);
   }, [
     error,
@@ -294,6 +313,8 @@ const ToastHandler = () => {
     suspendUserMessage,
     unSuspendUserMessage,
     updateUserRoleMessage,
+    deleteSaleMessage,
+    createSaleMessage,
   ]);
   return null;
 };
