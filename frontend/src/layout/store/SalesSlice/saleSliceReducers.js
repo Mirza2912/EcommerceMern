@@ -174,3 +174,36 @@ export const getSingleSalebyEmployee = createAsyncThunk(
     }
   }
 );
+
+//return sale
+
+//get single sale by employee
+export const returnSale = createAsyncThunk(
+  "sale/returnSale",
+  async (saleData, { rejectWithValue }) => {
+    try {
+      console.log("id", saleData.saleData);
+
+      const items = saleData.saleData;
+
+      const { data } = await axios.put(
+        `/api/v1/sale/return-sale/${saleData.saleId}`,
+        { items },
+        config
+      );
+
+      // console.log(data);
+
+      return data?.message;
+    } catch (error) {
+      console.log(error);
+
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Fetching single Sale failed"
+      );
+    }
+  }
+);

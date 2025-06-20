@@ -19,7 +19,15 @@ const saleSchema = new mongoose.Schema(
         discont: Number,
         item: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product", // 🟢 Add this to track which product was sold
+          ref: "Product",
+        },
+        isReturned: {
+          type: Boolean,
+          default: false,
+        },
+        returnedQuantity: {
+          type: Number,
+          default: 0,
         },
       },
     ],
@@ -27,9 +35,13 @@ const saleSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    returnedAmount: {
+      type: Number,
+      default: 0, // 🆕 Total returned Rs. value
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // could be admin, employee, or user
+      ref: "User",
       required: true,
     },
     customerName: {

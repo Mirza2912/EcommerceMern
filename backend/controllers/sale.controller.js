@@ -318,52 +318,81 @@ const getMySaleSummary = AsyncHandler(async (req, res, next) => {
 
 const returnPhysicalSale = AsyncHandler(async (req, res, next) => {
   const saleId = req.params.id;
+  const items = req.body.items; // Format: [{ _id, returnQuantity }]
 
   try {
-    // Find the sale
+    // Step 1: Find the sale
     const sale = await Sale.findOne({
       _id: saleId,
       createdBy: req.user._id,
       saleType: "PHYSICAL",
     });
 
-    if (!sale) {
-      return next(new ApiError("Sale not found", 404));
-    }
+    if (!sale) return next(new ApiError("Sale not found", 404));
 
-    // Optional: check if already returned
-    if (sale.isReturned) {
-      return next(new ApiError("Sale already returned", 400));
-    }
-
-    // Optional: time restriction
-    const allowedReturnTime = 168 * 60 * 60 * 1000; //  7 days
+    // Step 2: Return time check (7 days)
+    const allowedReturnTime = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
     const timeSinceSale = Date.now() - new Date(sale.createdAt).getTime();
+
     if (timeSinceSale > allowedReturnTime) {
       return next(new ApiError("Return time has expired", 400));
     }
 
-    // Update product stock
-    for (const item of sale.items) {
-      await Product.findByIdAndUpdate(item.item, {
-        $inc: { stock: item.quantity },
-      });
+    // Step 3: Track returned amount
+    let totalReturnedAmount = 0;
+
+    // Step 4: Process return items
+    for (const returned of items) {
+      const saleItem = sale.items.find(
+        (itm) => itm._id.toString() === returned._id
+      );
+
+      if (!saleItem) continue;
+
+      const validQty =
+        returned.returnQuantity &&
+        returned.returnQuantity > 0 &&
+        returned.returnQuantity + saleItem.returnedQuantity <=
+          saleItem.quantity;
+
+      if (validQty) {
+        // Step 4a: Update product stock
+        await Product.findByIdAndUpdate(saleItem.item, {
+          $inc: { stock: returned.returnQuantity },
+        });
+
+        // Step 4b: Update return quantity
+        saleItem.returnedQuantity += returned.returnQuantity;
+
+        // Step 4c: Mark item as returned if fully returned
+        if (saleItem.returnedQuantity >= saleItem.quantity) {
+          saleItem.isReturned = true;
+        }
+
+        // Step 4d: Calculate returned value
+        const itemReturnAmount =
+          returned.returnQuantity * saleItem.price -
+          returned.returnQuantity * (saleItem.discont || 0);
+
+        totalReturnedAmount += itemReturnAmount;
+      }
     }
 
-    // Mark the sale as returned (soft delete approach)
+    // Step 5: Mark sale as returned (even partial)
     sale.isReturned = true;
-    sale.returnedAt = Date.now();
-    await sale.save();
+    sale.returnedAt = new Date();
+    sale.returnedAmount = totalReturnedAmount;
 
-    // Alternative: Hard delete (if preferred)
-    // await Sale.findByIdAndDelete(saleId);
+    await sale.save();
 
     res
       .status(200)
-      .json(new ApiResponse(200, sale, "Sale has been returned successfully."));
+      .json(
+        new ApiResponse(200, sale, "Selected items returned successfully.")
+      );
   } catch (error) {
-    console.error(error);
-    return next(new ApiError("Error while returning sale", 500));
+    console.error("Return error:", error);
+    return next(new ApiError("Error while processing return", 500));
   }
 });
 

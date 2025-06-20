@@ -68,6 +68,7 @@ import EmployeeDashBoardLayout from "./layout/Pages/Employee/EmployeeDashboardLa
 import CreateSaleByEmployee from "./layout/Pages/Employee/CreateSale/CreateSaleByEmployee.jsx";
 import MySales from "./layout/Pages/Employee/MySale/MySales.jsx";
 import SingleSaleByEmployee from "./layout/Pages/Employee/MySale/SingleSaleByEmployee.jsx";
+import ReturnSalePage from "./layout/Pages/Employee/ReturnSale/ReturnSalePage.jsx";
 
 const App = () => {
   const { isVerified, user } = useSelector((state) => state.auth);
@@ -220,6 +221,12 @@ const App = () => {
                 path="my-sales/single-sale/:id"
                 element={<SingleSaleByEmployee />}
               />
+
+              {/* return sale  */}
+              <Route path="return-sale" element={<ReturnSalePage />} />
+
+              {/* profile  */}
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
 

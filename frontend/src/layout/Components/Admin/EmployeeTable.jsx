@@ -22,7 +22,7 @@ const EmployeeTable = ({ employees }) => {
   const { allEmployees, isLoading } = useSelector((state) => state.auth);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const employeesPerPage = 10;
+  const employeesPerPage = 8;
 
   const startIndex = (currentPage - 1) * employeesPerPage;
   const endIndex = startIndex + employeesPerPage;
@@ -30,7 +30,7 @@ const EmployeeTable = ({ employees }) => {
   const paginatedEmployees = employees?.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(
-    allEmployees && allEmployees?.length / employeesPerPage
+    employees && employees?.length / employeesPerPage
   );
 
   // useEffect(() => {
@@ -190,7 +190,7 @@ const EmployeeTable = ({ employees }) => {
           {/* Pagination */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm text-gray-400">
-              Showing {paginatedEmployees.length} of {allEmployees.length}{" "}
+              Showing {paginatedEmployees.length} of {employees.length}{" "}
               employees
             </p>
             <div className="flex flex-wrap gap-2">

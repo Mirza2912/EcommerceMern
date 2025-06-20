@@ -9,7 +9,7 @@ const SingleSaleByEmployee = () => {
   const dispatch = useDispatch();
 
   const { loading, singleSaleByEmployee } = useSelector((state) => state.sale);
-  console.log(singleSaleByEmployee);
+  // console.log(singleSaleByEmployee);
 
   useEffect(() => {
     dispatch(getSingleSalebyEmployee(id));
@@ -31,6 +31,15 @@ const SingleSaleByEmployee = () => {
                 singleSaleByEmployee && singleSaleByEmployee?.createdAt
               ).toLocaleString()}
             </p>
+            {singleSaleByEmployee &&
+              singleSaleByEmployee?.isReturned === true && (
+                <p className="text-center text-gray-400 text-base">
+                  Sale Returned On :
+                  {new Date(
+                    singleSaleByEmployee && singleSaleByEmployee?.returnedAt
+                  ).toLocaleString()}
+                </p>
+              )}
           </div>
 
           <div className="w-[100%] flex justify-between lg:flex-row flex-col mb-8 pb-4 border-b border-gray-700">
@@ -124,8 +133,11 @@ const SingleSaleByEmployee = () => {
                         alt={item.name}
                         className="w-16 h-16 object-cover rounded"
                       />
-                      <div className="flex flex-col items-start justify-center gap-4">
+                      <div className="flex flex-col items-start justify-center gap-1">
                         <h4 className="text-sm font-medium">{item.name}</h4>
+                        <h4 className="text-sm font-medium">
+                          {item.isReturned === true ? "Returned item" : ""}
+                        </h4>
                         <p className="text-sm text-gray-400">
                           Qty: {item.quantity}
                         </p>
@@ -175,6 +187,17 @@ const SingleSaleByEmployee = () => {
                     singleSaleByEmployee?.totalAmount?.toFixed(2)}
                 </span>
               </p>
+              {singleSaleByEmployee &&
+                singleSaleByEmployee?.isReturned === true && (
+                  <p>
+                    <strong className="text-lg">Return Amount:</strong>{" "}
+                    <span className="text-gold font-bold">
+                      Rs.{" "}
+                      {singleSaleByEmployee &&
+                        singleSaleByEmployee?.returnedAmount?.toFixed(2)}
+                    </span>
+                  </p>
+                )}
             </div>
           </div>
         </div>

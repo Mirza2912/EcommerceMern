@@ -3,8 +3,12 @@ import DashboardHeaders from "../../Components/Admin/DashboardHeader";
 import DashboardStats from "../../Components/Admin/DashboardStats";
 import RecentUsers from "../../Components/Admin/RecentUsers";
 import RecentProducts from "../../Components/Admin/RecentProducts";
+import MonthlySalesBarChart from "../../Components/Employee/SaleBarCharts";
+import SalesTypePieChart from "../../Components/Employee/SaleTypePieChart";
+import { useSelector } from "react-redux";
 
 const DashboardHome = () => {
+  const { sales } = useSelector((state) => state.sale);
   return (
     <div className="p-6 space-y-6">
       <DashboardHeaders />
@@ -20,6 +24,13 @@ const DashboardHome = () => {
           <h2 className="text-xl font-semibold mb-4">Recent Products</h2>
           <RecentProducts />
         </div>
+      </div>
+      <div className="text-2xl font-bold">
+        <h2>Charts</h2>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MonthlySalesBarChart mySales={sales} />
+        <SalesTypePieChart mySales={sales} />
       </div>
     </div>
   );

@@ -24,16 +24,14 @@ export default function ProductsTable({ products }) {
   const { adminProducts, loading } = useSelector((state) => state.product);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 10;
+  const usersPerPage = 8;
 
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
 
   const paginatedProducts = products?.slice(startIndex, endIndex);
 
-  const totalPages = Math.ceil(
-    adminProducts && adminProducts?.length / usersPerPage
-  );
+  const totalPages = Math.ceil(products && products?.length / usersPerPage);
 
   // console.log(paginatedProducts);
 
@@ -179,7 +177,7 @@ export default function ProductsTable({ products }) {
 
           <div className="flex items-center justify-between">
             <p className="text-sm ">
-              Showing {paginatedProducts.length} of {adminProducts.length} users
+              Showing {paginatedProducts.length} of {products.length} users
             </p>
             <div className="flex gap-1">
               <button

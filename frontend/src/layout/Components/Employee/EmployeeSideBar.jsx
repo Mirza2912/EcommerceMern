@@ -70,7 +70,7 @@ export default function EmployeeSideBar() {
               icon: <FaList className="text-xl mr-3" />,
             },
             {
-              path: "/admin/dashboard/sales",
+              path: "/employee/dashboard/return-sale",
               label: "Return Sale",
               icon: <VscDebugStepBack className="mr-3 h-5 w-5" />,
             },
@@ -80,7 +80,7 @@ export default function EmployeeSideBar() {
               icon: <IoBarChartOutline className="mr-3 h-5 w-5" />,
             },
             {
-              path: "/admin/dashboard/sales",
+              path: "/employee/dashboard/profile",
               label: "My Profile",
               icon: <FiUsers className="mr-3 h-5 w-5" />,
             },

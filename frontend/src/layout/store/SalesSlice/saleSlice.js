@@ -7,6 +7,7 @@ import {
   getSalesOfEmployee,
   getSingleSale,
   getSingleSalebyEmployee,
+  returnSale,
 } from "./saleSliceReducers";
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
   physicalSalesTotal: 0,
   deleteSaleMessage: "",
   createSaleMessage: "",
+  returnSalemessage: "",
 };
 
 const saleSlice = createSlice({
@@ -33,6 +35,9 @@ const saleSlice = createSlice({
     },
     clearCreateSaleMessage: (state) => {
       state.createSaleMessage = "";
+    },
+    clearReturnSalemessage: (state) => {
+      state.returnSalemessage = "";
     },
   },
   extraReducers: (builder) => {
@@ -49,6 +54,19 @@ const saleSlice = createSlice({
         state.physicalSalesTotal = action.payload.physicalSalesTotal;
       })
       .addCase(getAllSales.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(returnSale.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(returnSale.fulfilled, (state, action) => {
+        state.loading = false;
+        state.returnSalemessage = action.payload;
+      })
+      .addCase(returnSale.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -131,7 +149,10 @@ const saleSlice = createSlice({
   },
 });
 
-export const { clearDeleteSaleMessage, clearCreateSaleMessage } =
-  saleSlice.actions;
+export const {
+  clearDeleteSaleMessage,
+  clearCreateSaleMessage,
+  clearReturnSalemessage,
+} = saleSlice.actions;
 
 export default saleSlice.reducer;

@@ -47,6 +47,7 @@ import {
 import {
   clearCreateSaleMessage,
   clearDeleteSaleMessage,
+  clearReturnSalemessage,
 } from "../../store/SalesSlice/saleSlice.js";
 import { clearWholeCartBackend } from "../../store/CartSlice/CartSliceReducers.js";
 
@@ -85,9 +86,8 @@ const ToastHandler = () => {
     deleteCartItemFromBackendMessage,
   } = useSelector((state) => state.cart);
 
-  const { deleteSaleMessage, createSaleMessage } = useSelector(
-    (state) => state.sale
-  );
+  const { deleteSaleMessage, createSaleMessage, returnSalemessage } =
+    useSelector((state) => state.sale);
 
   const {
     orderPlacedMessage,
@@ -285,6 +285,11 @@ const ToastHandler = () => {
       dispatch(clearCreateSaleMessage());
     }
 
+    if (returnSalemessage) {
+      toast.success(returnSalemessage);
+      dispatch(clearReturnSalemessage());
+    }
+
     return () => clearTimeout(timeout);
   }, [
     error,
@@ -315,6 +320,7 @@ const ToastHandler = () => {
     updateUserRoleMessage,
     deleteSaleMessage,
     createSaleMessage,
+    returnSalemessage,
   ]);
   return null;
 };

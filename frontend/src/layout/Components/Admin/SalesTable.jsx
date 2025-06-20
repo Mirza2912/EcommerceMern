@@ -18,7 +18,7 @@ const SalesTable = ({ filteredSales }) => {
   const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const salesPerPage = 10;
+  const salesPerPage = 8;
 
   const startIndex = (currentPage - 1) * salesPerPage;
   const endIndex = startIndex + salesPerPage;
@@ -26,7 +26,9 @@ const SalesTable = ({ filteredSales }) => {
   const paginatedSales = filteredSales?.slice(startIndex, endIndex);
   //   console.log(paginatedSales);
 
-  const totalPages = Math.ceil(sales && sales?.length / salesPerPage);
+  const totalPages = Math.ceil(
+    filteredSales && filteredSales?.length / salesPerPage
+  );
 
   useEffect(() => {
     dispatch(getAllSales());
@@ -44,9 +46,12 @@ const SalesTable = ({ filteredSales }) => {
               <thead>
                 <tr className="bg-black/30 border-b border-gray-700 text-left text-xs sm:text-sm">
                   <th className="py-3 px-4">Customer</th>
+                  <th className="py-3 px-4">Sale ID</th>
+                  <th className="py-3 px-4">Return</th>
+                  <th className="py-3 px-4">Return At</th>
                   <th className="py-3 px-4">Sale Type</th>
                   <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4 ">Date</th>
+                  <th className="py-3 px-4 ">Done At</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -58,6 +63,17 @@ const SalesTable = ({ filteredSales }) => {
                   >
                     <td className="px-4 py-3">
                       {order.customerName || order.user?.name || "N/A"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {order.saleId || order._id || "N/A"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {order.isReturned ? "Returned" : ""}
+                    </td>
+                    <td className="px-4 py-3">
+                      {order.isReturned === true
+                        ? new Date(order.returnedAt).toLocaleDateString()
+                        : ""}
                     </td>
                     <td className="px-4 py-3 text-center sm:text-start">
                       {order.saleType}
@@ -93,7 +109,7 @@ const SalesTable = ({ filteredSales }) => {
           {/* PAGINATION */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
             <p className="text-sm text-white">
-              Showing {paginatedSales.length} of {sales.length} sales
+              Showing {paginatedSales.length} of {filteredSales.length} sales
             </p>
             <div className="flex gap-1">
               <button

@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet } from "react-router-dom";
 import EmployeeSideBar from "../../Components/Employee/EmployeeSideBar";
+import { getMyAllSales } from "../../store/SalesSlice/saleSliceReducers";
+import { getAllProductsEmployee } from "../../store/ProductSlice/productSliceReducers";
 
 const EmployeeDashBoardLayout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // dispatch(getAllUsers());
-    // dispatch(getALLProductsAdmin());
-    // dispatch(getAllOrdersAdmin());
-    // dispatch(getAllSales());
+    dispatch(getAllProductsEmployee());
+    dispatch(getMyAllSales());
   }, []);
   return (
     <>

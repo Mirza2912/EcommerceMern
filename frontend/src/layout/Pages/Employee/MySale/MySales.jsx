@@ -8,6 +8,7 @@ const MySales = () => {
   const { mySales } = useSelector((state) => state.sale);
 
   const [filter, setFilter] = useState("all");
+  const [returnFilter, setReturnFilter] = useState("all"); // ✅ New
   const [customerName, setCustomerName] = useState("");
   const [filteredSales, setFilteredSales] = useState([]);
 
@@ -16,7 +17,7 @@ const MySales = () => {
     dispatch(getMyAllSales());
   }, [dispatch]);
 
-  // Apply both filters: date and customer name
+  // Apply filters
   useEffect(() => {
     if (!mySales || mySales.length === 0) {
       setFilteredSales([]);
@@ -26,7 +27,7 @@ const MySales = () => {
     const now = new Date();
     let filtered = [...mySales];
 
-    // Filter by date
+    // 🔍 Filter by Date
     switch (filter) {
       case "today":
         filtered = filtered.filter((sale) => {
@@ -60,7 +61,12 @@ const MySales = () => {
         break;
     }
 
-    // Filter by customer name or sale ID (case insensitive)
+    // 🔍 Filter by Return Status
+    if (returnFilter === "returned") {
+      filtered = filtered.filter((sale) => sale.isReturned === true);
+    }
+
+    // 🔍 Filter by Name/ID
     if (customerName.trim()) {
       const search = customerName.trim().toLowerCase();
       filtered = filtered.filter(
@@ -71,7 +77,7 @@ const MySales = () => {
     }
 
     setFilteredSales(filtered);
-  }, [mySales, filter, customerName]);
+  }, [mySales, filter, customerName, returnFilter]); // ✅ Added returnFilter to deps
 
   return (
     <div className="p-6 space-y-6">
@@ -81,7 +87,7 @@ const MySales = () => {
 
       <div className="bg-black/60 backdrop-blur-lg p-6 rounded-lg border border-gray-700 shadow-md">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 flex-wrap">
-          {/* Date Filter */}
+          {/* Filter by Date */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <h2 className="text-lg font-semibold text-[#F7FAFC]">
               Filter By Date:
@@ -114,7 +120,31 @@ const MySales = () => {
             </div>
           </div>
 
-          {/* Customer Name Search */}
+          {/* ✅ New Return Filter */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <h2 className="text-lg font-semibold text-[#F7FAFC]">
+              Return Filter:
+            </h2>
+            <div className="relative w-full sm:w-[180px]">
+              <select
+                value={returnFilter}
+                onChange={(e) => setReturnFilter(e.target.value)}
+                className="w-full appearance-none border border-gray-700 rounded bg-transparent text-white text-sm px-3 py-2 pr-10 focus:outline-none"
+              >
+                <option className="text-black" value="all">
+                  All Sales
+                </option>
+                <option className="text-black" value="returned">
+                  Returned Only
+                </option>
+              </select>
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
+                ▼
+              </div>
+            </div>
+          </div>
+
+          {/* Search by Customer or ID */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <h2 className="text-lg font-semibold text-[#F7FAFC]">
               Search by Name or ID:
@@ -129,6 +159,7 @@ const MySales = () => {
           </div>
         </div>
 
+        {/* Table */}
         <EmployeeSaleTable filteredSales={filteredSales} />
       </div>
     </div>

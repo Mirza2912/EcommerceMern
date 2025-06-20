@@ -25,14 +25,14 @@ export default function UsersTable({ users }) {
   const disptach = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 10;
+  const usersPerPage = 8;
 
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
 
   const paginatedUsers = users?.slice(startIndex, endIndex);
 
-  const totalPages = Math.ceil(allUsers && allUsers?.length / usersPerPage);
+  const totalPages = Math.ceil(users && users?.length / usersPerPage);
 
   const toggleDropdown = (userId) => {
     if (dropdownOpen === userId) {
@@ -188,7 +188,7 @@ export default function UsersTable({ users }) {
           {/* Pagination */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm text-gray-400">
-              Showing {paginatedUsers.length} of {allUsers.length} users
+              Showing {paginatedUsers.length} of {users.length} users
             </p>
             <div className="flex flex-wrap gap-2">
               <button
