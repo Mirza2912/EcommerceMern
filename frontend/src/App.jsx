@@ -162,7 +162,7 @@ const App = () => {
                 element={<CreateNewProduct />}
               />
               <Route
-                path="products/product/update-product/:id"
+                path="products/single-product/update-product/:id"
                 element={<UpdateSingleProduct />}
               />
 

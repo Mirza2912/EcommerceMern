@@ -75,11 +75,6 @@ export default function EmployeeSideBar() {
               icon: <VscDebugStepBack className="mr-3 h-5 w-5" />,
             },
             {
-              path: "/admin/dashboard/sales",
-              label: "Sales Summary",
-              icon: <IoBarChartOutline className="mr-3 h-5 w-5" />,
-            },
-            {
               path: "/employee/dashboard/profile",
               label: "My Profile",
               icon: <FiUsers className="mr-3 h-5 w-5" />,

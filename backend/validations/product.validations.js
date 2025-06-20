@@ -66,11 +66,6 @@ const createProductValidation = [
 
 //validate updateProduct
 const updateProductValidation = [
-  query("id")
-    .notEmpty()
-    .withMessage("Product ID is required")
-    .isMongoId()
-    .withMessage("Invalid Product ID format"),
   body("name").optional().notEmpty().withMessage("Product name is required"),
   body("description")
     .optional()
@@ -85,9 +80,7 @@ const updateProductValidation = [
   body("stock")
     .optional()
     .isInt({ min: 0 })
-    .withMessage("Stock must be a non-negative integer")
-    .isBoolean()
-    .withMessage("Stock must be true or false"),
+    .withMessage("Stock must be a non-negative integer"),
   body("discount")
     .optional()
     .isFloat({ min: 0 })
@@ -104,10 +97,6 @@ const updateProductValidation = [
     .optional()
     .isBoolean()
     .withMessage("isFeatured must be boolean"),
-  body("productDetails")
-    .optional()
-    .isObject()
-    .withMessage("productDetails must be an object"),
 ];
 
 const singleProductValidation = [

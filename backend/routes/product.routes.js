@@ -41,17 +41,15 @@ router.route("/banner-products").get(getBannerProducts);
 router
   .route("/admin/products")
   .get(isAuthenticatedUser, isAuthorizedRoles("admin"), getAdminProducts);
+router.route("/admin/create-new-product").post(
+  isAuthenticatedUser,
+  isAuthorizedRoles("admin"),
+  // createProductValidation,
+  // validate,
+  createProduct
+);
 router
-  .route("/create")
-  .post(
-    isAuthenticatedUser,
-    isAuthorizedRoles("admin"),
-    createProductValidation,
-    validate,
-    createProduct
-  );
-router
-  .route("/updateProduct/:id")
+  .route("/admin/updateProduct/:id")
   .put(
     isAuthenticatedUser,
     isAuthorizedRoles("admin"),

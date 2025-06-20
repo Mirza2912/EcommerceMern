@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import {
   clearAddToFeaturedProduct,
+  clearCreateNewProductMessage,
   clearDeleteProductMessage,
   clearMakeProductUnFeaturedMessage,
 } from "../../store/ProductSlice/productSlice.js";
@@ -50,6 +51,7 @@ import {
   clearReturnSalemessage,
 } from "../../store/SalesSlice/saleSlice.js";
 import { clearWholeCartBackend } from "../../store/CartSlice/CartSliceReducers.js";
+import { clearCreateNewCategoryMessage } from "../../store/CategorySlice/categorySlice.js";
 
 const ToastHandler = () => {
   const dispatch = useDispatch();
@@ -73,10 +75,13 @@ const ToastHandler = () => {
     updateUserRoleMessage,
   } = useSelector((state) => state.auth);
 
+  const { createNewCategoryMessage } = useSelector((state) => state.category);
+
   const {
     deleteProductMessage,
     makeProductUnFeaturedMessage,
     addToFeaturedProduct,
+    createNewProductMessage,
   } = useSelector((state) => state.product);
 
   const {
@@ -290,6 +295,15 @@ const ToastHandler = () => {
       dispatch(clearReturnSalemessage());
     }
 
+    if (createNewProductMessage) {
+      toast.success(createNewProductMessage);
+    }
+
+    if (createNewCategoryMessage) {
+      toast.success(createNewCategoryMessage);
+      dispatch(clearCreateNewCategoryMessage());
+    }
+
     return () => clearTimeout(timeout);
   }, [
     error,
@@ -321,6 +335,8 @@ const ToastHandler = () => {
     deleteSaleMessage,
     createSaleMessage,
     returnSalemessage,
+    createNewProductMessage,
+    createNewCategoryMessage,
   ]);
   return null;
 };

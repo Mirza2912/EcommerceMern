@@ -95,7 +95,7 @@ const ProductCard = ({ product }) => {
 
     <div
       key={product._id}
-      className="group w-full h-full border bg-transparent border-gray-400 rounded-lg shadow-lg hover:shadow-xl transition-all p-4 relative"
+      className="group w-full h-full border bg-transparent border-gray-700 rounded-lg shadow-lg hover:shadow-xl transition-all p-4 relative"
     >
       {/* Category */}
       <div className="absolute top-6 left-5 text-xs font-semibold text-white/90 bg-gold px-2 py-1 rounded-full">

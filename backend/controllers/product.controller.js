@@ -7,7 +7,7 @@ import UploadProductImagesCloudinary from "../utils/UploadProductImagesCloudinar
 import cloudinary from "cloudinary";
 
 //get all products from Product model
-const getAllProducts = AsyncHandler(async (req, res) => {
+const getAllProducts = AsyncHandler(async (req, res, next) => {
   //extracting data from query(if user add any filter or search a product)
   const {
     keyword = "",
@@ -80,7 +80,8 @@ const getAllProducts = AsyncHandler(async (req, res) => {
     .populate("category", "category")
     .populate("user", "name email")
     .limit(productsPerPage)
-    .skip(skip);
+    .skip(skip)
+    .sort({ createdAt: -1 });
   // console.log("products : " + products);
 
   //length of filtered products
@@ -318,17 +319,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
       } else if (!categoryObj) {
         // console.log("not found category");
         // console.log(req.user._id);
-
-        const newCategory = await ProductCategory.create({
-          category: data?.category,
-          maker: req.user._id,
-        });
-        // console.log("new category " + newCategory);
-
-        if (!newCategory) {
-          return next(new ApiError(`Unable to create new category...!`, 404));
-        }
-        data.category = newCategory._id;
+        return next(new ApiError(`Category not found...!`, 401));
       }
     } else {
       return next(new ApiError(`Category is required...!`, 401));
@@ -337,35 +328,9 @@ const createProduct = AsyncHandler(async (req, res, next) => {
     // console.log(data.category);
 
     //handle images
-    if (req.files?.images || data?.images) {
-      console.log(req.files?.images || data?.images);
+    if (req.files?.images) {
+      // console.log(req.files?.images || data?.images);
 
-      //validation of image format
-      const allowedFormats = ["image/jpeg", "image/png", "image/webp"];
-      const maxSize = 5 * 1024 * 1024; // 5MB
-
-      // If image in file format
-      if (req.files?.images) {
-        // Ensure req.files?.images is an array
-        const imagesArray = Array.isArray(req.files?.images)
-          ? req.files?.images
-          : [req.files?.images];
-
-        //validation of images
-        for (let image of imagesArray) {
-          //check given image is valid or not
-          if (!allowedFormats.includes(image.mimetype)) {
-            return next(
-              new ApiError(`Invalid file type: ${image.mimetype}`, 400)
-            );
-          }
-
-          //check image size not exceed 5mb
-          if (image.size > maxSize) {
-            return next(new ApiError("File size exceeds 5MB limit", 400));
-          }
-        }
-      }
       // then call imageuploader on cloudinary function from utilities by giving parameters both
       const uploadedImages = await UploadProductImagesCloudinary(req, next);
       // console.log("uploaded : " + uploadedImages);
@@ -378,13 +343,14 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 
       //6.now set cloudinary given images urls in data(req.body)
       data.images = uploadedImages;
-      console.log(data);
+      data.user = req.user._id;
+      // console.log(data);
     } else {
       return next(new ApiError(`Images are required...!`, 400));
     }
 
     let newProduct = await Product.create(data);
-    // console.log(newProduct);
+    console.log(newProduct);
 
     if (!newProduct) {
       return next(
@@ -408,7 +374,7 @@ const createProduct = AsyncHandler(async (req, res, next) => {
         )
       );
   } catch (error) {
-    // console.log(error);
+    console.log(error);
 
     return next(
       new ApiError(`Something went wrong while creating product...!`, 500)
@@ -419,13 +385,14 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 //Update specific product
 const updateProduct = AsyncHandler(async (req, res, next) => {
   const productId = req.params.id;
-  // console.log(productId);
+  console.log(productId);
 
   const updateData = req.body;
+  console.log(updateData);
 
   try {
     const product = await Product.findById(productId);
-    // console.log(product);
+    console.log(product);
 
     if (!product) {
       return next(
@@ -434,40 +401,24 @@ const updateProduct = AsyncHandler(async (req, res, next) => {
     }
 
     //if user update images also
-    if (req.files?.images || updateData?.images) {
+    if (req.files?.images) {
+      console.log("yes image i hn");
+
       // check image comes from data base or not and also check its length greater than 1
       if (product?.images && product?.images?.length > 0) {
-        //apply loop on images and delete all old images
+        console.log("hn poorani b hn");
+
         for (const image of product.images) {
-          await cloudinary.v2.uploader.destroy(image.public_id);
-        }
-      }
-
-      const allowedFormats = ["image/jpeg", "image/png", "image/webp"];
-      const maxSize = 5 * 1024 * 1024; // 5MB
-
-      if (req.files?.images) {
-        // Ensure req.files?.images is an array
-        const imagesArray = Array.isArray(req.files?.images)
-          ? req.files?.images
-          : [req.files?.images];
-
-        //validation of images
-        for (let image of imagesArray) {
-          //check given image is valid or not
-          if (!allowedFormats.includes(image.mimetype)) {
-            return next(
-              new ApiError(`Invalid file type: ${image.mimetype}`, 400)
-            );
-          }
-
-          //check image size not exceed 5mb
-          if (image.size > maxSize) {
-            return next(new ApiError("File size exceeds 5MB limit", 400));
+          if (image?.public_id) {
+            // Only destroy if it is uploaded (has public_id)
+            await cloudinary.v2.uploader.destroy(image.public_id);
           }
         }
       }
 
+      console.log("upload hony lagi hn");
+
+      //here i will create new uploader image cloudinary for only new image uploads
       //now upload new images on cloudinary
       const uploadedImages = await UploadProductImagesCloudinary(req, next);
       updateData.images = uploadedImages;
@@ -477,17 +428,19 @@ const updateProduct = AsyncHandler(async (req, res, next) => {
       product._id,
       updateData,
       { new: true, runValidators: true, useFindAndModify: false }
-    ).populate({
-      path: "category",
-      select: "category",
-    });
+    );
+
+    if (updatedProduct) {
+      return next(
+        new ApiError(`Something went wrong while updating product...!`, 500)
+      );
+    }
 
     res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { products: updatedProduct },
           `Product updated with ${product.name} name successfully...!`
         )
       );

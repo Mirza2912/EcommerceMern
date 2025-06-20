@@ -1,6 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+//config for post request
+const config = {
+  headers: {
+    "Content-Type": "application/json", // Telling the server we're sending JSON data
+  },
+};
+
 //getAllProducts(with filters)
 export const getAllProducts = createAsyncThunk(
   "products/getAllProducts",
@@ -61,7 +68,7 @@ export const singleProductDetails = createAsyncThunk(
 
       return data; //returning fetched data
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       return rejectWithValue(
         error.response.data?.errors ||
           error.response.data?.message ||
@@ -119,12 +126,12 @@ export const getRelatedProducts = createAsyncThunk(
   "products/getRelatedProducts",
   async (id, { rejectWithValue }) => {
     try {
-      console.log(id);
+      // console.log(id);
 
       const { data } = await axios.get(
         `/api/v1/products/related-products/${id}`
       );
-      console.log(data?.data?.products);
+      // console.log(data?.data?.products);
 
       return data?.data?.products;
     } catch (error) {
@@ -177,6 +184,57 @@ export const getALLProductsAdmin = createAsyncThunk(
           error.response.data?.message ||
           error.message ||
           "Failed to fetch products"
+      );
+    }
+  }
+);
+
+//create new product
+export const createNewProduct = createAsyncThunk(
+  "products/createNewProduct",
+  async (productData, { rejectWithValue }) => {
+    // console.log(productData);
+
+    try {
+      const { data } = await axios.post(
+        `/api/v1/products/admin/create-new-product`,
+        productData
+      );
+      // console.log(data);
+      return data?.message;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to create products"
+      );
+    }
+  }
+);
+
+//update product
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (productData, { rejectWithValue }) => {
+    console.log(productData);
+
+    try {
+      const { data } = await axios.put(
+        `/api/v1/products/admin/updateProduct/${productData?.productId}`,
+        productData.myForm,
+        config
+      );
+      console.log(data);
+      return data?.message;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to create products"
       );
     }
   }

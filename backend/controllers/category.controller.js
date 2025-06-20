@@ -5,10 +5,9 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 //get all category
 const getAllCategory = AsyncHandler(async (req, res, next) => {
-  const categories = await ProductCategory.find().populate(
-    "maker",
-    "name email"
-  );
+  const categories = await ProductCategory.find()
+    .populate("maker", "name email")
+    .sort({ createdAt: -1 });
   // console.log(categories);
 
   if (!categories) {
@@ -45,10 +44,16 @@ const createCategory = AsyncHandler(async (req, res, next) => {
     );
   }
 
+  const categories = await ProductCategory.find().sort({ createdAt: -1 });
+
   res
     .status(200)
     .json(
-      new ApiResponse(200, { categories: newCategory }, `All Categories...!`)
+      new ApiResponse(
+        200,
+        { categories },
+        `New category created successfully...!`
+      )
     );
 });
 export { getAllCategory, createCategory };

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   addToFeatured,
+  createNewProduct,
   deleteProduct,
   getAllProducts,
   getALLProductsAdmin,
@@ -37,6 +38,7 @@ export const productSlice = createSlice({
     deleteProductMessage: "",
     addToFeaturedProduct: "",
     makeProductUnFeaturedMessage: "",
+    createNewProductMessage: "",
   },
 
   //Simple reducers(Functions)
@@ -53,6 +55,9 @@ export const productSlice = createSlice({
     },
     clearMakeProductUnFeaturedMessage: (state) => {
       state.makeProductUnFeaturedMessage = "";
+    },
+    clearCreateNewProductMessage: (state) => {
+      state.createNewProductMessage = "";
     },
   },
 
@@ -74,6 +79,20 @@ export const productSlice = createSlice({
         state.productsPerPage = action.payload?.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //create new product
+      .addCase(createNewProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createNewProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.createNewProductMessage = action.payload;
+      })
+      .addCase(createNewProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -240,5 +259,6 @@ export const {
   clearDeleteProductMessage,
   clearAddToFeaturedProduct,
   clearMakeProductUnFeaturedMessage,
+  clearCreateNewProductMessage,
 } = productSlice.actions;
 export default productSlice.reducer;

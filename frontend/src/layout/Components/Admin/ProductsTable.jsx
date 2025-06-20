@@ -135,7 +135,7 @@ export default function ProductsTable({ products }) {
                                 >
                                   <Link
                                     onClick={() => toggleDropdown(null)}
-                                    to={`/admin/dashboard/products/single-product/${product._id}`}
+                                    to={`/admin/dashboard/products/single-product/update-product/${product._id}`}
                                     className=" flex items-center gap-1 pl-1.5 py-2 text-md text-gray-700 hover:bg-gray-100 w-full text-left"
                                     role="menuitem"
                                   >
