@@ -156,11 +156,7 @@ async function sendWelcomeToEmployee(
     return res
       .status(200)
       .json(
-        new ApiResponse(
-          200,
-          employee,
-          `Employee with id ${employeeId} created successfully...!`
-        )
+        new ApiResponse(200, employee, `Employee created successfully...!`)
       );
   } catch (error) {
     return next(new ApiError("Server error. Please try again later."));
@@ -170,7 +166,7 @@ async function sendWelcomeToEmployee(
 // registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
-  console.log(name, password, email, avatar, phone);
+  // console.log(name, password, email, avatar, phone);
 
   // 3=Now verify phone format by regex
   function verifyPhone(phone) {

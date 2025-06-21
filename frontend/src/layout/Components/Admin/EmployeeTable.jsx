@@ -141,15 +141,6 @@ const EmployeeTable = ({ employees }) => {
                                   role="menu"
                                   aria-orientation="vertical"
                                 >
-                                  <Link
-                                    onClick={() => toggleDropdown(null)}
-                                    to={`/admin/dashboard/employees/single-employee/${employee._id}`}
-                                    className="flex items-center gap-1 pl-2 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                                    role="menuitem"
-                                  >
-                                    <FaRegEdit className="text-lg" />
-                                    Edit Employee
-                                  </Link>
                                   <button
                                     onClick={() => {
                                       employee.isSuspended === true

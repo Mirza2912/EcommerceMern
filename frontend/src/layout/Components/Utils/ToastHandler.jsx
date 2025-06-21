@@ -120,12 +120,14 @@ const ToastHandler = () => {
     //user reagisteration success message show
     if (resgisterMessage) {
       toast.success(resgisterMessage);
-      navigate(
-        `/register/otp-verification/${tempUser?.data?.email}/${tempUser?.data?.phone}`,
-        {
-          replace: true,
-        }
-      );
+      if (resgisterMessage !== "Employee created successfully...!") {
+        navigate(
+          `/register/otp-verification/${tempUser?.data?.email}/${tempUser?.data?.phone}`,
+          {
+            replace: true,
+          }
+        );
+      }
       dispatch(clearRegisterMessage());
     }
 

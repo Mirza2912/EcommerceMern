@@ -43,7 +43,7 @@ const AllEmployee = () => {
               Employee Management
             </h1>
             <Link
-              to={"/admin/dashboard/products/create-new-product"}
+              to={"/admin/dashboard/employee/create-new-employee"}
               className="bg-gold hover:bg-[#d99f18] text-[#F7FAFC] px-4 py-2 rounded-md flex items-center text-sm justify-center gap-1"
             >
               <FiPlus className="text-lg" />
