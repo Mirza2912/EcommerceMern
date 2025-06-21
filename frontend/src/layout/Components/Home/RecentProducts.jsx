@@ -16,7 +16,7 @@ const RecentAddedProducts = () => {
 
   return (
     <>
-      <h2 className="text-5xl sm:text-6xl font-bold text-white/90 mt-14 text-center">
+      <h2 className="text-5xl mt-20 sm:text-6xl font-bold text-white/90 text-center">
         New Arrivals
       </h2>
 
@@ -64,7 +64,7 @@ const RecentAddedProducts = () => {
                   </div>
                   {product.discount > 0 && (
                     <div className="absolute top-2 right-2 bg-gold text-white text-xs px-3 py-1 rounded-full shadow-sm">
-                      {product.discount}% OFF
+                      -Rs. {product.discount}
                     </div>
                   )}
                 </div>

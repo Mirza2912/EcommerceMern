@@ -12,7 +12,7 @@ const SingleOrderDetailsAdmin = () => {
   const { id } = useParams();
 
   const { singleOrderAdmin, loading } = useSelector((state) => state.order);
-  console.log(singleOrderAdmin && singleOrderAdmin?.data);
+  // console.log(singleOrderAdmin && singleOrderAdmin?.data);
 
   const dispatch = useDispatch();
   const [statusDropdown, setStatusDropdown] = useState(false);
@@ -103,7 +103,13 @@ const SingleOrderDetailsAdmin = () => {
 
                 {statusDropdown && (
                   <div className="absolute z-10 mt-2 left-16 bg-white text-black border rounded shadow-lg w-40 text-sm">
-                    {["Pending", "Processing", "Delivered"].map((status) => (
+                    {[
+                      "Pending",
+                      "Processing",
+                      "Shipped",
+                      "Out for Delivery",
+                      "Delivered",
+                    ].map((status) => (
                       <button
                         key={status}
                         onClick={() => handleStatusChange(status)}

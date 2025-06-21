@@ -17,7 +17,7 @@ const ImagesSection = () => {
   ];
 
   return (
-    <section className="bg-bg-color mb-10">
+    <section className="bg-bg-color mt-10">
       <div className="flex flex-col items-center justify-center lg:gap-4 lg:flex-row gap-6  overflow-hidden shadow-lg">
         {featuredImages.map((img, idx) => (
           <div key={idx} className="w-full  lg:w-1/3">

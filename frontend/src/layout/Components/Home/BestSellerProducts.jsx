@@ -1,28 +1,27 @@
-// components/RecentProductsSwiper.jsx
-
 import React from "react";
+import { useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { NavLink } from "react-router-dom";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useSelector } from "react-redux";
 
-const RelatedProducts = () => {
-  const { recentAddedProducts, relatedProducts } = useSelector(
-    (state) => state.product
-  );
+const BestSellerProducts = () => {
+  const { bestSellerProducts } = useSelector((state) => state.product);
+  //   console.log(bestSellerProducts);
 
   return (
     <>
-      <h3 className="text-5xl mb-5 -mt-10 sm:text-6xl font-semibold text-white/90">
-        Related Products
-      </h3>
-      <section className="border-gray-700 bg-black/60 backdrop-blur-lg rounded-2xl shadow-lg  h-auto w-full sm:w-[90%] mx-auto px-4 lg:px-10 py-10  ">
+      <h2 className="text-5xl mt-10 sm:text-6xl font-bold text-white/90 text-center">
+        Best Seller Products
+      </h2>
+
+      <section className="max-w-7xl w-[100%] mx-auto my-14 px-4 lg:px-10 py-10 bg-bg-color rounded-lg shadow-inner">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-semibold text-white/90">
-            Related Products
+            {" "}
+            Best Seller Products
           </h3>
           <NavLink
             to="/products"
@@ -46,9 +45,9 @@ const RelatedProducts = () => {
             1024: { slidesPerView: 4 },
             1280: { slidesPerView: 5 },
           }}
-          className="pb-12 "
+          className="pb-12"
         >
-          {relatedProducts?.map((product) => (
+          {bestSellerProducts?.map((product) => (
             <SwiperSlide key={product._id}>
               <NavLink
                 to={`/product/${product._id}`}
@@ -116,20 +115,10 @@ const RelatedProducts = () => {
           .swiper-button-prev {
             color: #faaf00;
           }
-            .swiper-wrapper{
-            display: flex;
-            items-center: center;
-            justify-content: center;
-            gap: 10px;
-            }
-         .swiper-slide {
-  margin-right: 0px !important;
-}
-
         `}
       </style>
     </>
   );
 };
 
-export default RelatedProducts;
+export default BestSellerProducts;

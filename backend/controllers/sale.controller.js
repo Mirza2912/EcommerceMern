@@ -38,7 +38,7 @@ const createPhysicalOrder = AsyncHandler(async (req, res, next) => {
       sale.items.map((item) =>
         Product.findByIdAndUpdate(
           item?.item,
-          { $inc: { stock: -item.quantity } },
+          { $inc: { stock: -item.quantity, sold: item.quantity } },
           { new: true }
         )
       )

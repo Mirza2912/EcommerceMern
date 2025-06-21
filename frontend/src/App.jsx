@@ -69,6 +69,8 @@ import CreateSaleByEmployee from "./layout/Pages/Employee/CreateSale/CreateSaleB
 import MySales from "./layout/Pages/Employee/MySale/MySales.jsx";
 import SingleSaleByEmployee from "./layout/Pages/Employee/MySale/SingleSaleByEmployee.jsx";
 import ReturnSalePage from "./layout/Pages/Employee/ReturnSale/ReturnSalePage.jsx";
+import AllContacts from "./layout/Pages/Admin/Contact/AllContacts.jsx";
+import SingleContactDetails from "./layout/Pages/Admin/Contact/SingleContactDetails.jsx";
 
 const App = () => {
   const { isVerified, user } = useSelector((state) => state.auth);
@@ -106,7 +108,7 @@ const App = () => {
       <ToastHandler />
       <Navbar />
       {isVerified && isVerified === true && <UserSpeedDial user={user} />}
-      <div className="w-[100%] min-h-screen relative flex items-center justify-center flex-col bg-[url('/src/assets//body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover ">
+      <div className="w-[100%] min-h-screen relative flex items-center justify-center flex-col bg-[url('/src/assets/body-bg-free-img.jpg')]  bg-center bg-no-repeat bg-fixed bg-cover ">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -198,6 +200,13 @@ const App = () => {
                 path="sales/single-sale/:id"
                 element={<SingleSaleAdmin />}
               />
+
+              {/* contact  */}
+              <Route path="contact" element={<AllContacts />} />
+              <Route
+                path="contact/single-contact/details/:id"
+                element={<SingleContactDetails />}
+              />
             </Route>
 
             {/* Employees  */}
@@ -236,7 +245,7 @@ const App = () => {
           {/* <Route path="/search" element={<Search />} /> */}
         </Routes>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </>
   );
 };

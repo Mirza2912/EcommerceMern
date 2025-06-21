@@ -13,6 +13,10 @@ import {
   makeUnFeatured,
   getRelatedProducts,
   getEmployeeAllProducts,
+  getBestSellerProducts,
+  createProductReview,
+  getProductReviews,
+  deleteReview,
 } from "../controllers/product.controller.js";
 import {
   createProductValidation,
@@ -75,9 +79,17 @@ router
 
 router.route("/related-products/:id").get(getRelatedProducts);
 
+router.route("/best-seller-products").get(getBestSellerProducts);
 //Employee Routes
 router
   .route("/employee/products")
   .get(isAuthenticatedUser, getEmployeeAllProducts);
+
+router.route("/review").post(isAuthenticatedUser, createProductReview);
+
+router
+  .route("/reviews")
+  .get(getProductReviews)
+  .delete(isAuthenticatedUser, deleteReview);
 
 export default router;

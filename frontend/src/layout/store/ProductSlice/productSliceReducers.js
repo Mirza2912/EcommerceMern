@@ -311,6 +311,26 @@ export const makeUnfeatured = createAsyncThunk(
   }
 );
 
+//get all products
+export const getBestSellerProducts = createAsyncThunk(
+  "products/getBestSellerProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/api/v1/products/best-seller-products`);
+      console.log(response?.data?.data);
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error.response.data?.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch products"
+      );
+    }
+  }
+);
+
 //Employee
 
 //get all products
@@ -321,6 +341,33 @@ export const getAllProductsEmployee = createAsyncThunk(
       /*making api call with axios for getting single  product from backend */
       const response = await axios.get(`/api/v1/products/employee/products`);
       // console.log(response?.data?.data);
+      return response?.data?.data;
+    } catch (error) {
+      console.log(error.response.data?.message);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to fetch products"
+      );
+    }
+  }
+);
+
+//create new review of product
+export const createProductReview = createAsyncThunk(
+  "products/createProductReview",
+  async (data, { rejectWithValue }) => {
+    try {
+      console.log(data);
+
+      /*making api call with axios for getting single  product from backend */
+      const response = await axios.post(
+        `/api/v1/products/review`,
+        data,
+        config
+      );
+      // console.log(response?.data);
       return response?.data?.data;
     } catch (error) {
       console.log(error.response.data?.message);

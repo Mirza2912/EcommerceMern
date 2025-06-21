@@ -7,14 +7,9 @@ import { Link } from "react-router-dom";
 const FeaturedProducts = () => {
   const dispatch = useDispatch();
   const { loading, featuredProducts } = useSelector((state) => state.product);
-  // console.log(featuredProducts);
-
-  //   useEffect(() => {
-  //     dispatch(getFeaturedProducts()); // Initially load 8
-  //   }, [dispatch]);
 
   return (
-    <section className="py-10 px-4 md:px-8 my-14">
+    <section className="mt-20  px-4 md:px-8 my-14">
       <div className="max-w-7xl w-[100%] mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-5xl sm:text-6xl font-bold text-white/90">

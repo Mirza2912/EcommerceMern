@@ -5,6 +5,7 @@ import { FaList, FaBars } from "react-icons/fa";
 import { useState } from "react";
 import { FiUsers } from "react-icons/fi";
 import { RxDashboard } from "react-icons/rx";
+import { MdOutlineMessage } from "react-icons/md";
 
 export default function AdminSidebar() {
   const dispatch = useDispatch();
@@ -95,6 +96,11 @@ export default function AdminSidebar() {
               path: "/admin/dashboard/sales",
               label: "Sales",
               icon: <FaList className="mr-3 h-5 w-5" />,
+            },
+            {
+              path: "/admin/dashboard/contact",
+              label: "Contact Message",
+              icon: <MdOutlineMessage className="text-xl mr-3" />,
             },
           ].map(({ path, label, icon }) => (
             <NavLink

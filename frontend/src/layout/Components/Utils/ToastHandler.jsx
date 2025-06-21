@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import {
   clearAddToFeaturedProduct,
   clearCreateNewProductMessage,
+  clearCreateProductReviewMessage,
   clearDeleteProductMessage,
   clearMakeProductUnFeaturedMessage,
 } from "../../store/ProductSlice/productSlice.js";
@@ -52,6 +53,10 @@ import {
 } from "../../store/SalesSlice/saleSlice.js";
 import { clearWholeCartBackend } from "../../store/CartSlice/CartSliceReducers.js";
 import { clearCreateNewCategoryMessage } from "../../store/CategorySlice/categorySlice.js";
+import {
+  clearCreateContactMessage,
+  clearDeleteSingleContactMessage,
+} from "../../store/ContactSlice/contactSlice.js";
 
 const ToastHandler = () => {
   const dispatch = useDispatch();
@@ -76,12 +81,16 @@ const ToastHandler = () => {
   } = useSelector((state) => state.auth);
 
   const { createNewCategoryMessage } = useSelector((state) => state.category);
+  const { createContactMessage, deleteSingleContactMessage } = useSelector(
+    (state) => state.contact
+  );
 
   const {
     deleteProductMessage,
     makeProductUnFeaturedMessage,
     addToFeaturedProduct,
     createNewProductMessage,
+    createProductReviewMessage,
   } = useSelector((state) => state.product);
 
   const {
@@ -117,6 +126,15 @@ const ToastHandler = () => {
       }
     }
 
+    if (createProductReviewMessage) {
+      toast.success(createProductReviewMessage);
+      dispatch(clearCreateProductReviewMessage());
+    }
+    if (deleteSingleContactMessage) {
+      toast.success(deleteSingleContactMessage);
+      dispatch(clearDeleteSingleContactMessage());
+    }
+
     //user reagisteration success message show
     if (resgisterMessage) {
       toast.success(resgisterMessage);
@@ -129,6 +147,11 @@ const ToastHandler = () => {
         );
       }
       dispatch(clearRegisterMessage());
+    }
+
+    if (createContactMessage) {
+      toast.success(createContactMessage);
+      dispatch(clearCreateContactMessage());
     }
 
     //user verification success message show
@@ -311,6 +334,7 @@ const ToastHandler = () => {
     error,
     resgisterMessage,
     verificationMessage,
+    deleteSingleContactMessage,
     loginMessage,
     logOutMessage,
     updateProfileMessage,
@@ -339,6 +363,8 @@ const ToastHandler = () => {
     returnSalemessage,
     createNewProductMessage,
     createNewCategoryMessage,
+    createContactMessage,
+    createProductReviewMessage,
   ]);
   return null;
 };

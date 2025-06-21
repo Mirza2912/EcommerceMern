@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../../../Components/Input/FloatingInput";
@@ -62,6 +62,13 @@ const CreateNewEmployee = () => {
       });
     }
   };
+
+  // useEffect(() => {
+  //   if(error){
+  //     toast.error(error)
+  //     dispatch(clearError())
+  //   }
+  // } , [])
 
   return (
     <div className="flex items-center justify-center w-full mt-10">

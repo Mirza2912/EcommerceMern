@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   addToFeatured,
   createNewProduct,
+  createProductReview,
   deleteProduct,
   getAllProducts,
   getALLProductsAdmin,
   getAllProductsEmployee,
   getBannerProducts,
+  getBestSellerProducts,
   getFeaturedProducts,
   getRecentAddedProducts,
   getRelatedProducts,
@@ -33,12 +35,14 @@ export const productSlice = createSlice({
     bannerProductsCount: 0,
     singleProduct: {},
     categories: [],
+    bestSellerProducts: [],
     loading: false,
     error: null,
     deleteProductMessage: "",
     addToFeaturedProduct: "",
     makeProductUnFeaturedMessage: "",
     createNewProductMessage: "",
+    createProductReviewMessage: "",
   },
 
   //Simple reducers(Functions)
@@ -58,6 +62,9 @@ export const productSlice = createSlice({
     },
     clearCreateNewProductMessage: (state) => {
       state.createNewProductMessage = "";
+    },
+    clearCreateProductReviewMessage: (state) => {
+      state.createProductReviewMessage = "";
     },
   },
 
@@ -79,6 +86,20 @@ export const productSlice = createSlice({
         state.productsPerPage = action.payload?.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //create review
+      .addCase(createProductReview.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createProductReview.fulfilled, (state, action) => {
+        state.loading = false;
+        state.createProductReviewMessage = action.payload;
+      })
+      .addCase(createProductReview.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -124,6 +145,20 @@ export const productSlice = createSlice({
         state.featuredProductsCount = action.payload?.featuredProductsCount;
       })
       .addCase(getFeaturedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //getbestsellerproducts
+      .addCase(getBestSellerProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBestSellerProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bestSellerProducts = action.payload?.products;
+      })
+      .addCase(getBestSellerProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -260,5 +295,6 @@ export const {
   clearAddToFeaturedProduct,
   clearMakeProductUnFeaturedMessage,
   clearCreateNewProductMessage,
+  clearCreateProductReviewMessage,
 } = productSlice.actions;
 export default productSlice.reducer;
