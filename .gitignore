@@ -9,11 +9,11 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Environment variables
+# .gitignore
 .env
 .env.local
 .env.*.local
+
 
 # OS-specific files
 .DS_Store
