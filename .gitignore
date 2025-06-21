@@ -1,2 +1,46 @@
+# Node modules (backend & frontend)
 node_modules/
+frontend/node_modules/
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+frontend/build/
+frontend/dist/
+backend/dist/
+backend/build/
+
+# Coverage reports
+coverage/
+
+# Cache & debug
+.cache/
+.next/
+.vite/
+*.tgz
+
+# Editor folders
+.vscode/
+.idea/
+
+# Static uploads (optional)
+uploads/
+public/uploads/
+
+# MongoDB dump files (if using mongodump)
+dump/
