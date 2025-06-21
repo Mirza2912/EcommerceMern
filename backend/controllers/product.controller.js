@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ProductCategory } from "../models/productCategory.model.js";
 import UploadProductImagesCloudinary from "../utils/UploadProductImagesCloudinary.js";
 import cloudinary from "cloudinary";
+import axios from "axios";
 
 //get all products from Product model
 const getAllProducts = AsyncHandler(async (req, res, next) => {
@@ -302,6 +303,9 @@ const createProduct = AsyncHandler(async (req, res, next) => {
   // console.log(data);
 
   try {
+    const postToSocialMedia = req.body?.postToSocialMedia === "true";
+    delete data.postToSocialMedia;
+
     //make sure product will use category by category model
     if (data?.category) {
       // console.log("category start" + data.category);
@@ -350,7 +354,28 @@ const createProduct = AsyncHandler(async (req, res, next) => {
     }
 
     let newProduct = await Product.create(data);
-    console.log(newProduct);
+
+    if (postToSocialMedia) {
+      const zapierWebhookURL =
+        "https://hooks.zapier.com/hooks/catch/23465807/uoleemw/";
+
+      await axios
+        .post(zapierWebhookURL, {
+          title: newProduct?.name,
+          description: newProduct?.description,
+          image: newProduct?.images[0]?.url,
+          price: newProduct?.price,
+        })
+        .then(() => {
+          console.log("✅ Posted to Zapier");
+        })
+        .catch((err) => {
+          console.log(
+            "❌ Failed to post to Zapier:",
+            err.response?.data || err.message
+          );
+        });
+    }
 
     if (!newProduct) {
       return next(

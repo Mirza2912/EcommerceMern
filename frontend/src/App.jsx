@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Home from "./layout/Pages/Home";
 import {
   BrowserRouter as Router,
@@ -74,6 +74,7 @@ const App = () => {
   const { isVerified, user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
   useEffect(() => {

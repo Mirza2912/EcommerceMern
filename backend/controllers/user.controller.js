@@ -170,7 +170,7 @@ async function sendWelcomeToEmployee(
 // registration
 const userRegistration = AsyncHandler(async (req, res, next) => {
   const { name, email, password, avatar, phone } = req.body;
-  // console.log(name, password, email, avatar, phone);
+  console.log(name, password, email, avatar, phone);
 
   // 3=Now verify phone format by regex
   function verifyPhone(phone) {
@@ -279,14 +279,14 @@ const userRegistration = AsyncHandler(async (req, res, next) => {
         next
       );
     } else {
-      // console.log("yes");
+      console.log("yes");
 
       //checking data comes or not
       if (!name || !email || !password || !phone) {
         // console.log("❌ Missing required fields!");
         return next(new ApiError(`All fields are required...!`, 400));
       }
-      // console.log("yes2");
+      console.log("yes2");
 
       //Checking user already exist or not
       const isUserExist = await User.findOne({ email });

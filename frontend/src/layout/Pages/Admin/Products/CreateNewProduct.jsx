@@ -16,7 +16,11 @@ import { BiImageAdd } from "react-icons/bi";
 import { IoIosAddCircle, IoMdAdd } from "react-icons/io";
 import SubmitButton from "../../../Components/SubmitButton/SubmitButton";
 import { createNewProduct } from "../../../store/ProductSlice/productSliceReducers";
-import { clearCreateNewProductMessage } from "../../../store/ProductSlice/productSlice";
+import {
+  clearCreateNewProductMessage,
+  clearError,
+} from "../../../store/ProductSlice/productSlice";
+import { toast } from "react-toastify";
 
 const CreateNewProduct = () => {
   const [name, setName] = useState("");
@@ -31,9 +35,10 @@ const CreateNewProduct = () => {
   const [discount, setDiscount] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
+  const [postToSocialMedia, setPostToSocialMedia] = useState(false);
 
   const { categories } = useSelector((state) => state.category);
-  const { loading, createNewProductMessage } = useSelector(
+  const { loading, createNewProductMessage, error } = useSelector(
     (state) => state.product
   );
   const dispatch = useDispatch();
@@ -42,6 +47,12 @@ const CreateNewProduct = () => {
     dispatch(getAllCategories());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
+  }, []);
   const handleAddCategory = () => {
     if (newCategory.trim()) {
       console.log(newCategory);
@@ -94,6 +105,7 @@ const CreateNewProduct = () => {
     if (category) myForm.set("category", category);
     if (stock) myForm.set("Stock", stock);
     if (discount) myForm.set("discount", discount);
+    myForm.set("postToSocialMedia", postToSocialMedia); // ✅ Used only for backend condition
 
     myForm.set("isReturnAble", isReturnAble);
     myForm.set("isBannerProduct", isBannerProduct);
@@ -268,6 +280,15 @@ const CreateNewProduct = () => {
               className="w-4 h-4 accent-gold"
             />
             <label>Banner Product</label>
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={postToSocialMedia}
+              onChange={(e) => setPostToSocialMedia(e.target.checked)}
+              className="w-4 h-4 accent-gold"
+            />
+            <label>Post to Social Media</label>
           </div>
         </div>
         <div className="flex items-center gap-2 relative col-span-2">
