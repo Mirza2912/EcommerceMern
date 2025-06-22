@@ -18,6 +18,7 @@ const getAllProducts = AsyncHandler(async (req, res, next) => {
     page = 1,
     limit = 8,
     stock = true,
+    ratings,
   } = req.query;
   // console.log(keyword, minPrice, maxPrice, category, page, stock, rating);
 
@@ -41,12 +42,12 @@ const getAllProducts = AsyncHandler(async (req, res, next) => {
     }
   }
 
-  //if user use rating option
-  // if (rating) {
-  //   // console.log(rating);
+  // if user use rating option
+  if (ratings) {
+    // console.log(rating);
 
-  //   query.rating = { $gte: Number(rating) };
-  // }
+    filter.ratings = { $gte: Number(ratings) };
+  }
 
   //if user add category to get products
   if (category) {

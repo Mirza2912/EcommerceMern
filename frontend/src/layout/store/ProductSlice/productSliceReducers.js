@@ -12,11 +12,18 @@ const config = {
 export const getAllProducts = createAsyncThunk(
   "products/getAllProducts",
   async (
-    { category, price = [0, 3000], page = 1, stock = true, keyword = "" } = {},
+    {
+      category,
+      price = [0, 25000],
+      page = 1,
+      stock = true,
+      keyword = "",
+      ratings = 0,
+    } = {},
     { rejectWithValue }
   ) => {
     try {
-      // console.log("start");
+      // console.log(price);
 
       const params = new URLSearchParams();
 
@@ -27,6 +34,7 @@ export const getAllProducts = createAsyncThunk(
       if (price[0] !== undefined) params.append("minPrice", price[0]);
       if (price[1] !== undefined) params.append("maxPrice", price[1]);
       if (category) params.append("category", category);
+      if (ratings) params.append("ratings", ratings);
       // if (rating !== undefined) params.append("rating", rating);
       if (page !== undefined) params.append("page", page);
       if (stock !== undefined) {

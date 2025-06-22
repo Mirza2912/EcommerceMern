@@ -69,6 +69,12 @@ const OrdersTable = () => {
                 <option className="text-black" value="Processing">
                   Processing
                 </option>
+                <option className="text-black" value="Processing">
+                  Shipped{" "}
+                </option>
+                <option className="text-black" value="Processing">
+                  Out for Delivery{" "}
+                </option>
                 <option className="text-black" value="Delivered">
                   Delivered
                 </option>

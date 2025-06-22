@@ -20,9 +20,20 @@ export default function UsersTable({ users }) {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const { allUsers, isLoading } = useSelector((state) => state.auth);
 
+  // console.log(users);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  // console.log(statusFilter);
+
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const disptach = useDispatch();
+
+  const filtereedUsers =
+    statusFilter === "All"
+      ? users
+      : users?.filter((order) => order.role === statusFilter);
+  // console.log(filtereedUsers);
 
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 8;
@@ -30,7 +41,7 @@ export default function UsersTable({ users }) {
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
 
-  const paginatedUsers = users?.slice(startIndex, endIndex);
+  const paginatedUsers = filtereedUsers?.slice(startIndex, endIndex);
 
   const totalPages = Math.ceil(users && users?.length / usersPerPage);
 
@@ -51,6 +62,31 @@ export default function UsersTable({ users }) {
         <Loader />
       ) : (
         <div className="space-y-4 w-full overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <h2 className="text-lg font-semibold text-[#F7FAFC]">
+              Filter by Status:
+            </h2>
+            <div className="relative w-full max-w-xs">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full appearance-none border border-gray-700 rounded bg-transparent text-white text-sm px-3 py-2 pr-10 focus:outline-none"
+              >
+                <option className="text-black" value="All">
+                  All
+                </option>
+                <option className="text-black" value="admin">
+                  Admin
+                </option>
+                <option className="text-black" value="user">
+                  User
+                </option>
+              </select>
+              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
+                ▼
+              </div>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-[600px] w-full text-left">
               <thead>

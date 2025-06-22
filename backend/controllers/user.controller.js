@@ -802,7 +802,7 @@ const resetPassword = AsyncHandler(async (req, res, next) => {
 //get all users --->Admin
 const getAllUsers = AsyncHandler(async (req, res, next) => {
   try {
-    const users = await User.find({ role: "user" }, "-password").sort({
+    const users = await User.find({ role: { $ne: "employee" } }).sort({
       createdAt: -1,
     });
     if (!users) {
