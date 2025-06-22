@@ -14,6 +14,7 @@ import {
   getRelatedProducts,
   makeUnfeatured,
   singleProductDetails,
+  updateProduct,
 } from "./productSliceReducers.js";
 
 /*--------------------------------------*/
@@ -43,6 +44,7 @@ export const productSlice = createSlice({
     makeProductUnFeaturedMessage: "",
     createNewProductMessage: "",
     createProductReviewMessage: "",
+    updateProductMessage: "",
   },
 
   //Simple reducers(Functions)
@@ -56,6 +58,9 @@ export const productSlice = createSlice({
     },
     clearAddToFeaturedProduct: (state) => {
       state.addToFeaturedProduct = "";
+    },
+    clearUpdateProductMessage: (state) => {
+      state.updateProductMessage = "";
     },
     clearMakeProductUnFeaturedMessage: (state) => {
       state.makeProductUnFeaturedMessage = "";
@@ -86,6 +91,20 @@ export const productSlice = createSlice({
         state.productsPerPage = action.payload?.productsPerPage;
       })
       .addCase(getAllProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      //update a product
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updateProductMessage = action.payload;
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -296,5 +315,6 @@ export const {
   clearMakeProductUnFeaturedMessage,
   clearCreateNewProductMessage,
   clearCreateProductReviewMessage,
+  clearUpdateProductMessage,
 } = productSlice.actions;
 export default productSlice.reducer;

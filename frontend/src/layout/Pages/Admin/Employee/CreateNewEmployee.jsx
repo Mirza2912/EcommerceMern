@@ -8,10 +8,13 @@ import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { IoCallOutline } from "react-icons/io5";
 import { registerUser } from "../../../store/UserSlice/userSliceReducers";
+import { clearError } from "../../../store/UserSlice/userSlice";
 
 const CreateNewEmployee = () => {
   //fetching data from user state
-  const { isLoading, resgisterMessage } = useSelector((state) => state.auth);
+  const { isLoading, resgisterMessage, error } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,7 +55,13 @@ const CreateNewEmployee = () => {
   const registerFormHandler = (e) => {
     e.preventDefault();
     dispatch(registerUser(signUpData));
+  };
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearError());
+    }
     if (resgisterMessage) {
       setSignUpData({
         name: "",
@@ -61,17 +70,10 @@ const CreateNewEmployee = () => {
         avatar: "/src/assets/profile.jpg",
       });
     }
-  };
-
-  // useEffect(() => {
-  //   if(error){
-  //     toast.error(error)
-  //     dispatch(clearError())
-  //   }
-  // } , [])
+  }, [resgisterMessage, error, dispatch]);
 
   return (
-    <div className="flex items-center justify-center w-full mt-10">
+    <div className="flex items-center justify-center w-full my-10">
       <div className="w-full  lg:w-[60%] rounded-2xl p-6 md:p-8 border border-gray-700">
         <h2 className="text-4xl font-bold mb-8 text-center">
           Add New Employee

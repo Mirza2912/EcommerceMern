@@ -9,9 +9,11 @@ import {
   clearCreateProductReviewMessage,
   clearDeleteProductMessage,
   clearMakeProductUnFeaturedMessage,
+  clearUpdateProductMessage,
 } from "../../store/ProductSlice/productSlice.js";
 
 import {
+  clearCancelOrderMessage,
   clearDeleteOrderAdminMessage,
   clearGetAllOrdersMessage,
   clearOrderItems,
@@ -91,6 +93,7 @@ const ToastHandler = () => {
     addToFeaturedProduct,
     createNewProductMessage,
     createProductReviewMessage,
+    updateProductMessage,
   } = useSelector((state) => state.product);
 
   const {
@@ -109,6 +112,7 @@ const ToastHandler = () => {
     getAllOrdersMessage,
     deleteOrderAdminMessage,
     updateOrderStatusMessage,
+    cancelOrderMessage,
   } = useSelector((state) => state.order);
 
   /* USEEFFCART FOR TOAST AND CLEAR MESSAGES*/
@@ -124,6 +128,16 @@ const ToastHandler = () => {
         toast.error(error);
         dispatch(clearError());
       }
+    }
+
+    if (updateProductMessage) {
+      toast.success(updateProductMessage);
+      dispatch(clearUpdateProductMessage());
+    }
+
+    if (cancelOrderMessage) {
+      toast.success(cancelOrderMessage);
+      dispatch(clearCancelOrderMessage());
     }
 
     if (createProductReviewMessage) {
@@ -341,6 +355,7 @@ const ToastHandler = () => {
     changeUserPasswordMessage,
     deleteUserMessage,
     forgotPasswordMessage,
+    cancelOrderMessage,
     resetPasswordMessage,
     updateCartOfLocalMessage,
     addToCartBackendMessage,
@@ -354,6 +369,7 @@ const ToastHandler = () => {
     makeProductUnFeaturedMessage,
     deleteOrderAdminMessage,
     updateOrderStatusMessage,
+    updateProductMessage,
     adminDeleteEmployeeMessage,
     suspendUserMessage,
     unSuspendUserMessage,

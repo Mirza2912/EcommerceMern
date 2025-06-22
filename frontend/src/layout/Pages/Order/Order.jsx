@@ -18,7 +18,7 @@ const Order = () => {
       toast.error(error);
       dispatch(clearError());
     }
-  }, [error]);
+  }, [error, dispatch]);
 
   return (
     <div className="p-4 sm:my-10 md:my-14">

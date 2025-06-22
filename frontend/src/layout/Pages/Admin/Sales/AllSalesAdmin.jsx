@@ -19,7 +19,6 @@ const AllSalesAdmin = () => {
     { key: "physical", label: "🏪 Physical Sales" },
     { key: "online", label: "💻 Online Sales" },
     { key: "returned", label: "🔄 Returned" },
-    { key: "cancelled", label: "❌ Cancelled" },
   ];
 
   const filterSales = (key) => {
@@ -33,8 +32,6 @@ const AllSalesAdmin = () => {
         filtered = filtered.filter((sale) => sale.saleType === "ONLINE");
       } else if (key === "returned") {
         filtered = filtered.filter((sale) => sale.isReturned === true);
-      } else if (key === "cancelled") {
-        filtered = filtered.filter((sale) => sale.isCancelled === true);
       }
     }
 

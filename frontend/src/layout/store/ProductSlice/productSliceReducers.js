@@ -226,16 +226,15 @@ export const createNewProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async (productData, { rejectWithValue }) => {
-    console.log(productData);
+    // console.log(productData);
 
     try {
       const { data } = await axios.put(
         `/api/v1/products/admin/updateProduct/${productData?.productId}`,
-        productData.myForm,
-        config
+        productData.myForm
       );
-      console.log(data);
-      return data?.message;
+      // console.log(data);
+      return data?.data;
     } catch (error) {
       console.log(error);
       return rejectWithValue(

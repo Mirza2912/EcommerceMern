@@ -2,7 +2,8 @@ import React, { useMemo } from "react";
 import { useTable, usePagination } from "react-table";
 import { Link, useNavigate } from "react-router-dom";
 import { RiShareBoxFill } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { cancelOrderByUser } from "../../store/OrderSlice/orderSliceReducers";
 
 const OrdersTable = () => {
   const navigate = useNavigate();
@@ -17,9 +18,12 @@ const OrdersTable = () => {
         orderId: ord._id,
         price: ord.totalPrice,
         details: ord._id,
+        Action: ord._id,
       }))
     );
   }, [order]);
+
+  const dispatch = useDispatch();
 
   const columns = useMemo(
     () => [
@@ -62,6 +66,19 @@ const OrdersTable = () => {
             title="View Order"
           >
             <RiShareBoxFill className="w-5 h-5" />
+          </button>
+        ),
+      },
+
+      {
+        Header: "Action",
+        accessor: "Action",
+        Cell: ({ value }) => (
+          <button
+            onClick={() => dispatch(cancelOrderByUser(value))}
+            className="text-md text-red-600 hover:text-red-700 hover:cursor-pointer hover:underline"
+          >
+            cancel order
           </button>
         ),
       },

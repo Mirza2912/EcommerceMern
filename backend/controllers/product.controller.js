@@ -439,14 +439,14 @@ const createProduct = AsyncHandler(async (req, res, next) => {
 //Update specific product
 const updateProduct = AsyncHandler(async (req, res, next) => {
   const productId = req.params.id;
-  console.log(productId);
+  // console.log(productId);
 
   const updateData = req.body;
-  console.log(updateData);
+  // console.log(updateData);
 
   try {
     const product = await Product.findById(productId);
-    console.log(product);
+    // console.log(product);
 
     if (!product) {
       return next(
@@ -454,48 +454,26 @@ const updateProduct = AsyncHandler(async (req, res, next) => {
       );
     }
 
-    //if user update images also
-    if (req.files?.images) {
-      console.log("yes image i hn");
-
-      // check image comes from data base or not and also check its length greater than 1
-      if (product?.images && product?.images?.length > 0) {
-        console.log("hn poorani b hn");
-
-        for (const image of product.images) {
-          if (image?.public_id) {
-            // Only destroy if it is uploaded (has public_id)
-            await cloudinary.v2.uploader.destroy(image.public_id);
-          }
-        }
-      }
-
-      console.log("upload hony lagi hn");
-
-      //here i will create new uploader image cloudinary for only new image uploads
-      //now upload new images on cloudinary
-      const uploadedImages = await UploadProductImagesCloudinary(req, next);
-      updateData.images = uploadedImages;
-    }
-
     const updatedProduct = await Product.findByIdAndUpdate(
       product._id,
       updateData,
       { new: true, runValidators: true, useFindAndModify: false }
     );
+    // console.log("update ho gya :" + updatedProduct);
 
-    if (updatedProduct) {
+    if (!updatedProduct) {
       return next(
         new ApiError(`Something went wrong while updating product...!`, 500)
       );
     }
+    // console.log("ho gya");
 
     res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          `Product updated with ${product.name} name successfully...!`
+          `Product with ${product.name} name updated successfully...!`
         )
       );
   } catch (error) {

@@ -62,7 +62,7 @@ const SalesTable = ({ filteredSales }) => {
                     className="border-b border-gray-700 hover:bg-white/5 transition"
                   >
                     <td className="px-4 py-3">
-                      {order.customerName || order.user?.name || "N/A"}
+                      {order.customerName || order.orderId?.user?.name || "N/A"}
                     </td>
                     <td className="px-4 py-3">
                       {order.saleId || order._id || "N/A"}

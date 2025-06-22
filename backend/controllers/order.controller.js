@@ -236,9 +236,7 @@ const updateOrderStatus = AsyncHandler(async (req, res, next) => {
 
 //cancle request order from user
 const cancelOrder = AsyncHandler(async (req, res, next) => {
-  const { orderId, reason } = req.body;
-
-  const order = await Order.findById(orderId);
+  const order = await Order.findById(req.params.id);
 
   if (!order) return next(new ApiError("Order not found", 404));
 
@@ -246,8 +244,13 @@ const cancelOrder = AsyncHandler(async (req, res, next) => {
     return next(new ApiError("Unauthorized to cancel this order", 403));
   }
 
-  if (order.orderStatus === "Delivered" || order.isCancelled) {
-    return next(new ApiError("Order already delivered or cancelled", 400));
+  if (
+    order.orderStatus === "Delivered" ||
+    order.orderStatus === "Shipped" ||
+    order.orderStatus === "Out for Delivery" ||
+    order.isCancelled
+  ) {
+    return next(new ApiError(`Sorry order already ${order.orderStatus}`, 400));
   }
 
   // Restore product stock
@@ -258,7 +261,7 @@ const cancelOrder = AsyncHandler(async (req, res, next) => {
   }
 
   order.orderStatus = "Cancelled";
-  order.cancelReason = reason || "User cancelled the order";
+  order.cancelReason = "User cancelled the order";
   order.isCancelled = true;
   order.cancelledAt = Date.now();
 

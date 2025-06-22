@@ -32,6 +32,7 @@ const SingleProductDetails = () => {
     singleProduct,
     loading: productLoading,
     error,
+    createProductReviewMessage,
   } = useSelector((state) => state.product);
   const { isVerified } = useSelector((state) => state.auth);
   const { loading: cartLoading } = useSelector((state) => state.cart);
@@ -87,15 +88,7 @@ const SingleProductDetails = () => {
       dispatch(clearError());
     }
     dispatch(singleProductDetails(id));
-  }, []);
-
-  useEffect(() => {
-    if (product) {
-      if (product?.category?._id) {
-        dispatch(getRelatedProducts(product.category._id));
-      }
-    }
-  }, [singleProduct]);
+  }, [dispatch, error]);
 
   const options = {
     size: "large",
@@ -111,7 +104,7 @@ const SingleProductDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(rating, comment, id);
+    // console.log(rating, comment, id);
     const data = {
       rating,
       comment,
@@ -120,20 +113,15 @@ const SingleProductDetails = () => {
     dispatch(createProductReview(data));
   };
 
-  const submitReviewToggle = () => {
-    open ? setOpen(false) : setOpen(true);
-  };
-  const reviewSubmitHandler = () => {
-    const myForm = new FormData();
+  useEffect(() => {
+    if (createProductReviewMessage) {
+      setRating(0);
+      setComment("");
+      setShowForm(false);
+      dispatch(singleProductDetails(id));
+    }
+  }, [createProductReviewMessage]);
 
-    myForm.set("rating", rating);
-    myForm.set("comment", comment);
-    myForm.set("productId", match.params.id);
-
-    // dispatch(newReview(myForm));
-
-    setOpen(false);
-  };
   return (
     <>
       <Title title="Single Product" />

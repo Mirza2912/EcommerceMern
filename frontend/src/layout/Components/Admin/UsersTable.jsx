@@ -64,7 +64,7 @@ export default function UsersTable({ users }) {
         <div className="space-y-4 w-full overflow-hidden">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
             <h2 className="text-lg font-semibold text-[#F7FAFC]">
-              Filter by Status:
+              Filter by Role:
             </h2>
             <div className="relative w-full max-w-xs">
               <select

@@ -153,3 +153,24 @@ export const updateOrderStatus = createAsyncThunk(
     }
   }
 );
+
+export const cancelOrderByUser = createAsyncThunk(
+  "order/cancelOrderByUser",
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id);
+
+      const response = await axios.post(`/api/v1/orders/order/cancel/${id}`);
+      console.log(response?.data);
+      return response?.data?.message;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(
+        error.response.data?.errors ||
+          error.response.data?.message ||
+          error.message ||
+          "Failed to update order"
+      );
+    }
+  }
+);

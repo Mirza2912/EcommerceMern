@@ -6,6 +6,7 @@ import {
   saveShippingToLocalStorage,
 } from "./orderLocalStorageHandler";
 import {
+  cancelOrderByUser,
   createOrder,
   deleteOrderAdmin,
   getAllOrders,
@@ -33,6 +34,7 @@ const orderSlice = createSlice({
     otherDetails: { taxPrice: null, shippingPrice: null, totalPrice: null },
     loading: false,
     error: null,
+    cancelOrderMessage: "",
   },
   reducers: {
     setShippingAddress: (state, action) => {
@@ -51,6 +53,10 @@ const orderSlice = createSlice({
     clearOrderItems: (state) => {
       saveOrderItemsToLocalStorage([]);
       state.orderItems = [];
+    },
+
+    clearCancelOrderMessage: (state) => {
+      state.cancelOrderMessage = "";
     },
 
     clearGetAllOrdersMessage: (state) => {
@@ -85,6 +91,19 @@ const orderSlice = createSlice({
         state.orderPlacedMessage = action.payload?.message;
       })
       .addCase(createOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(cancelOrderByUser.pending, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(cancelOrderByUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.order = action.payload?.data;
+        state.cancelOrderMessage = action.payload;
+      })
+      .addCase(cancelOrderByUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -182,5 +201,6 @@ export const {
   clearGetAllOrdersMessage,
   clearDeleteOrderAdminMessage,
   clearUpdateOrderStatusMessage,
+  clearCancelOrderMessage,
 } = orderSlice.actions;
 export default orderSlice.reducer;

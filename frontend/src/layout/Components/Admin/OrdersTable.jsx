@@ -78,6 +78,9 @@ const OrdersTable = () => {
                 <option className="text-black" value="Delivered">
                   Delivered
                 </option>
+                <option className="text-black" value="Cancelled">
+                  Cancelled
+                </option>
               </select>
               <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white">
                 ▼

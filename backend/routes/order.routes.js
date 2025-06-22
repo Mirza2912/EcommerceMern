@@ -51,7 +51,7 @@ router
   .route("/admin/single-order/update/:id")
   .put(isAuthenticatedUser, isAuthorizedRoles("admin"), updateOrderStatus);
 
-router.post("/cancel", isAuthenticatedUser, cancelOrder);
+router.post("/order/cancel/:id", isAuthenticatedUser, cancelOrder);
 router.post("/request-return", isAuthenticatedUser, requestReturn);
 router.post(
   "/admin/approve-return",
